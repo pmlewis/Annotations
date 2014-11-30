@@ -1,0 +1,133 @@
+# Bash scripting with Reindert Ekker on Pluralsight
+
+# dont forget to make your scripts executable and shebang it
+
+
+## Vairables
+* don't use whitespace around assignment
+* get it's value with $x
+* $(ls or whatever)
+	* execute the command in the parens and use the output in place of the $
+* -x 
+	* set debug mode
+* -d
+	* is a directory
+* -f
+	* is a file
+* read : read a line from input and set to var
+	* read x
+	** \#read a line and save it to x
+	* read 
+* man buitlins
+* man read
+	* read can take many options
+	* -p prompt
+	* -s suppress output, like for typing in passwords
+* $1, $2, etc
+	* arguments to calling the script
+* ${topic}
+	* use the contents of $topic in a string
+* single quotes escape $
+	* excape single qutoes with \
+* double quotes around a var will still use the value in the var
+	* always try to use double qutoes to avoid weird bugs
+**for help with any bash shell command, do help {cmd}**
+
+## pattern matching
+* $x =~ ^[a-g0-9]+$
+* $x == [aA]*
+	* true if x starts with a's and/or A's
+
+## Control Flow
+* for var in $vars;
+	* $vars is a string separated by spaces
+* for (( i=1; i < $#; ++i )); do
+	stuff
+  done
+* case $x in
+	y)
+		do_y
+		;;
+	n)
+		do_n
+		;;
+	\?)
+		exit 1
+		;;
+  esac
+
+## Variables 2
+* declare -i 
+	* the string is an arthmetic expression, echo evaluates this
+* let n=something and using ((c-style math express))
+	* evaluate the expression
+	** double parens can be used in truth statements, where anything greater than 0 is true
+* declare -r
+	* read only var
+* export var, declare -x
+	*  make a var available to a subprocess
+**Exporting in .bashrc**
+	* useful for setting custom environment vars for your session
+
+* Arrays
+	* x[0]="start"
+	* x[1]="end"
+	* echo ${x[1]}
+	* ${x[@]} or ${x[*]}
+	* declare -a, or just assign an index
+	* count of elements in an array ${#x[@]}
+	* arrays cannot be exported
+	* declare -A for associative arrays
+	* list the indexes being used ${!x[2]}
+
+## Handling script parameners
+* special variables
+	* $*
+		* similar to $@
+		* double quotes wrap all the args in double quote
+		* *useful for args "like this"*
+	* $@
+		* all the arguments you gave
+		* double quotes around it will double quote arround each param
+	* $#
+	* $0
+		* name of the cmd you used
+	* $?
+* shift
+	* moves $2 to $1
+	* so you can iterate over args and options
+* getopts
+	* use this to pars things like -p or -am or -xvzf filename
+	* returns false when no options left
+	* -- will be seen at the end of options also
+	* check out
+		* OPTIND
+		* OPTARG
+	* non-silent mode, getopts will handle errors
+	* silent mode, prepend with colon, handle errors yourself
+
+
+
+## Shell functions
+* declaring functions, using functions, returning data, and exporting functions
+* function_name(){
+	dostuff
+	
+  }
+* use the above function like
+  <code>
+  function_name
+  </code>
+* $1, $2, etc are the params fed into the function
+* "exit" quits the entire script you're running, return exits the executing function
+* be careful about piping output into functions, functions will run in a subshell and is probably not what you want
+* here documents
+	cat <<TAG
+		this is a bunch of text
+	TAG
+
+
+## String manipulation
+
+
+

@@ -1,0 +1,126 @@
+# Pro Git
+
+## Chapter 6
+
+### Submodules - keep a git repo inside another git repo
+* `git submodule add $repo {$name}`
+* `.gitmodules` config file for you submodules
+* must be in the subdirectory where your module lives in order to make changes to it
+* if you clone a project with submodules, you must go into those sub modules
+
+            git submodule init
+            git submodules update
+
+* to pull in changes to your submodule you must
+
+          git merge origin/$repo
+          git submodule update
+          
+* beware of committing to a submod, not pushing it out, then making another commit off the local commit, and pushing that one out. running `git submodule update` for other devs will blow up
+* Superprojects - one strategy is to make each subdirectory a submodule
+* Always make a branch to keep your work in when you're working on a submodule
+* be careful about working on a superbranch, pulling in a submodule, then swithcing superbranches. Git will see the submodule directory as untracked
+* if you're working on a directory, then decide you want to make it a submodule, remember to unstage the directory by running `git rm -r $directory`, then `git submodule add $repo` or `git submodule init`
+* if after doing this, you decide to switch superbranches to one that has the original subdirectory, you must physically move the submodule directory to a different location before switching superbranches
+
+### Subtree merging - another way to have subprojects inside superprojects
+* add the (remote) project within your project and check out a new branch of your project
+    * `git remote add $name $repo`  
+      `git fetch $repo`  
+      `git checkout -b subprojectadded`
+    * to get this added into your master, use `git read-tree`
+        * checkout your master
+        * `git read-tree --prefix=directory -u subprojectadded`
+    * to get the upstream changes from the subproject, checkout your subproject branch, and git pull
+    * after doing this, to merge subproject differences into your master you can use  
+      `git merge -s subtree`        
+      but you'll get the subproject's history mixed in. Avoid this with  
+      `git merge --squash -s subtree --no-commit subprojectadded`
+    * `git diff-tree` to see differences in projects with subtrees
+     
+     
+## Chapter 7 - Customizing Git
+* config files hierarchy
+    1. global git config - /etc/gitconfig
+    2. user git config - ~/.gitconfig
+    3. project git config - ${projecthome}/.git/config
+* `git config --help`
+* some config options: editor, commit template, pager, signing key, excludes, autocorrect (number of tens of seconds before excuting what you think it meant
+* coloring in terminal
+    * set `git config --global color.ui true`
+    * some things you can color
+        * branches diffs
+        * interactive commands
+        * status
+        * these have sub attibutes you can set
+    * textcolor background textstyle
+        * normal, black, red, etc
+        * teststyles - bold, dim, ul, blink, reverse
+    * check out git config --help or man git config.
+* users can use their choice of diff and merge tools
+* Formatting and Whitespace
+    * Windows txt files use crlf, *nix uses only lf
+    * if you're using a windows machine, and others may use *nix, you should set
+    
+            git config --global core.autocflt true
+            
+    * This converts lf to crlf on check out
+    * if you're using *nix on a windows project, you don't want to introduce lfs without a cr, so you want to set
+            
+            git config --global core.autocrlf input
+            
+    * This converts lf to crlf on commit
+    * *something about this bothers me, but I'm not quite sure what it is yet*
+    * Whitespace issues
+        * trailing-space - space at a line end
+        * space-before-tab - spaces before a tab at the beginning of a line
+        * indent-with-non-tab - look for lines that begin with 8 or more spaces rather than tabs
+        * cr-at-eol - cr's at the end of a line are ok
+        * trailing-space and space-before-tab are enabled by default
+        * when applying patches, whitespace issues may occur, so you may need to `git apply --whitespace=warn ...` or `git apply --whitespace=fix ...`
+* some git serverside configs - 
+    * fsckObjects - make sure the sha1 exactly matches the diff and points to valid objects (expensive)
+    * denyNonFastForwards - disables force-updating branches with non fastforwards
+    * denyDeletes - denies branch and tag deletion
+* Git attributes - certain path or file specific settings
+    * `.gitattributes` in a directory to have it checked in
+    * `.git/info/attributes` to not have it checked in
+    * can treat files as binary, it won't fix clrf issues or try to diff changes
+    * can handle otherwise binary files in a way to handle diff'ing
+        * the book gives examples for word docs and jpgs
+    * Keyword expansion - doesn't seem all that helpful atm
+    * export rules - can specify files you don't want exported when running `git archive`
+    * Merge strategies for specific files, say always choosing your version of a file if there's conflict from the outside
+* Git Hooks - events that can start custom scripts
+    * clientside and serverside
+    * `.git/hooks` - normally has examples
+* an example of a Git enforced change policy
+
+## Chapter 8 - Git and other VCS's
+
+## Chapter 9 - Git Internals
+* Git is a content addressable filesystem, at its core, a key value store
+* has *porcelain* commands, userfriendly, for everyday consumption, and *plumbing* commands, for the innerworkings of git and creating new tools
+* `.git` contains HEAD, index, objects, and refs dirs
+    * objects stores all the content for the db
+        * git objects are blobs, trees, commits, or tags
+    * refs has the pointers to commit objects
+        * refs will contain heads, tags, and remotes
+    * HEAD points to the branch you have checked out
+    * index is your stagining area
+* Packfiles
+    * as you save and make commits, git will save copies of the files you work on in full initially, i.e. a one line change will result in two nearly identical git objects on disk. git will run on it's own (or when you want by `git gc`) a packer that will compare similar objects, build deltas from them, compress everything into the packfile, then gets rid of the "loose objects" that are now packed
+* Refspec - reference spec, where to look for for mapping local references to remotes
+    * can give refspecs for fetching and pushing to control what you may fetch and what pushing does to the remote branches, and to what branch
+* Smart and Dumb transfer protocols
+* **Maintenance and Data Recovery**
+    * `git gc --auto` - gc will also remove objects that are not reachable from any commit and a few months old
+    * gc will pack all refs and move them to `.git/packed-refs`. new refs will just go to refs, and if you specify a ref that git can't find, itll go check out the packed-refs
+    * git reflog - git keeps track of all changes to HEAD, making commits, and changing branches. `git reflog` will show all of these changes
+        * `git log -g` will show the reflog in normal log way
+    * to recover a hanging commit, you can create a branch off of the commit when you find it in the reflog, then you can work from that and perhaps any other hanging commits that your branch has in its history
+    * for some reason, if you can't find the commit in the reflog, or the reflog gets deleted, you could try running `git fsck` with the `--full` option to get all objects that aren't pointed to by another object. if there's a commit there, you can make a branch off of it to recover it also
+    * Removing objects from history, or dealing with someone committing and pushing huge ass files
+        * git filter-branch - run a command through a whole branch. --index-filter will run this through each staging area. so to remove a file that got checked in, you can do a git rm --cached hugeassfile through filter-branch. after that, you need to remove your .git/refs/original, your .git/logs, and anything else that might contain referances to the old commits, and then repack by running `git gc`
+            * you could then remove the object completely by doing `git prune --expire`
+    * How to find huge files

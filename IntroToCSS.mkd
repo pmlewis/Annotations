@@ -1,0 +1,124 @@
+# Intro to CSS
+
+## The Intro
+* Styles webpages, provides consistency, and reusability
+* rules associated with selectors
+
+        selector {
+            property: propertyvalue;
+        }
+        
+* `{ property: propertyvalue; }` is a rule
+* CSS specs at www.w3.org/Style/CSS
+* CSS 2.1 in 2004, CSS3 support is in progress
+    * take a look at the *Full property table* for css2.1 at www.w3.org
+* `body` selector, `#id` selector, `.class` selector
+* `selector1, selector2 { rule } ` to apply to multiple selectors with one rule
+* id's should be unique, classes should be reused
+* Other selectors
+    * `div p { rule }` decendant - apply rule to p tags **anywhere inside** a div
+    * `div > p { rule }` child - apply rule to p tags to *direct children* ie **one level deep**
+    * see also attribute selectors - can specify rules for elements with attributes of certain values
+    * psuedoclasses `a:visited` things the browser may keep track of for you
+    * CSS selectors ref at www.w3.org
+* Property values
+    * css keywords, certain keywords can only be used with certain rules
+    * measurements
+        * physical, like points for font, or even mm and pc
+        * screen measurements, with pixels, px
+        * relative measurements, like using percentages and em's (1.0 em is default text size in browsers ? )
+        * color codes
+            * rule `color` normally means font color, background color is background-color
+        * fonts  
+        * some functional notation, like rgb(0,0,0) and url("awesomecat.jpg")
+        * percents are of the selector's parent
+        
+## Cascading and Inheritance
+* The Cascade - how styles will be applied
+    * check out css's @import for linking multiple styles
+    * implict styles
+        * the browser's defaults, or user agent defaults
+        * you can apply a User Stylesheet to your browser to use everywhere, try looking under accessibility settings
+    * Weight - with more weight, overrides others. From least to most        
+        1. Default, browsers
+        2. User Styles, like those you can define for yourself
+        3. Author styles, like with `<link type="text/stylesheet">` and `@import`
+        4. Inline style
+    * Checkout googling for browser default's stylesheets, like iecss.org
+    * `!important` tell the browser to favor this setting more, to kind of break the above weight
+    * Handling Conficting rules
+        * from same source, browser chooses the one farthest down the list, or the last rule
+        * linked css that comes after another linked css wins
+        * CSS Reset stylesheets
+* Specificity - where the above weights will get overruled
+    * The ABC Rule for selectors
+        A. Count of ID selectors in a selector = A
+        B. Count of class and attribute selectors in a selector = B
+        C. count of type (basic tag)selectors in a selector = C
+        * The specificity for a selector is A,B,C. Rules with a higher specificity will win, where A is heaviest, C is lightest
+        * inline styles have a rating of one magnitude heavier than A
+        * `!important` has a weight of two magnitudes heavier than B
+        * `*` has a specificity of 0
+* **A Note On Winning**
+    An element *e* is affected by two rules, *a* and *b*. *a* wins over *b*. If a rule of the same type is defined in *a* and *b*, *a*'s rule will take precidence, but if *b* has additional rules, different from *a*, *e* will still be affected by the additional rules in *b* as well
+* Inheritance
+    * child elements being affected by the rules applied to its parent
+    * ***Not every property is inherited***
+    * font rules tend to be always inheritable, list styles tend to be also
+    * Margin, border, padding tend to **not** get inherited
+    
+## The Box Model
+* elements produce boxes
+* 3 things that surround each box
+    * Margin - The space outside the border between the box and any other content
+    * Border - is the line around the box
+    * Padding - is the space inside between the border and the content
+* order of sides : top right bottom left
+* *Style tip* : defining unordered lists bullet styles - use list-style, like list-style-type
+* border style syntax: width style color
+* *Neat style trick* : setting border sides to differing widths, can create a wedge or shadow affect, like having a thick right border and a thin bottom border, with differing colors to create like a shadow
+* Vertical Margins Collapse - margins will overlap each other
+* Box Width - defining width for a tag will define the **content** width. Margins, borders, and padding will add onto this
+* Box Height : defining height will will define the **content** height. Again, m,b,p will add onto this
+* Display
+    * Block - block elements extend as far as the are ruled to, and blocks sit on top of each other (or create new lines)
+    * Inline - Tends to just surround the content, only moves downward when there's not enough space (don't create new line). **You can't set width for an inline element** The page will ignore and width and just be the width of the content
+    * None - removes an element
+    * Inline-block - like inline, but with block characteristics **can define width.**
+*Visibilty
+    * Hidden - hide a element, but it will still take up space. Useful for not blowing up spacing between things
+* Styling a navbar - author used an ul, list-style:none with a .menu that was text-align: centered to be in the middle of the page
+
+## Fonts and Text
+* Font collections
+    * font-family: sans-serif;
+    * How to use font-familys correctly, since fonts are very client-dependent and the w3 doesn't define fonts, just font collections
+    * Use one of the below as a fallback
+        * serif - think times new roman
+        * sans-serif - think Arial
+        * cursive - comic sans
+        * fantasy - think impace
+        * monospace - for code
+    * Can specify specific fonts in a comma delimitd list  as values for the font-family property. Font used is the first matched. font names with spaces should be enclosed in quotes or double quotes
+    * pixels for absolute size control, em for relative size (1.0 em is default browser size. 2em is good for accessibility)
+    * `<pre>` tag for preformatted text, respects whitespace, nls, and tabs
+    * font-style: italic, or bold, etc
+    * text properties
+        * text-indent
+        * word-spacing
+        * letter spacing
+        * text-decoration (for underlines or strike throughs)
+        * text-align: justify (for making text fit all of line)
+        * line-height: spaces between lines
+
+## Layouts
+* Position
+    * static - default, stack ontop of each other, like block level
+    * relative - with this, can specify top: and left:, or bottom: and right: values to set an element at a location relative to its *default location* ie where it would normally appear on the page given its context
+    * fixed - breaks free from the flow of the page, posistion is relative to the window, so if user scrolls, itll still be in the window
+    * absolute - breaks free from the flow of the page, posistion is relative to the body, so if the user scrolls, they may scroll past it
+    * can use negative values for top, left, bottom, right
+* Floating and Clearing
+    * float - to have text reflow around the ruled element
+    * clear - to have nothing float around on the ruled element
+    

@@ -1,0 +1,232 @@
+# Front End Development: Get Started
+* github.com/joeeames for course content
+
+## Learning && How to solve problems
+* Mozilla Developer Network - great ref for modern web tech, more so than w3schools
+* Browser console
+    * can run inline javascript here
+    * shift enter to newline without sending
+    * type var name to see it's value
+    * console.dir(someobject)
+        * load and view the someobject as a javascript object
+* JSFiddle
+    * Html, js, css windows in one window
+    * type name of tag, shift shift to html tag it
+    * js libraries
+    * don't need a full boilerplate, use fiddle options for <body\> mods
+* JSBin
+    * select only which langs you need
+    * Export as Gist, for github
+* Codepen
+    * can use markdown, and other langs to HTML
+    * can use Sass, Less
+    * js, coffeescript, livescript
+    * Modernizer
+* Plunker
+    * create any number of project files (the above seem to only have one file each)
+    * Includes many templates and boilerplate, and save as templates
+    * preview in full window
+    * versioning
+    * popular user contributed templates
+* Keeping up to date
+    * Follow people
+        * paul irish
+        * addy osmani
+    * podcasts
+        * shoptalk show
+        * javascript jabber
+    * Newsletters
+        * Javascript weekly, html5 weekly, css weekly, node weekly
+        
+## HTML and CSS
+### Good HTML
+* Validate and Wellformed - validator.w3.org
+* google's guidelines bit.ly/1e5R7Kc
+### Html5 apis
+* audio tag - different browsers, different usable files
+    * include a default text
+    * js to grab audio element, then element.play();
+    * element.paused, element.pause()
+    * `<audio control>` add a default player control - control is an attribute that doesn't neeed a value
+* video
+    * works very similar
+* local storage
+    * window.localStorage.setItem(), window.localStorage.getItem()
+    * sessionStorage.setItem() sessionStorage.getItem()
+* canvas
+    * `<canvas id="name" width="600" height="600">some can't play text</canvas>`
+    * get canvas element in js
+        * var drawonme = $("#name").getContext('2d');
+            drawonme.fillStyle = "blue";
+            drawonme.fillRect(100, 100, 30, 30);
+* offline api
+    * html manifest="app.appcache"
+    * CACHE MANIFEST
+      offlinehtmlfile.html
+      offlinehtmlfile2.html
+      offlinehtmlfile_etc.html
+* check out webstorm for a quick and dirty webserverand ide
+* history api
+    window.history.go(1); window.history.go(-1); window.history.pushState()
+    * this is js mvc frameworks can do routing
+* geolocation api
+    * navigator.geolocation.getCurrentLocation()
+    * prompts to allow user to say ok
+    * returns lat long
+* check out file api, socket api
+
+### CSS
+* transistions
+* Resets and Normalizing - each browser has a lot of default syltes
+    * **Reset** clears styles **Normalize** tries to unify differences
+    * html5 doctor reset style
+    * normalize.css
+    * css frameworks may have this builtin
+* Preprocessors
+    * variables, math, mixins, nested rules, and logic for css
+    * color variables `movieticketsyellow: #321241;`
+    * math, for doing pixel widths `width: total-width - content-width;`
+    * mixins, for packaging browser specific css3 prefixes
+    * nested rules, like classes that have properties
+    * less
+        * built on node.js
+    * sass, avoid classic sass, check out scss, compass: scss plus more mixins
+        * built on ruby
+    * stylus, compatable with plain old css and can mix syntaxs
+        * built on node.js
+    * webstorm can do on the fly preprocessing
+    
+### Responsive Design
+* layout, textsize, methods of input, navigation, images
+    * screen size changes - smaller the window, larger the relative text size shoud be - tapping versus hovering - different images if screensize is different
+    * media query
+    `@media (min-width: 600px) { /*for screens larger than 600px*/`
+    `   stuff`
+    `}`
+* Grid systems
+    * specify columns to a sections, and resizing is handled for you
+    * Bootstrap
+        * 6:30 min diy style with Bootstrap - try something like this
+        * course on bootstrap with sean wildermuth
+* Icon Fonts
+    * Bootstap has one
+    * Font-Awesome
+        * `<i class="fa fa-caretdown"></i>`
+        * can double size of fa stuff, use colors, manipulate icons, and add css styles to them
+        
+## Javascript
+* Javascript the Good Parts plural sight course by the books author
+* Everything is an object, including arrays and functions
+* objects can use dot or bracket syntax for accessing properties
+* JS Event Loop with async events
+    * Callback is when the async method you call returns to you
+* Hoisting
+    * all javascript var declarations are 'hoisted' to the top of the current scope
+    * function declaration `function x() { stuff(); }` vs function expression `var x = function() { stuff(); }`
+        * with declaration, the entire function gets hoisted up
+        * with expression, the var gets hoisted, but it only gets assigned its function at the line you said `var x = function(){stuff();}`
+* Scope
+    * IFFE to avoid polluting global scope
+        (function() {
+            stuff();
+         }());
+    * Closures -inner scoped functs can access outerscope objects
+* this, and context
+    * assigning a function to an object method using this keywords, this will refer to the assignee object, not the assigner
+    
+## Merge in notes from email
+
+## Javascript in the browser
+*Script loading
+    * scripts are processed/run in the order linked to on a page
+* Global Object
+    * all files execute in global scope, which belongs to the window object
+* DOM
+    * an api, accessed through the document object
+    * createElement, then attach to dom with appendChild or insertBefore
+* Module systems
+    * js has no modules like c# class libaries
+    * CommonJS, ES6 modules, AMD
+    * AMD (Asyncronous Module definitions) - RequireJS
+        * use of `define` function, which you can specify dependent modules
+        * `require` defining some code that needs modules but is itself not a module
+        * solves the problem of correctly ordering your script tags in the right order as you write larger and larger apps
+        
+## Basic Libraries and Tools
+* Bower
+    * a js 'package manager' similar to nuget, run from shell
+    * a node.js tool. install node.js, `npm install bower`, `bower install jQuery` in the directory you want
+    * `bower init` for intial bower file
+    * `bower install $libary --save` to add it as a dependency to the project
+* JQuery
+    * Has a LOT of plugins, almost a language onto itself
+    * 5 main features
+        * Selecting dom elements
+            * `$('css-syntax-selectors').eq(0).innerText = "accessing the first element in the return set"`
+        * modifying dom
+            * `$('h1').after('<h4>Hello subtitle</h4>')`
+        * animations
+            * .fadeIn().fadeOut()
+        * event handling
+            * .click(function() {alert("hello world")})
+        * XHR (Ajax) 
+            * $.get() $.post() $.put() etc
+* Underscore.js / LoDash
+    * libraries for utilities that add to
+    * Collections
+        * _.each([1,2,3], function(item){alert(item)})
+        * _.map
+        * _.filter
+    * Arrays
+        * _.indexOf(array, value)
+    * Functions
+        * _.bind(function, object)
+        * object()
+        * _.once(function) - can use only once
+        * var keysonlyarray = _.keys(keyvaluestore)
+        * _.isFunction(maybe)
+        * _.isObject(x)
+        * _.isArray(string)
+        * _.escape("<HTmL&nbsp;hell>")
+    * Objects
+    * generic Utilities
+* Modernizr
+    * is an html, css feature available in the running browser? ask Modernizr
+    * go to modernizr, create a file of features you want, download, include, then check modernizr's bool values
+    * Modernizr.load({test: Modernizr.someting, yep: , nope: })
+* jsLint/lsHint
+    * code quality analysers
+    * specify criteria you want to check against
+* Grunt
+    * a task runner that runs on node.js
+    * think tasks like those you can define in msbuild
+    * can use it to do things like lint changes to js files 
+* MVC Frameworks
+    * Backbone
+        * closer to a library for building mvc frameworks
+        * small, but not really changing
+    * Knockout
+        * Twoway Bindings, MVVM, declarative
+        * data is in wrappers you have to apply
+    * Angular
+        * Associated with Google, super popular, test-focused, expressive and declarative
+        * Maybe see performance issues
+    * Ember
+        * has a full state machine
+        * is opinionated
+        * wrapped data
+
+## Performance
+* style adn script placement
+    * position affects performance
+    * place all css in the head
+    * the author of the course recommends placing all scripts at the bottom of the body with the idea that all the visible content will load up before execution of any of the scripts. this seems to go against what I've heard about placement of scripts, and i'd be a little concerned about things like javascript being totally necessary to have before the visible page loads
+* CDN's - content delivery network
+    * host files that tend to be static for easing your load and being faster for your visitors
+    * host libraries there for you
+* Minifying
+    * compressing js for shrinking size and making it harder for code analysis
+    * minifying can shrink js to less than half
+    * css can be minified too, but less so
+* concantentation
+    * taking multiple css or js files, and mashing them into one for prod to increase performance

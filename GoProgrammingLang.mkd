@@ -1,0 +1,27 @@
+# The Go Programming language
+* concurrency - language designed with this in mind
+* compiled, GC'd, concurrent
+* designed for systems level code
+* targets linux, OSX, BSD's, Windows, Plan 9
+* i386, x86_64, ARM
+* similar to C-family, but really something very different
+* written by Google for a contempory language to kind of replace aging systems langs
+* Some things Go does without
+    + **No Inheritance** - uses Composistion as a solution
+    + No assertions
+    + No method overloading
+    + No generic programming
+* pointers behave differently *Note that Go is type-safe and memory-safe*
+
+## Go Dev Environments
+* Can use Eclipse - has a Go plugin
+* IntelliJ - has a plugin, called GoIDE
+* Text editor support
+* Gettting Go
+    + [download](http://golang.org/doc/install)
+    + [builtin libraries](golang.org/pkg/)
+    + [Interactive Go tutorial](tour.golang.org/#1)
+* Set an environment variable called `GOPATH`
+* *Open curly's for a function should be on the same line as its signature
+* go can interpet code in the shell, and can compile then run
+* `go install $(directory)` - can created linkable libraries

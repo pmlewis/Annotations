@@ -1,0 +1,55 @@
+# Intro to Game Design with Unity3d
+
+## Section 1 - Unity store, Installing, and Importing Projects, and Basic object manipulation
+Download from the Unity site. Makes games for almost any platform you can think of
+
+* Gallery - get demos
+* Asset store - browse for projects, levels
+    * top free - check out stealth
+    * Import tha prokect and assets
+
+Unity focuses on importing assets you create in other tools, ie Photoshop or Maya and puts them together.
+
+For Stealth, check out the Done directory, for the complete game up and running.
+
+Check out Angry Bots also
+
+Windows > Layout to check out changing which windows are open
+
+Try tapping space bar to get back to default layout
+
+Use a mouse with a two button and a clickable scroll wheel, Alt-click and drag to move around a map
+alt middle to move laterally. alt right to zoom
+
+click on an object, press f to focus on it and then you can move around while still looking at it
+
+right click, wsad to move in level, qe to rise and fall
+
+manipulating objects
+   - open a new project
+   - open a simple object - game object -> createobject -> cube
+    top left icons, hand - click an object to select it
+        q
+    plus - move object through space
+        w
+    rotate
+        e
+    x - stretch
+        r
+    ctrl d to duplicate a selected object
+    shift and click to select multiple objects
+    ctrl delete to delete selected objects
+    
+## Section 2 - Level Design
+* Primatives
+    * create a handful of flat floor cubes for different platforms
+    * angled cubes for a ramp
+    * be aware of duplicated objects and the textures they use
+    * long little blocks for baracades
+    * type in values at the inspector for uniformity
+    * avoid intersecting goemetry, otherwise there will be a flicker
+    * don't forget to save
+* Textures
+    * Import assets
+    * drag textures onto an object to apply them
+    * textures stretched? Inspector -> tiling

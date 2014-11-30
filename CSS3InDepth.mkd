@@ -1,0 +1,87 @@
+# CSS3 In-Depth
+* files available at estelle.github.com/CSS-Workshop including exercises and try this things
+
+## Selectors
+* basic ones - ID, Class, tag
+* ul li - descendants, including nested
+* ol > li - childs, excludes nested
+* li.myClass + li - adjacent sibling, matches the li after `<li class="myClass">`
+* li.myClass ~ li - adjacent siblings, matches lis after `<li class="myClass">`
+
+* *Check out Standardista blog for a whole lotta CSS browser suppport info*
+
+* attribute selectors - `img[alt]` always do an alt for your images, dont use title
+* theres attribute selects that can match or partial match values
+* html5 has some regex support for matching
+* try to avoid global selectors
+* content rule - can add content to a matching selector
+* UI psuedo-classes
+    * `:enabled`, `:disabled`, `:checked`
+    * form related pseudo-classes - :valid, :required, :optional, :out-of-range, :read-only
+        * not supported in IE 6,7
+        
+* contenteditable - can do some cool things with this, without js
+* structural selectors - `:nth-child, :first-of-type, :first-child`
+* You can string together structaral selectors one after another to apply *and* behavior
+* `:not` - exclude these matches - `p:not(.posts)`
+    * :not does not add specificty, but containing things do
+    * can't use relational selectors, but can use structual
+* `:hover`, `:active`, `:focus`
+* `:target`- can implement a tabbed page without js using this and z-index
+* `:root` selects document root
+    * use font-size on :root if using rem units
+* psuedo-elements
+    * are lead with 2 colons, but 1 colon works also, and should be for prod, because microsoft
+    
+* selectivizer.js - can use for js compatiblity
+
+## Specificity
+* see my notes in IntroToCSS
+
+## Generated content
+* `:before`, `:after` - creates stuff you can see, but not a part of the dom, cant select it
+* *finish watching this section eventually*
+
+## Media Queries
+* been around for a while, for example print stylesheets
+
+        <link rel='stylesheet' type='text/css' media='screen' href='css/style.css' />
+        <link rel='stylesheet' type='text/css' media='print' href='css/print.css' />
+        
+        @media screen {
+            p {
+                color: blue;
+            }
+        }
+        @media print {
+            p {
+                color: white;
+            }
+        }
+        
+* for responsive design
+
+        <link rel='stylesheet' type='text/css' media='screen and (min-width: 320px) and (max-width: 480px)' href='css/style.css' />
+        
+        @media screen and (max-width: 480px) {
+            p {
+                color: blue;
+            }
+        }
+        @media print and (orientation: landscape) { /* I don't know if thatd work anyway for printing */
+            p {
+                color: white;
+            }
+        }
+
+* min/max for
+    * -width
+    * -height
+    * -device-width
+    * -device-height
+    * -aspect-ratio
+    * -device-aspect-ratio
+* `media="only screen and (orientation: portait)"`
+* `media="print, screen and (min-width: 480px)"`
+* can include in media query things that the browser may or may not be capable of handling
+* Viewport

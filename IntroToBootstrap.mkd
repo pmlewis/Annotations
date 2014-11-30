@@ -1,0 +1,67 @@
+# Intro to Bootstrap
+* Bootstrap widgets require jQuery
+* comes with loads of classes you can include in your html to get going
+* try to keep bootstraps css, img, and js directories together in the same directory
+* Reuseable styles, build upon styles
+* Semantic class names
+* Compositional classes, include many classes to one div to get magic going
+* focuses on Convention
+* styles are supposed to be easily overridible
+
+## Layout with Bootstrap
+* Grid Layouts
+* *This course seems to focus on the previous version of Bootstrap which is pretty different from Bootstrap 3*
+* 12 Columns
+* can have as many rows as you'd like 
+* can have multiple containers for rows, but do not nest containers
+* rows can be nested in columns
+* columns can be offset
+* resizing the window may reflow columns that are side by side, but will never break a column unit, i.e. col-md-7 col-mid-offset-2 will be together as one always
+* According to the author, having rows outside of a container is ok, and will have reflow, but by dafault is flush left. Putting in a container with center, but be fixed width. *Not totally sure this is a behavior in place for Bootstrap 3*
+* `.container` for fixed width, `.container-fluid` for fluid layouts
+    + in fluid, content may shrink in size
+* Responsive Design traits
+    + Bootstrap comes with media queries for window size, check out their docs for specifics on pixels
+    + having responsiveness will at a certain point change columns size so that small columns will change to full width
+    + there are helper classes that can make elements visible or hidden at certain view sizes. You can use this to say include different logos, or have different navigation schemes
+* try checking out BootTheme for generating Bootstrap themes
+
+## Everyday Bootstrap
+* Typography
+    + including bootstrap will set the default fonts to Helvetica style sans-serif
+    + classes for leading text, warning text, info text, etc
+    + styles for `<address>`, `<blockquote>`
+    + styles for `<ul>`, `<dl>`
+* Tables
+    + add class `.table` for some instant goodness
+        - adds width %100 and top and bottom borders for `<tr>`
+    + `.table-striped`, `.tabled-bordered`, `.table-hover`
+        - stuff like this can be easily overridden by copying the style rule's selector, pasting it into some override css file, and customize your sheez
+    + `.table-condensed` for less padding
+    + some style classes for `<tr>`
+* Forms
+    + Having a `<form>` on the page unstyled, then adding bootstrap can add a whole bunch of magic and snaz
+    + have checkboxes and radios inside of `<label>`, then add a class like `<label class="checkbox">` to solve ugly alignment issues
+    + can add classes to `<input>` to increase the length of a textbox, like `.col-X-X` or `.input-xxl` or `.input-block-level`
+    + `<input type="submit">` can take classes `.btn` or something like `.btn .btn-primary`
+    + for horizontal forms, the labels can be side-by-side the input controls (*I like this*), but needs more markup
+        - make your form `<form class="form-horizontal">`
+        - wrap each "line"  in `<div class="control-group">`
+        - make `<label class="control-label">`
+        - wrap inputs in a `<div class="controls">`
+    + classes for adding help text, invalid input text
+* Buttons
+    + `.btn` - works for
+        - `<a href="#">`
+        - `<button type="button">`
+    + `.btn-link`
+    + `.btn-large`, `.btn-small`
+    + `.btn-block`
+    + `.disabled`
+* Img
+    + '.img-rounded`
+    + `.img-circle`
+    + `.img-poloroid`
+    + includes many gliph icons (*remember to attribute*) - normally used with `<i>` elements, or even `<span>`
+    + Checkout Font Awesome for Bootstrap
+    + can prepend and append icons to input's to have a nice leading gliph on the input
