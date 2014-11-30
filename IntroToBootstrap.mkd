@@ -65,3 +65,66 @@
     + includes many gliph icons (*remember to attribute*) - normally used with `<i>` elements, or even `<span>`
     + Checkout Font Awesome for Bootstrap
     + can prepend and append icons to input's to have a nice leading gliph on the input
+    
+## Bootstrap Components
+- mostly means clickable things. Remember to include jQuery!
+* Dropdowns
+    + Basic code to start
+    
+            <div class="dropdown">
+               <a class="dropdown-toggle" href="#" data-toggle="dropdown">Click me</a>
+               <ul class="dropdown-menu">
+                  <li><a href="whateve">Init</a></li>
+               </ul>
+             </div>
+             
+     + `<span class="caret"></span>` - for a nice little "dropdown" caret that is not an image, but css trickery
+     + `role`, `aria-labeledby`
+     + `<a tabindex="-1">` to make links that you can't reach by pressing tab
+     + `<li class="divider">` to have a dropdown item have a divider
+     + submenus
+     
+            <li class="dropdown-submenu">
+               <a href="#">More options</a>
+               <ul class="dropdown-menu">
+                  <li><a href="stuff">Stuff</a></li>
+                </ul>
+             </li>
+             
+* Buttons and button groups
+    + button groups make a series of buttons look continuous
+        - `.btn-group`, `.btn-group-vertical`
+    + can add `.dropdown` to buttons
+    + can have dropup menus
+    + split buttons - having "one button" that has two separate clickable buttons, like the main text one, and a more specific dropdown caret
+        - make the two in one `.btn-group`, have differnt `<a href>`
+* Tabs & Pills
+    + first, have `<ul class="nav">`
+    + then you can have things like `.nav-tabs`, or `.nav-pills`
+    + `<li class="active">`
+    + `.nav-stacked` to have your <li> stack vertically 
+    + `<li class="nav-header">` to have a separator with text in your nav
+    + can have tabbable content, so you can have content within the same page, but can click on tabs to have it show or hide the content
+    
+            <div class="tabbable">
+               <ul class="nav nav-tabs">
+                  <li class="active">
+                     <a href="#tab1" data-toggle="tab">Section 1</a>
+                  </li>
+                  <li>
+                     <a href="#tab2" data-toggle="tab2">Section 2</a>
+                  </li>
+               </ul>
+               <div class="tab-content">
+                  <div class="tab-pane active" id="tab1">
+                     <p>Hello tab 1</p>
+                  </div>
+                  <div class="tab-pane" id="tab2">
+                     <p>Hello tab 2</p>
+                  </div>
+               </div>
+            </div>
+            
+* Navbar - as in primary navigation
+    + *Go back and take notes for this, as it's lengthy and filled with good stuff*
+* Heros, Badges, Labels, and Media
