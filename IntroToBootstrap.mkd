@@ -126,5 +126,48 @@
             </div>
             
 * Navbar - as in primary navigation
-    + *Go back and take notes for this, as it's lengthy and filled with good stuff*
+    + built around an unordered list `class="nav"
+    + wrap around with `<nav class="navbar">`
+        - `<div class="navbar-inner">`
+    + `<a class="brand" href="/">` for something like the site name
+    + `navbar-fixed-top` for the bar sticking to the top of the window always
+    + `.nav-collapse collapse` to make elements in the nav disappear on window resizing
+    + Bootstrap breadcrumbs
+        - `<ul class="breadcrumb">`
+        - `<li class = "active">`
+    + Pagination
+        - for like pages in a forum thread
 * Heros, Badges, Labels, and Media
+    + Hero - large centerpiece of homepage
+        - `<div class="hero-unit">`
+        - use `<h1>` and `<p>`
+    + Badges and labels
+        - `<span class="label">` or `<span class="badge">`
+        - `-warning`, `-success`, `-important`, etc
+    + Alerts
+        - not pop ups, but an element that appears in page, that has a dismissal button, can use for error messages
+    + Media
+        - to have some images inline with some text, and have the text be "connected" to the image, or other media
+
+## Buttons and Javascript
+* Buttons
+    + `data-toggle` can make things like make buttons behave like checkboxes or radios
+    + Take advantage of jQuery since you'll probably have it linked for Bootstrap. Can check if element hasClass(".active")
+    + `data-loading-text` - can call $(".whaver").button("loading") to switch on click what the current text for the .whaver to whatever the data-loading-text=
+* Modals
+    + Have a button (button button or `<a>` button) with `data-toggle="modal"` point to an `href="#somemodalid"`
+    + `<div id="somemodalid" class="modal hide fade">`
+        - `.modal-header`, `.modal-body`, `.modal-footer`
+    + there are also bootstrap process bars you can use
+    + for way more info, check out the documentation
+* Tooltips
+    + hovering over a anchor, then having a bit of info pop up 
+    + Popovers - clicking on a link, then having a thing pop up on it and kind of stick around
+* Scrollspy
+    + being able to have some reaction based on scrolling through a page
+    + `data-spy="scroll"`, `data-target=".navspy"
+    + `data-spy-offset`
+* Typeahead
+    + like an autocomplete for input boxes. Very easy, and can add things to completion list programmatically
+* Carousel
+    + being able to have pictures flow, slide, etc
