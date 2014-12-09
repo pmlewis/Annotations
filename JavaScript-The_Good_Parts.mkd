@@ -1,0 +1,99 @@
+Javascript, The Good Parts, The Lecture
+=======================================
+
+1. Programming Style and Your Brain
+    1. Programming thought process
+        * It's hard to keep your Gut and your Brain in agreement, as your Gut can fool your Brain.
+        * Suffienciently high-level programming languages are the best means to balence the amount of code one can write in a day and how functional the code is.
+        * Programming is hard because of the influence of perfection. Therefore, we release early to get the greatest amount of exposure to the real world in a state where it is easier to make change
+        * Programming uses both Head and the Gut, and is very much an individual process, and is by no means algorithmic.
+        * The brain is not particularly good at making trade-offs, waying good and bad, because it is influenced by the Gut
+    1. Javascript has some really really good parts, and some really really bad parts
+        * The author also wrote JSLint, which will hurt your feelings and help make your code better
+        * **Always use brace syntax like the following**
+        
+                return {
+                    ok: true
+                };
+                
+        Otherwise, there will be a silent error and the object won't be there
+        * JS has automatic semicolon insertion in interpertation, but **Always use semicolons**
+        * Prefer forms (and style) that are error resistant
+        * Beware of "clever" code, like using switch statements that rely on falling-through. That may be a sign you have a misinterpretation on what is needed to be done
+    1. Understanding good programming style
+        * "That hardly ever happens" means "It happens." Always remember this, regardless of style. But do consider it with style too.
+        * Good style makes better programs, and style must not be about "self-expression" or "personal preference"
+        * Programs must *communicate clearly* to *people*
+        * No space between function name and (
+        * One space between all other names and (
+        * Immediately Invocable function expressions
+            + Dont leave any dangly bits at the end. Do like this
+            
+                    (function () {
+                        //...
+                    }());
+                    
+       * Avoid using `with` statements, they end up being confusing
+       * **Always avoid confusion**
+       * **Always use `===`, never `==`**
+       * If there is a feature of a languge that is tricky or problematic, and you can use something more reliable, always use the more reliable one
+       * Avoid multline string constants
+       * Make your programs look like what they do
+       * Javascript has *function* scope, not *block* scope
+            + remember var hoisting? Make it clear you understand this, and write code in a way that doesn't leave the reader questioning if the statement is being hoisted or not
+            + Declare all variables at the top of the function, Declare all functions before you use them.
+            + With the line `for (var i ...) {...}`, `i` is not scoped to the loop!
+        * Write in the language you're writing in. Address style without the influence of other, maybe similar looking, languages
+        * AVOID GLOBAL VARS. IF YOU ABSOLUTELY MUST, MAKE THEIR NAMES IN UPPERCASE
+        * Constructor functions should be named with InitialCaps. Also, be super aware of the `new` keyword, as it probably doesn't do what you think it does
+        * Javascript has implicitly global variables. So don't use something ambigious like `var a = b = 0` where `b` is implicity global
+        * `++` can be a pre- or post-increment operator. But why be ambigious with at what time something can happen? Be certain with `x += 1`
+        * JSLint style
+            + automatically detect defects
+            + if a programming construct could mask others, the construct should be considered defective
+            + focuses on a language subset that is really good
+        * Notes on performance
+            + Performance specific code is usually crufty, ie may have more hardcoding, not 'agile' code
+            + Clean code is easier to reason about, and clean code makes bugs more visible
+            + *Premature optimization is the root of all evil* - Knuth
+            + Most code has a negligible impact on performance. Avoid code twiddling, and spend more time on recognizing places to replace algorithms
+            
+            
+1. And then there was JavaScript
+    1.The History of JavaScript
+        * designed and implemented in ten days
+        * influenced by Java, Scheme, and Self (a dialect of Smalltalk)
+        * JavaScript is synominous with ECMAScript
+            + for widest compatibility, in the short term, work with features in the intersection of ES3 and ES5/Strict. For the long term, work with ES5/Strict. Avoid ES5/Default
+    1. JavaScript fundamentals
+        * objects
+            + get
+                - `object.name` or `object[expression]`
+            + set
+                - `object.name = value` or `object[expression] = value`
+            + delete (though hardly used)
+                - `delete object.name` or `delete object[expression]`
+        * object literals, influencing the creation of JSON
+            + check this out, in ES5, you can use `Object.defineProperties()` and can define the create function, and define properties for values in the object for whether or not the value is writable, enumerable, or configurable
+        * JavaScript does not have classes. JavaScript has prototypes. And prototypes are very powerful, and more flexible than classes
+        * There's some real gotchas with `for in (...)` and in counting values, come back to *JavaScript Fundamentals* and watch this more
+        * Keys must be strings
+        * JavaScript has the following types, where each is inherited from Object
+            + Number
+            + Boolean
+            + String
+            + Array
+            + Date
+            + RegExp
+            + Function
+    1. Number
+        * Only one number type(!) - uses IEEE-754 "Double", 64-bit floating point
+        * supports number literals, like using scientific notation
+        * sometimes, testing arithmetic and conditionals can produce crazy results
+        * has a number of Number helper methods
+        * Numbers are first class
+        * can add "extension" methods through adding to the prototype (though should only do this in library code)
+        * `Math` object and methods
+        * NaN - "not a number", value returned when an erronious operation occurred. Remember `NaN === NaN` is false!
+        
+            
