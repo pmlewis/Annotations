@@ -95,5 +95,204 @@ Javascript, The Good Parts, The Lecture
         * can add "extension" methods through adding to the prototype (though should only do this in library code)
         * `Math` object and methods
         * NaN - "not a number", value returned when an erronious operation occurred. Remember `NaN === NaN` is false!
-        
+    2. Bools, Strings, and Arrays
+        * true and false
+        * strings made of 16-bit Unicode chars - not quite UTF-16
+        * strings are immutable
+        * use `===` for equivalent strings
+        * `"` for external strings
+        * `'` for internal strings - by convention
+        * can use `+` for concat, but beware of adding number strings, strings have a string.concat(string2)
+        * `num.toString()` or `String(num)`
+        * `Number(str)` or `+num`
+        * `parseInt()` but will stop parsing at first occurance of a non-digit character
+            + leading zeros in a number string denotes octal
+            + pass in a second param, a radix, or base. for no ambiguity with leading 0's, use base 10
+            + string.length
+        * an interesting example of adding a method to String.prototype so that all strings are selftrimming
+        * Arrays - inherieted from Object. not exactly like C arrays, much closer to maps or associative arrays
+        * Arrays.length - not how many elements are in the array, but the highest index + 1
+        * watch out if you use `for in` on an Array, does not guarantee a specific order of traversal
+        * Array literals `var arr = []`
+        * new items appended to the end by `arr[arr.length] = 'new item'`
+        * the dot notation works, but only works with string indexes. Don't use the dot, use the brackets
+        * Beware of Array.sort, compares elements as string values
+        * can you use `delete arr[useless]` but there will be an `undefined` gap where `usless used to be
+        * Use Array.splice(), but it's really slow
+    3. Objects, Date, RegExp
+        * Use objects when your objects have arbitrary string names, use arrays when you're using numbers
+        * Date - based off of Java's Date class (**!!!**)
+        * RegExp - syntax is clunky and ugly
+        * **All values are objects, except for `null` and `undefined`**
+        * `null` is used for empty values
+        * `undefined` is the default value for variables and parameters that are not given a value, and the value of a member that isn't found in an object
+        * typeof - a prefix operator that returns a string identifying its "type"
+            + *Remember `typeof Array === 'object'` and `typeof null === 'object'`. the rest are what you expect them to be
+        * Array.isArray()
+        * *Falsy* values
+            + `false`
+            + `null`
+            + `undefined`
+            + ""
+            + 0
+            + `NaN`
+            + beware! `"0"`, `"false"`, as strings are
+             not falsy
+       * JS is *loosly typed*, not untyped since there are types
+       + all objects are passed by reference, not by value
+       + `===` returns true if the two operators are the same object 
+    4. Common JavaScript Statements
+        * don't lead vars with `_` since these may clash with other vars in JS engines
+        * `$` was originally used for 'machines', things that will generate their own names
+        * convention: all vars, params, members, and functions start with lower case, except for Constructor functions
+        * use `//` for comments
+        * again, beware of adding strings together that may be numbers
+        * `/` dividing two ints can produce a nonint value
+        * `%` remainder op, not modulo op. `%` takes the sign of the first op
+        * there are `==` and `!=`, but these can force type coercion. It is always better to use `===` and `!==`, which don't
+        * `&&` guard, or *logical and*, can be used to avoid null refs
+        * `||` *logical or*, can be used to assign a default value, or to not override already existing values. watch out when using with numbers, since 0 is falsy
+        * `!` *logical not* returns the opposite truthy value to its op. `!!` returns a boolean value
+        * bitwise ops - converts operands to a 32-bit signed int, does the thing, then converts it back to 64-bit float
+        * statements
+            + can use labels, to say `break` out of a really nasty loop and go to(!) a location
+            + switches: strings work fine, and so do expressions as case statements(! :-) )
+            + try, catch, throw
+                - you can throw *anything*, there's an Error object you can use, but not totally necessary
+                - catch will catch anything thrown. your code will have to assume its any object
+                
+1. Function, the Ultimate
+    1. background on functions
+        * Javascript uses functions for everything
+        * optional name
+        * produces an instance of a `function` object
+        * first class, can be assigned to vars, can be stored in arrays
+        * `function` objects inherit from Function.prototype
+        * vars declared in a function are visible *anywhere* within that function, including in other functions
+        * there's a different between `var myfunction = function() { ... };`: a function experssion, and `function myfunc() { ... }`: a function statement
+            + remember hoisting
+            + least just remember to
+                - declare all vars at the top of the function
+                - declare all functions before you use them
+        * `return` statements to quit the function and/or return objects
+        * `arguments`
+            + all parameters passed to a function call can be referenced here, and is *array-like*
+        * `this`
+            + a reference to the object of invocation
+        * Invocation
+            + too many arguments, the extra arguments are ignored
+            + too few, the missing values will be `undefined`
+            + no type checking
+        * four ways to invoke functions
+            + method form
+                + like classes
+            + function form
+                + like a standalone function
+                + `this` is set to the global object
+                + `var that = this`
+            + constructor form
+                + `new Beast(args);`
+            + apply form
+                + `functionObject.apply(thisObject, args)`
+                + `functionObject.call(thisObject, args)`
+    1. functions as subroutines
+        * Closure
+            + the context of the inner function includes the scope of the outer function, and
+            + an inner function enjoys that context even after the parent functions have returned
+            + understand that
             
+                    var digit_name = (function() {
+                        var names = ['zero', 'one', ...];
+                        
+                        return function (n) {
+                            return names[n];
+                        };
+                    }());
+                    
+              is absolutely superior to
+                
+                    var digit_name = (function(n) {
+                        var names = ['zero', 'one', ...];
+                        
+                        return names[n];
+                    }());
+                    
+    1. Prototypal Inheritance
+        * `Gizmo.prototype.toString = function () { return "gizmo " + this.id; };`
+            + Adding to the prototype lets all objects of that prototype have access to the function
+        	* Inheritance
+        		+ `Hoozit.prototype = new Gizmo(); Hoozit.prototype.test = function (id) { return this.id === id; };`
+        		+ this isn't too great though, not really intuitive, and not really self contained
+        		+ there are ways of, in effect, creating your own means of inheriting and extending objects, like writing a new constructor function that takes an object you want to inherit from, and adding the additional objects to that
+    	* function as a module
+    		+ use this keep everything all neat and together, and utilizes closures
+    
+    				var singleton = (function () {
+    					var privateVariable;
+    					function privateFunction(x) {
+    						...privateVariable...
+    					}
+    					return {
+    						firstMethod: function (a,b) {
+    							...privateVariable...
+    						},
+    						secondMethod: function (c) {
+    							...privateFunction();...
+    						}
+    					};
+    				}());
+    
+    		+ This is the Module Pattern
+    		+ Constructor Pattern, or Functional Inheritance
+    			1. Make an object
+    				* Object literal, `new`, `Object.create`, call another power constructor
+    			2. Define some vars and functions
+    				* these become private members
+    			3. Augment object with privileged methods
+    				* use closures
+    			4. Return the object
+    
+    					//template for power constructor
+    					function myPowerConstructor(x) {
+    						var that = otherMaker(x);
+    						var secret = f(x);
+    						that.priv = function() {
+    							...secret x that...
+    						}
+    						return that;
+    					}
+    
+    					//using the pattern for Gizmo and hoozit
+    					function gizmo(id) {
+    						return {
+    							id: id,
+    							toString: function() {
+    								return "gizmo " + this.id;
+    							}
+    						};
+    					}
+    					function hoozit(id) {
+    						var that = gizmo(id);
+    						that.test = function (testid) {
+    							return testid === this.id;
+    						};
+    						return that;
+    					}
+    
+    		+ Neat thing about closures, parameters to function calls can be closed over also, this can used to create private vars
+    		
+    				function gizmo(id) {
+    					return {
+    						toString: function () {
+    							return "gizmo " + id;
+    						}
+    					};
+    				}
+    				function hoozit(id) {
+    					var that = gizmo(id);
+    					that.test = function (testid) {
+    						return testid === id;
+    					};
+    				}
+    
+    		+ Similarly, can create Shared Secrets, and Super Methods 
