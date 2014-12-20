@@ -295,4 +295,29 @@ Javascript, The Good Parts, The Lecture
     					};
     				}
     
-    		+ Similarly, can create Shared Secrets, and Super Methods 
+    		+ Similarly, can create Shared Secrets, and Super Methods
+        * Don't ever make functions in a loop! the new function closes over the loop's variables, not over their current values
+            + for example, don;t do
+            
+                    for (var i...) {
+                        div_id = divs[i].id;
+                        divs[i].onclick = function () {
+                            alert(div_id);
+                        };
+                    }
+                    
+            + instead do,
+            
+                    var i;
+                    function make_handler(div_id) {
+                        return function () {
+                            alert(div_id);
+                        };
+                    };
+                    for (i...) {
+                        div_id = divs[i].id;
+                        divs[i].onclick = make_handler(div_id);
+                    }
+                    
+            * *Go check out the Little Lisper and the Little Schemer!*
+              
