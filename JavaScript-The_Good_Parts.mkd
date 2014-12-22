@@ -297,7 +297,7 @@ Javascript, The Good Parts, The Lecture
     
     		+ Similarly, can create Shared Secrets, and Super Methods
         * Don't ever make functions in a loop! the new function closes over the loop's variables, not over their current values
-            + for example, don;t do
+            + for example, don't do
             
                     for (var i...) {
                         div_id = divs[i].id;
@@ -320,4 +320,8 @@ Javascript, The Good Parts, The Lecture
                     }
                     
             * *Go check out the Little Lisper and the Little Schemer!*
-              
+1. Problems
+	* if you pass in parameters to a function, and attempt to change the parameters values, the params outside the function will have the same values going into the function. Not sure why, my understanding of "pass by value" and "pass by reference" must be different
+	* These problems try to really test how well you grok functions, closures, working with functions that have any number of arguements, and things like using `.call()` and `.apply()`. Definitely good practice
+1. Monads and gonads
+
