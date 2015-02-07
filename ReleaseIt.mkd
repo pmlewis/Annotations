@@ -1,0 +1,32 @@
+Release It! - Michael Nygard
+---------------------------
+
+## Introduction
+* First your system needs to have Stability. Lack of Stability means short-term fixes, emergencies, "excitement", and daily fires
+* Once gaining Stability, you need Capacity, being able to handle loads and increase in volume of uses in your system
+* Good designs are more resilient than bad, and designing for network and storage usage have sets of challenges to account for
+* You must have visibility into your system, in prod, QA, etc, and the system should be transparent and produce useful reporting that leads to actionable troubleshooting
+
+## Stability
+1. The exception that grounded an Airline
+1. Introducing Stability
+1. Stability AntiPatterns
+1. Stability Patterns
+
+## Capacity
+1. Trampled by your own customers
+1. Introducing Capacity
+1. Capacity AntiPatterns
+1. Capacity Patterns
+
+## General Design Issues
+1. Networking
+1. Security
+1. Availability
+1. Administration
+
+## Operations
+1. Phenomenal Cosmic Powers, Itty-Bitty Living space
+1. Transparency
+1. Adaptation
+
