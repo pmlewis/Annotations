@@ -24,6 +24,15 @@ Release It! - Michael Nygard
 1. Security
 1. Availability
 1. Administration
+  * An easy-to-administrate system is a happy system, and leads to happy admins and users. How can you make your system at large easier to admin?
+  * Making QA match Prod
+    + According to Nygard, the most influential differences between Prod and QA tend to not be configuration differences, but *Topology* differencies
+    + Topology - the number and connectivity of servers and applications. Produce diagrams of your Topology of your System, across your environments. Other environments should mimic prod's topology
+    + Keep your environments separated! Utilize different machines or relegate separation with VM's.
+    + Practice the Zero, One, Many rule in differences between environments. In prod, you may have zero, one, or many of a given resource in your topology. If you must scale down other environments compared to prod, at least make sure your copy environment matches the zero, one, or many instances in its topology. Never have only one of a resource in nonprod when there's many in prod
+    + Do you have firewalls and load balancers in prod? Your copy environments ( **including dev!** ) must have them also at the same topology points, at the very least cheaper versions of prod. Make sure you have firewalls in place day one in dev also, avoid introducing them after development has already started
+  * Configuration Files
+    +
 
 ## Operations
 1. Phenomenal Cosmic Powers, Itty-Bitty Living space
