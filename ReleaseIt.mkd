@@ -32,7 +32,22 @@ Release It! - Michael Nygard
     + Practice the Zero, One, Many rule in differences between environments. In prod, you may have zero, one, or many of a given resource in your topology. If you must scale down other environments compared to prod, at least make sure your copy environment matches the zero, one, or many instances in its topology. Never have only one of a resource in nonprod when there's many in prod
     + Do you have firewalls and load balancers in prod? Your copy environments ( **including dev!** ) must have them also at the same topology points, at the very least cheaper versions of prod. Make sure you have firewalls in place day one in dev also, avoid introducing them after development has already started
   * Configuration Files
-    +
+    + Property files - config files that will change between environments, deployments
+    + Plumbing files - config files that should never be edited by hand, files that hold object associations, files that internally wire your application to itself
+    + Admins should never be able to touch plumbing and break object associations
+    + Plumbing should be kept separate (different files, different directories, etc) from Property
+    + Production config (property) should be kept in a different directory than the app install directory since the install dir will probably be overwritten as some point
+    + The author recommends Admins use version control on configuration files for environments that are in secure repos, a part of a larger change control process, a part of automated deployments that go directly to the repo, and have an automated audit process
+    + Configuration properties should be crystal clear in what values they hold so anyone working on editing them shouldn't have to guess making changes
+    + **Name properties by their function, not their nature** - don't name by what something is, name by what it does or means. Try to think of "what kind of thing is this?" rather than just "what is this?"`
+  * Startup and Shutdown
+    + Apps need to report errors on things that fail during startup, and needs to be aware and react accordingly if things fail during startup 
+    + Apps need to ensure all of its components are loaded properly before accepting connections/ any new work
+    + if an app requires a connection pool, the connection pool needs to verify it's made successful connections on initialization, otherwise it needs to report it's in a failure state, and the entire app should be in a failure state (not accepting new work, but perhaps still able to be examined)
+    + Clean shutdowns should not be rude to customers in the store. During shutdown, the app needs to not accept new work, but handle existing tasks by either working them to completion, or delegate work to others before closing (but temper this with a timeout so unnecessarily long customers get kicked out eventually)
+  * Administrative Interfaces
+    + GUI's are ok, but cli's are often so much more powerful and versatile (can be scripted, front-ended, works over ssh, can wrap in logging)
+    + Web interfaces (HTML pages, REST apis) are useful, and more versatile than straight OS clients since you could use HTTP scripting to automate actions or write clients against them, but cli's are still awesome and shouldn't be forgotten
 
 ## Operations
 1. Phenomenal Cosmic Powers, Itty-Bitty Living space
