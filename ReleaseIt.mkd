@@ -12,6 +12,7 @@ Release It! - Michael Nygard
 1. Introducing Stability
 1. Stability AntiPatterns
 1. Stability Patterns
+1. Stability summary
 
 ## Capacity
 1. Trampled by your own customers
@@ -48,7 +49,8 @@ Release It! - Michael Nygard
   * Administrative Interfaces
     + GUI's are ok, but cli's are often so much more powerful and versatile (can be scripted, front-ended, works over ssh, can wrap in logging)
     + Web interfaces (HTML pages, REST apis) are useful, and more versatile than straight OS clients since you could use HTTP scripting to automate actions or write clients against them, but cli's are still awesome and shouldn't be forgotten
-
+1. Design summary
+  * read after reading the other chapters in this section
 ## Operations
 1. Phenomenal Cosmic Powers, Itty-Bitty Living space
 1. Transparency
