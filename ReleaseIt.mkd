@@ -34,6 +34,8 @@ Release It! - Michael Nygard
     + Clustering uses software that assigns a virtual IP to one server, and where app traffic is sent to a DNS name that points to the virtual IP. If the server is to be shutdown, or experiences failure (say through loss of a heartbeat to the clustering switch), the cluster switch will assign the virtual IP address to a new server on standby.
     + In-memory state that is not made persistent will be lost (remember this could be an app server or a DB server). Client's that use clustered services should be written to handle sudden loss of connectivity. Catch an exception, attempt to reconnect, but be prepared to "circuit break"
 1. Security
+  * Principle of Least Privilege - the privilege of a process should only have as much privilege as it needs to complete its job, and no more. Never run as root or admin unless it's absolutely necessary, keep its use to a minimum. Relegate long running processes to separate users, like the "apache" user for Apache. Load balancers can add as a separator between an exposed port under 1024, which could be open for a UNIX app needing root, and reassigned ports to the load balanced machines
+  * Configured Passwords - separate passwords to DB's from any other config files, and should definitely not live in the installation directory. Should be readable only to the file owner. If passwords are kept in memory, they can be recoverable through a memory dump, maybe through a kernel error that dumps its memory. Encrypt password files, but try to use software to monitor changes to those files.
 1. Availability
 1. Administration
   * An easy-to-administrate system is a happy system, and leads to happy admins and users. How can you make your system at large easier to admin?
