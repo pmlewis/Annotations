@@ -22,6 +22,17 @@ Release It! - Michael Nygard
 
 ## General Design Issues
 1. Networking
+  * Multihomed servers - servers that exist in multiple networks, therefore have multiple network interfaces
+    + separate interfaces for separate purposes - separate prod facing from nonprod facing, could have multiple prod facing for load balencing or for failover. 
+    + be aware that a multihomed server will probably have multiple different DNS entries that point to it, and they'll probably be different than its own hostname
+    + bonded, or teaming interfaces - multiple network interfaces having the same IP - can be used to balance traffic, but beware that you do extra config to make sure you don't introduce routing loops
+    + Nonprod facing interfaces should be used for backups, and for admin access (like SSH), and *don't go through prod*
+    + Applications should be written so that it is aware of its own name/IP and should know what specific interfaces it should connect to when reaching the server. Danger being that if its aware of which interfaces, it could connect to any on the server, which may cross prod-facing to admin-facing
+  * Routing
+    + Decide what interfaces should be prod/ nonprod, keep the routes each should take separate, facing different VLANs, and keep records of the routing configuration (destination name, address, and desired route)
+  * Virtual IP Addresses - Utilizing clustering
+    + Clustering uses software that assigns a virtual IP to one server, and where app traffic is sent to a DNS name that points to the virtual IP. If the server is to be shutdown, or experiences failure (say through loss of a heartbeat to the clustering switch), the cluster switch will assign the virtual IP address to a new server on standby.
+    + In-memory state that is not made persistent will be lost (remember this could be an app server or a DB server). Client's that use clustered services should be written to handle sudden loss of connectivity. Catch an exception, attempt to reconnect, but be prepared to "circuit break"
 1. Security
 1. Availability
 1. Administration
