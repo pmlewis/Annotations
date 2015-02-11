@@ -37,6 +37,38 @@ Release It! - Michael Nygard
   * Principle of Least Privilege - the privilege of a process should only have as much privilege as it needs to complete its job, and no more. Never run as root or admin unless it's absolutely necessary, keep its use to a minimum. Relegate long running processes to separate users, like the "apache" user for Apache. Load balancers can add as a separator between an exposed port under 1024, which could be open for a UNIX app needing root, and reassigned ports to the load balanced machines
   * Configured Passwords - separate passwords to DB's from any other config files, and should definitely not live in the installation directory. Should be readable only to the file owner. If passwords are kept in memory, they can be recoverable through a memory dump, maybe through a kernel error that dumps its memory. Encrypt password files, but try to use software to monitor changes to those files.
 1. Availability
+  * Calculating downtime and availability costs - availability as a percentage (98%, 99% 99.999%), take a 30 day month for minutes, multiply by availability for uptime
+  * Figure how much your site makes in an hour during peak. Worst case loss because of availability is peak money times downtime. There's a big difference between 98% and 99.99%
+  * Each '9' of availability increases implementation costs by a factor of ten and operational cost per year by a factor of two
+  * Nip future SLA (dis)agreements by writing precise SLA's early.
+    + define by how up are critical features, specific features, or services of your app
+    + You cannot offer a higher SLA than the lowest SLA of the service your app uses (ie, third party services)
+    + Have an automated system reporting on your systems availability, and have it monitor your critical services
+    + Define what good responses from your system are like, ie timeouts, too slow, throwing errors
+      - How often will automation perform synthetic transactions?
+      - Max acceptable response time from each step of system
+      - What response codes indicate success, and what codes indicate failure?
+      - where will the data be recorded?
+      - what formula will be used to compute availability? Based on time, or number of samples?
+  * Horizontal scaling and load balancing
+    + DNS Round-Robin - oldest of load balancing, avoid doing this today
+      - DNS servers resolve requests by rotating through IPs of app servers
+      - Points requests directly to app servers, not good security
+      - DNS servers don't account for app server health, and doesn't guarantee load is distributed evenly
+      - DNS is subject to caching the IP
+    + Reverse Proxy
+      - The difference between a regular Proxy server and a Reverse Proxy
+        * Regular proxies multiplex many outgoing requests into a single source IP
+        * Reverse proxies multiplex incoming requests for a single source IP to many addresses
+      - Reverse proxies can cache static content
+      - Since reverse proxies get involved in every request, reverse proxy servers can quickly become overburdened
+      - Many reverse proxies may not take into account app server health
+    + Hardware load balancing - hardware that serve a similar role to reverse proxies
+      - Can often check health of app servers and remove bad servers from the active pool
+      - Can often switch through any connection based protocal
+      - Can make managing SSL and certs more difficult, including choosing where SSL decryption happens
+      - Probably very expensive
+    + Clustering
 1. Administration
   * An easy-to-administrate system is a happy system, and leads to happy admins and users. How can you make your system at large easier to admin?
   * Making QA match Prod
