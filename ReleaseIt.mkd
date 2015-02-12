@@ -69,6 +69,12 @@ Release It! - Michael Nygard
       - Can make managing SSL and certs more difficult, including choosing where SSL decryption happens
       - Probably very expensive
     + Clustering
+      - Servers that are aware of each other and talk to each other for load balancing and server health
+      - Load balancing: active/active
+      - Redundancy for failure: active/passive
+      - Some applications may have built-in clustering services, where there isn't, you can run an app under a clustering server, and can be configured to perform specific actions when app health is down
+      - Clustering servers/server software may be finicky to configure and may have unique sets of quirks
+      - Isn't known for scaling well, and can be used to band-aid on clustering support
 1. Administration
   * An easy-to-administrate system is a happy system, and leads to happy admins and users. How can you make your system at large easier to admin?
   * Making QA match Prod
@@ -95,7 +101,7 @@ Release It! - Michael Nygard
     + GUI's are ok, but cli's are often so much more powerful and versatile (can be scripted, front-ended, works over ssh, can wrap in logging)
     + Web interfaces (HTML pages, REST apis) are useful, and more versatile than straight OS clients since you could use HTTP scripting to automate actions or write clients against them, but cli's are still awesome and shouldn't be forgotten
 1. Design summary
-  * read after reading the other chapters in this section
+  * Define application / system architecture early to make everyone's lives easier, changes further down the road will be harder to deal with.
 ## Operations
 1. Phenomenal Cosmic Powers, Itty-Bitty Living space
 1. Transparency
