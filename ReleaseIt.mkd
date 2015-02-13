@@ -103,7 +103,20 @@ Release It! - Michael Nygard
 1. Design summary
   * Define application / system architecture early to make everyone's lives easier, changes further down the road will be harder to deal with.
 ## Operations
-1. Phenomenal Cosmic Powers, Itty-Bitty Living space
+1. Case Study: Phenomenal Cosmic Powers, Itty-Bitty Living space
+  * Holiday seasons can cause an 1000%(!) increase in online store traffic, the most serious real world predictable load test.
+  * Learn the normal rhythm of the system by regularly observing the system through admin interfaces and monitoring interfaces. Watch these for a while, and you'll learn what looks normal and can then see quickly what looks off
+  * If crap is going down on your servers, taking thread dumps can show helpful info on the running application
+  * Don't schedule maintenance during expected high traffic times (like holiday weekends)
+  * Know your system, know how to access components of your system, know how to control your system through scripting
+  * Check out Recovery Oriented Computing - encourages component-level restartability, damage control treatment, and automatic fault detection
 1. Transparency
+  * to be transparent is to be able to see system's current state, view what's happening right now, and be able to see the system's history
+  * systems must be built with transparency and feedback
+  * Four perspectives on transparency
+    1. Historical Trending
+    1. Predictive Forecasting
+    1. Present Status
+    1. Instantaneous Behavior
 1. Adaptation
 
