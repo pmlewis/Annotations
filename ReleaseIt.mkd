@@ -113,10 +113,60 @@ Release It! - Michael Nygard
 1. Transparency
   * to be transparent is to be able to see system's current state, view what's happening right now, and be able to see the system's history
   * systems must be built with transparency and feedback
+  * Benefits of transparency
+    + Debugging issues becomes way easier
+    + Gives data that adds to business decisions. Hard data can't be disputed
   * Four perspectives on transparency
     1. Historical Trending
+      + With systems, past behavior can predict today's behavior both with
+        - business metrics (sales, orders, revenue,etc)
+        - system metrics (storage, CPU usage, network bandwidth, number of errors logged)
+      + Historical data should be kept in an OpsDB (explained on page 273), and should be able to be rift through and analysed to produce reports or used with Business Intelligence tools
+      + Author believes that Historical data like this doesn't require dashboards since this data is not immediate
+      + Questions related to historical trending
+        - TODO: fill me in
     1. Predictive Forecasting
+      * Future predictions tend to be about correlations and linkages
+      * "Good enough" models of system behavior should be fine for ebusinesses to predict future behavior
+      * Author believes projections should not be in a dashboard view since this data can be sensitive and is not immediate
+      * App releases may invalidate past correlations of the system, so correlations should be evaluated after versions, so any set of correlations of the system should include app versions
+      * Questions related to forecasting
+        - TODO: fill me in
     1. Present Status
+      * Immediate health of the system, which is a short history, and includes the state of every piece of hardware, app server, application, and batch job
+      * Should measure required events like batch jobs or feeds and parameters, continous metrics or states of the system.
+      * Statistics of both operating system metrics and application metrics, page 268 includes examples of each and what may be useful to collect
+      * Parameters should have a normal range of values, where there should be tolerance around some optimal value. Approaching either end of the range should trigger a caution
+      * Continuous metrics use a rule of thumb of being within 2 standard deviations for a time period where time period is dependant on what time period is important for your organization
+      * Dashboards - should be visible and be of aid to ops engineers, developers, and business: component level, application centric, and summary views. Should show required jobs completing or having not completed
+      * Dashboard colors
+        + Green: all true - All expected events occurred, no abnormal events, all metrics nominal, all states operational
+        + Yellow: at least 1 true - an expected event hasn't happened, at least one abnormal event with medium severity occurred, one or more parameters is out of normal range, some noncritical function is not fully operational
+        + Red: at least 1 true - a required event hasn't happened, at least one abnormal event with high severity occurred, one or more parameters is outside of acceptable values, a critical function is not at expected value
     1. Instantaneous Behavior
+      * What kinds of things are immediately happening, observing the running app and monitoring output of the system, like log files, stack traces, thread dumps, failed user requests
+      * These things can be watched with monitoring software
+      * You may choose to restrict views into this since observing every single request or ever error could cause undue alarm from others not familiar with normal operation. Pressure for this kind of info normally indicates a need for more visibility into present status
+  * Designing for Transparency - systems are built with transparency in mind, it is not tacked on, at least not without much greater cost
+    + Local transparency leads to local optimization, beware that optimizing one transparent component for one problem is actually undue to a different nontransparent component
+    + Aim for transparency with all components
+    + Be aware that building your transparency does not couple the app to any particular monitoring framework, that your transparency is written so monitoring can act around it, not woven into it. Also, making decisions about alerts, thresholds, and policy items should be outside the actual writing of tranparency
+  * Whitebox vs blackbox technologies for enabling transparency
+    + Whitebox is built into the app itself to report on internal state to provide more info, but produces coupling
+    + Blackbox observes generated output from the app, and can be implemented after getting the app
+  * Logging - using log files is awesome and you should definitely be able to generate logs. It's whitebox but nearly any monitoring framework can scrape logs, so you're loosely coupled
+    + Locations to hold logs should be configurable, ideally able to be moved to different drives - don't roll your own logging, use a framework that already has this in place for you
+    + Try to generate logs that'll be especially helpful for ops guys reading prod logs, not necessarily developers. Anything logged at "Error" or "Severe" levels should be something that requires ops intervention
+    + Beware of overlogging. Not every exception needs to be logged, "Error" level logging should be able to lead to actionable fixes
+    + Don't default run "debug" level or similarly low-level logging in prod, as it'll create too much noise to be useful
+    + If you could catalog error log messages into key values with error message number / message, it will be easy for users to look through, and keys could be good error codes that could help tell you where the error occurred
+    + Log files need to be **human readable, easily skimmed over**
+      - a single log should only be on one line, don't add newlines, don't take up more than one line
+      - space delimited, with even columns that line up nicely with subsequent lines
+      - severity levels should be clear, author likes levels indicated with one character
+      - remember that ops will read error messages outside the context of surrounding app code. Beware of ambiguous messages or warnings that sound like ops should do something when intervention isn't necessary
+    + Including some id that is consistent over a session to a log can really help parsing logs for a certain transaction over its requests and state changes
+    + State changes of a transaction are interesting and should definitely be logged
+  * Monitoring systems
 1. Adaptation
 
