@@ -202,4 +202,23 @@ Release It! - Michael Nygard
       - Routines help : weekly problem ticket reviews, monthly volume of problem reviews, daily/weekly log reviews for exceptions or errors, Review help desk calls for common problems- if too much, review by top category plus randomly sampling, ever .25 or .5 years, recheck system correlations, monthly data volume, query statistics, and expensive queries/procs, weekly demand and system statistics including traffic
     + Once you start building a collection of data, try comparing new data to history, spot trends, and if some data stops becoming useful to review, lose it
 1. Adaptation
+  * Systems rarely do everything you want them to do on first release, and if you hope to keep afloat with the system, they must change
+  * Many systems change more often because of what flaws they have versus what good they bring
+  * The key to adaptation comes from making changes that bring in more money than it takes to introduce them
+  * Adaptable Software Design - many of these fall into Agile Methodology
+    + Dependency Injection - Components interact through interfaces without knowing underlying implementation. Allows pieces to be replaced or improved without out components having to know about it. Allows creation of mocks to be used in development and in unit testing
+    + Object Design - loose coupling and tight cohesion
+      - Coupling refers to how dependent a class is on other classes
+      - Cohesion refers to focused a class is on what it intends to do. Classes that do too much or represents multiple things at once have lower cohesion
+      - it is hard to develop around tighly coupled systems and tighly coupled systems tend to be very inflexible
+      - loosely cohesive classes may be broken in multiple more tighly cohesive classes
+    + XP practices - Refactoring and Unit testing
+      - improving code design without changing functionality is best done with Unit tests to stop unintentional functionality change
+      - Following TDD forces components to be reusable and injectable
+      - If a component is difficult to unit test, that may be a sign that your components are too dependent on context, and as a consequence not reusable
+    + Agile Databases - Never happens without intention and work to keeping data schemas changable
+      - App behavior and data must be equally important to each other - app code changes, thus data schemes must be able to change also, since if data doesn't change, app code will convolute the meaning of the data
+      - ORMs can help make app code able to handle schema change, but must be able to handle database changes gracefully. Metadata and schema matching should be handled at startup.
+      - Schemas should include a table with structure version numbers. Versions should be updated when the structure changes and when interpretation of data changes also. The app should support schemas at certain versions and should fail if there's a version incompatibility
+  * Adaptable Enterprise Architecture
 
