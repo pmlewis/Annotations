@@ -324,4 +324,58 @@ Javascript, The Good Parts, The Lecture
 	* if you pass in parameters to a function, and attempt to change the parameters values, the params outside the function will have the same values going into the function. Not sure why, my understanding of "pass by value" and "pass by reference" must be different
 	* These problems try to really test how well you grok functions, closures, working with functions that have any number of arguements, and things like using `.call()` and `.apply()`. Definitely good practice
 1. Monads and gonads
+	* A functional pattern that's powerful and impossible to explain to people
+	* functional prrogramming
+		1. simply programming with functions, like subroutines
+		2. pure functional programming, that's more mathematical
+			1. programming without side-effects
+				* remove assignments, loops, freeze array literals and object literals
+			1. Memoization, caching
+			1. however, things in the real world changes
+	* Monads
+		+ a loophole in the function contract
+		+ a monad is an object
+		+ to know monads:
+
+				function unit(value)....
+				function bind(monad, function (value))
+
+		all 3 return a monad
+	* Axioms of monads
+		+ `bind(unit(value), f) ==== f(value)`
+		+ `bind(monad, unit) ==== monad`
+		+ `bind(bind(monad, f), g) === bind(monad, function (value) { return bind(f(value), g); }
+	* the OO transform
+		+ bind(monad, func) ..... monad.bind(func)
+	* a Macroid
+
+			//the identity monad
+			function MONAD() {
+				return function unit(value) {
+					var monad = Object.create(null);
+					monad.bind = function (func) {
+						return func(value);
+					};
+					return monad;
+				};
+			}
+			var unit = MONAD();
+			var monad = unit("Hello world.");
+			monad.bind(alert);
+
+	* axioms rewritten in method notation
+		+ `unit(value).bind(f) ==== f(value)`
+		+ `monad.bind(unit) ==== monad`
+		+ `monad.bind(f).bind(g) ==== monad.bind(function (value) { return f(value).bind(g); }`
+	* this looks a lot like Ajax programming
+	1. Ajax monad
+		* to get there, you need to go from monad.bind(func) to monad.method()
+		* review this again, this section
+	2. cool things with monads
+		* Null exception monads
+		* Concurrency
+			+ turn based processing
+		* promises
+			+ 'kept', 'broken', 'pending'
+		* promises can be a better solution to exceptions, where exceptions unwind the execution stack. Promises obey turn based processing where exceptions break it
 
