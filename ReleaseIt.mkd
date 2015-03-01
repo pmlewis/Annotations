@@ -221,4 +221,33 @@ Release It! - Michael Nygard
       - ORMs can help make app code able to handle schema change, but must be able to handle database changes gracefully. Metadata and schema matching should be handled at startup.
       - Schemas should include a table with structure version numbers. Versions should be updated when the structure changes and when interpretation of data changes also. The app should support schemas at certain versions and should fail if there's a version incompatibility
   * Adaptable Enterprise Architecture
-
+    - The author warns against top-down architectures where everything is in its place like a machine, and everything is designed and set in stone.
+    - A more realistic view is that enterprise systems are closer to ecosystems than machines, where there may be much more inefficiencies but the ecosystem is far more robust. Ecosystems evolve continuously to survive
+    - Evaluating architecture could be done with asking "Does this help IT better to respond to user needs?"
+    - There are patterns to interactions with ecosystems that promote success
+    - Dependencies within a system
+      + loose clustering: a loss of a tree should not affect the whole forest. Trees should be able to be brought up and down without time ordering. Trees should not have to know about every other tree
+    - Dependencies between systems
+      + Protocols
+        * protocols must be versioned, and able to speak to multiple versions, to avoid tight coupling        * Test harness can be used to ensure all protocol combinations can be handled
+        * sending and receiving protocol version should be easy
+        * systems should be able to support older formats, and be able to detect formats
+      + Databases
+        * Don't do integration databases!
+        * Wrap access to a DB through a web service, make it redundant and accessible through a virtual IP
+        * Multiple systems interacting directly to databases make it impossible to make schema changes because everything touching it will need to be updated at the same time
+  * Releases shouldn't hurt - must be regular, frequent, boring, and must take minimal manual effort
+    + Releases are often unaccounted for in cost budgeting, where planning, analysis, development, and testing do.
+    + Also, downtime required for releases. Downtime for releases is downtime for availability measurements, all the more reason to automate it
+    + Don't risk customers for arbitrary release dates. A buggy experience is a potential loss of a customer
+    + Zero downtime deploys
+      - many times, there's downtimes for deployments cause otherwise there'll be different versions of the app running between your servers and that can cause some problems
+      - implementing zero downtime deploys often require effort and co-ordination between dev and ops, so often times it never gets done
+      - author says key is to break up the deployment process into phases that can be spread out over an extended period (though things can be done all at once if you can codify deployment of new environments with deployed code, and then switch the new environment live)
+      - Expansion - add new stuff that being around doesn't break old stuff
+        + Url based assets - like JS and CSS - assets should be reachable by unique paths incorporating the version number into the URL
+        + Web services - new revisions of interfaces should have a new endpoint name. Remote object interfaces need a new interface name
+        + Protocals - protocals should contain a version identifier, and receiving apps should support the now multiple protocols. Another option is to create separate app pools supporting the different versions, or map the new protocol to a new port
+        + Adding DB tables and columns to old tables - new columns should be nullable first if they are intended to become NOT NULL. Existing procs inserting or updating old tables should *always* be explict about columns and values, and `select *` should never be in prod code. Triggers can be helpful to update new column data if old code doesn't fill in the new column and will continue to run
+      - Rollout - pushing the new app code version and getting it started. If downtime is absolutely necessary, downtime should be minimized and start up and shut down should not be rude to users. Deploying new app code to a new pool could be an option
+      - Cleanup - removing the unnecessary things or helpers for deployment, like triggers or extra service pools, columns and tables no longer used, old assets. Now you add NOT NULL to columns and enforce referential integrity
