@@ -10,15 +10,48 @@ Release It! - Michael Nygard
 ## Stability
 1. The exception that grounded an Airline
 1. Introducing Stability
-1. Stability AntiPatterns
+1. Stability Antipatterns
+  * Integration Points
+  * Chain Reactions
+  * Cascading Failures
+  * Users
+  * Blocked Threads
+  * Attacks of Self denial
+  * Scaling Effects
+  * Unbalanced Capacities
+  * Slow Responses
+  * SLA Inversion
+  * Unbounded Result Sets
 1. Stability Patterns
+  * Timeouts
+  * Circuit Breakers
+  * Bulkheads
+  * Steady State
+  * Fail fast
+  * Handshaking
+  * Test harness
+  * Decoupling middleware
 1. Stability summary
 
 ## Capacity
 1. Trampled by your own customers
 1. Introducing Capacity
-1. Capacity AntiPatterns
+1. Capacity Antipatterns
+  * Resource pool contention
+  * Excessive JSP fragments
+  * AJAX Overkill
+  * Overstaying sessions
+  * Wasted space in HTML
+  * Reload Button
+  * Handcrafted SQL
+  * Database eutrophication
+  * Integration Point Latency
+  * Cookie Monsters
 1. Capacity Patterns
+  * Pool connections
+  * Using caching carefully
+  * Precompute content
+  * Tune the Garbage Collector
 
 ## General Design Issues
 1. Networking
