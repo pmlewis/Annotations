@@ -26,6 +26,12 @@ Release It! - Michael Nygard
   * Timeouts
   * Circuit Breakers
   * Bulkheads
+    + On a ship, bulkheads are compartments that can be closed water tight in case the hull is breeched.
+    + Bulkheads in architecture separate servers from each other so that if one server goes down or can't serve properly, others which may have been dependent can continue working. If two different services depend on a common service, the common service can be made available into two pools, then each different service gets its own.
+    + One option is to separate critical services into a pool while non-critical can go into another
+    + The goal is to minimize impact of failure. What is the impact of a certain loss of capability, examine your system, see what makes sense to separate in terms of system boundaries
+    + At a CPU process level, having a process bound to a CPU core instead of hopping across all is an example of using the bulkhead idea
+    + Be aware of the needs of different services dependent on a common service that you bulkhead, there could be underuse of the service if one service is more demanding than the other, but they have the same size bulkhead pools
   * Steady State
   * Fail fast
   * Handshaking
