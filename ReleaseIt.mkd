@@ -23,16 +23,33 @@ Release It! - Michael Nygard
   * SLA Inversion
   * Unbounded Result Sets
 1. Stability Patterns
-  * Timeouts
-  * Circuit Breakers
-  * Bulkheads
+  * Timeouts - code oriented
+    + Timeouts tell code to stop waiting if a response from a service or thread is taking long to complete, long enough that you suspect the answer will never come, or is longer than you're willing to wait.
+    + May be helpful to establish a class that handles making the connection, executing the query, and processing the result. May be helpful to have Circuit breaking incorporated into this class
+    + Waiting indefinitely is bad, returning some kind of response, failure included, is always better
+    + Learn if Connection classes used in your language/framework of choice have timeout components and handling to them.
+    + Immediately re-trying a timed out option could sometimes work, but more often will fail again. Consider queueing the work and re-trying after some significant time
+    + Timeouts can also help with large unbound return sets, but there are better ways of dealing with that
+    + This is similar to the *Fail Fast* pattern, where *Fail Fast* handles incoming requests that can't finish and *Timeout* handles outward requests that you don't think are going to finish.
+  * Circuit Breakers - code oriented
+    + Circuit breakers stop operations from happening when a system is not in a healthy state. If 'open', any call of that operation will fail immediately saying this operation is down and needs attention. 'Closed' circuits are healthy. If too many failures occur or if manually flipped open, the circuit breaker flips open *and logs and notifies it changed*. After some time passes, the breaker can go to 'half-open' where it will retry the operation, and if it succeeds, it goes back to 'closed'
+    + Circuits can switch, say, if one operation times out, if connections are refused, maybe if there's some incompatible version differences, and these things happen repeatedly.
+    + Failure due to circuit breaker open should be a unique kind of exception, so code can handle it differently
+    + Ops team needs to have a means to monitor breakers, manually set and reset breakers, and have access to logs of state changes
+    + Protects system reliability at integration points
+  * Bulkheads - architecturally oriented 
     + On a ship, bulkheads are compartments that can be closed water tight in case the hull is breeched.
     + Bulkheads in architecture separate servers from each other so that if one server goes down or can't serve properly, others which may have been dependent can continue working. If two different services depend on a common service, the common service can be made available into two pools, then each different service gets its own.
     + One option is to separate critical services into a pool while non-critical can go into another
     + The goal is to minimize impact of failure. What is the impact of a certain loss of capability, examine your system, see what makes sense to separate in terms of system boundaries
     + At a CPU process level, having a process bound to a CPU core instead of hopping across all is an example of using the bulkhead idea
     + Be aware of the needs of different services dependent on a common service that you bulkhead, there could be underuse of the service if one service is more demanding than the other, but they have the same size bulkhead pools
-  * Steady State
+  * Steady State - ops oriented, deployment oriented
+    + Systems should not need to be fiddled with as part of its normal operation, as fiddling is a sign that there's something missed in creating the system. This includes cleaning up logs and purging old data.
+    + *Steady state* means that for every process that accumulates resources, there should be a process that prevents the overflow of that resource.
+    + Data purging - often neglected in first releases. Signs of this becoming a problem include increasing I/O rates and latency on the DB. Difficulties may include maintain referential integrity, and ensuring the app works still after old data is purged. If you must release data purging later, it's smart to take care of the most rapidly increasing data first.
+    + Old logs - remember to roll your logs! Many logging frameworks include this, find this in your choice of logging frameworks. Logs should never grow without having a size limit, regardless of where they're stored (they should always be stored outside of the prod system). Normally, logs from more than a week old are pretty uninteresting. If your framework doesn't have log rolling, or you have a legacy app, consider using something like `logrotate` or writing a script that runs purging old logs
+    + Memory cache - there needs to be a limit on the number of cache keys, and if cached items can change, there needs to be a way to invalidate/ refresh the cache, like using a time-based, least recently used, or working-set flushes.
   * Fail fast
   * Handshaking
   * Test harness
