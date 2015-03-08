@@ -1,0 +1,51 @@
+Structuring JavaScript - Dan Wahlin
+----------------------
+
+1. Prototype Pattern
+  * Creates custom 'objects' using JavaScript's prototype
+  * Very memory efficient, prototype functions are not duplicated in memory when there's multiple instances of your object
+  * Can namespace functions and properties
+  * Easy to extend, and easier to debug, lets users of the prototype overwrite prototype functions if they want to
+  * Pattern structure
+    `
+    var Calculator = function(output) {
+      this.output = document.getElementById(output);
+    };
+    Calculator.prototype = {
+      add: function(x, y) {
+        this.output.innerHTML = x + y;
+      }
+    };
+    var myCalc = new Calculator("sum");
+    myCalc.add(3, 4);
+    `
+  * Namespacing (Not exclusive to the prototype pattern, can do this anywhere)
+    `
+    var FunMath = FunMath || {}; //Don't override if FunMath is defined
+    FunMath.Calculator = function(output) {
+    //...
+    }
+    `
+  * Overriding prototype methods
+    `
+    FunMath.Calculator.prototype.add = function(x, y) {
+      return x + y;
+    }
+    `
+1. Module Pattern
+  * When you really want to have public functions and private functions, and you don't want anyone to touch them or extend them
+  * Each instantiation of a module duplicates properties **and methods** in memory
+  * Can be harder to debug
+  * Pattern structure
+    `
+    var Calculator = function(output) {
+      var history = [];
+      var out = document.getElementById(output);
+      return {
+        add: function(x, y) {
+          out.innerHTML = x + y;
+          history.push("add(" + x + ", " + y + ")");
+        }
+      };
+    };
+    `
