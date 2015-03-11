@@ -50,8 +50,14 @@ Release It! - Michael Nygard
     + Data purging - often neglected in first releases. Signs of this becoming a problem include increasing I/O rates and latency on the DB. Difficulties may include maintain referential integrity, and ensuring the app works still after old data is purged. If you must release data purging later, it's smart to take care of the most rapidly increasing data first.
     + Old logs - remember to roll your logs! Many logging frameworks include this, find this in your choice of logging frameworks. Logs should never grow without having a size limit, regardless of where they're stored (they should always be stored outside of the prod system). Normally, logs from more than a week old are pretty uninteresting. If your framework doesn't have log rolling, or you have a legacy app, consider using something like `logrotate` or writing a script that runs purging old logs
     + Memory cache - there needs to be a limit on the number of cache keys, and if cached items can change, there needs to be a way to invalidate/ refresh the cache, like using a time-based, least recently used, or working-set flushes.
-  * Fail fast
-  * Handshaking
+  * Fail fast - code oriented
+    + Slow responses are worse than no response, and a slow failure is the worst of all. Always check for possible failures as early as possible.
+    + Do all your parameter validation before anything else, then verify and validate you can allocate all your needed resources before you do any business logic. This includes verifying things like db and endpoint connections
+    + Use different error handling means for System failures (like failing a db connection) versus App failures (like bad parameters that are ultimately user errors) so that any Circuit Breakers don't get tripped when the system is otherwise healthy
+  * Handshaking - code oriented
+    + Handshaking really means a client asks a server if it is ready for a request, the server says yes or no, then the client behaves appropriately. This is a means for the server to throttle its workload.
+    + May rely on the use of healthchecks and heartbeats to servers. Say, a load balancer asks for healthchecks on app servers. The server may reply 'OK' so it can accept more work, or may say 'Service Unavailable' and then the load balancer won't give more work to the server
+    + Consider a healthcheck call as a part of your API you're writing, and using a handshake for any protocols you may develop
   * Test harness
   * Decoupling middleware
 1. Stability summary
