@@ -54,3 +54,44 @@ Structuring JavaScript - Dan Wahlin
       };
     };
     ```
+1. Revealing Module
+  * Similar to Module, but with a 'Cleaner' way of exposing public members. Common pattern for implementing Singletons
+  * Similar pros and cons to the Module
+  * Pattern structure
+
+    ```
+    var calculator - function (eq) { //Lower case var is norm for this
+      var eqCtl = document.getElementById(eq),
+        doAdd = function (x, y) {
+          var val = x + y;
+          eqCtl.innerHTML = val;
+        };
+      return { add: doAdd }; //exposing public members
+    }('eqCtl');
+    ```
+  * If you want to use this with the `new` syntax, you can leave off the self-invoke, and you should upper case the var
+1. Revealing Prototype
+  * Brings in pros from both prototype and revealing prototype patterns
+  * functions loaded into memory once, extensible, and exposes only public members
+  * Use of `this` can be tricky, and Constructor is separate from prototype definition
+  * Pattern structure
+
+    ```
+    var Calculator = function (eq) {
+      //vars defined here
+      this.eqCtl = document.getElementById(eq);
+    };
+    Calculator.prototype = function () {
+      //functions defined here
+      var add = function (x, y) {
+        var val = x + y;
+        this.eqCtl.innerHTML = val;
+      }
+      return {
+        //public members here
+        add: add
+      };
+    }();
+    ```
+  * `this` could mean different things depending on the context. If you want to have functions in your prototype definition that operate on the current instantiation of the object, pass `this` into a function that does something like `double(thisObj) { return thisObj.value + thisObj.value }`, where double does not refer to `this` in its definition
+  * Or, you can do `double.call(this);` with the above definition, where the `call()` function operates on another function, but you specify the context as the first argument, ie the `this` value in the function definition
