@@ -58,7 +58,13 @@ Release It! - Michael Nygard
     + Handshaking really means a client asks a server if it is ready for a request, the server says yes or no, then the client behaves appropriately. This is a means for the server to throttle its workload.
     + May rely on the use of healthchecks and heartbeats to servers. Say, a load balancer asks for healthchecks on app servers. The server may reply 'OK' so it can accept more work, or may say 'Service Unavailable' and then the load balancer won't give more work to the server
     + Consider a healthcheck call as a part of your API you're writing, and using a handshake for any protocols you may develop
-  * Test harness
+  * Test harness - development and testing oriented
+    + Because integration testing environments are difficult to maintain and is really only reliable for testing when everything is working correctly, it's useful to write pieces of software for testing that surround one component, and emulates all sorts of failures that could occur in the real world
+    + The bigger and scarier the scenarios you can put into the test harness, the better. Harness is meant as a controllable stress test to supplement other tests, like unit testing, qa, etc
+    + see page 126 for a list of failure ideas for a test harness
+    + encourages using low-level code to recreate all sorts of nonsense, think on all 7 layers of OSI
+    + Try having different ports set up to repeat different scenarios
+    + Log requests set to the harness, and what the harness is doing so you can repeat epic failures and know what happened
   * Decoupling middleware
 1. Stability summary
 
