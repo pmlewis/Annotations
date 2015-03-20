@@ -65,8 +65,16 @@ Release It! - Michael Nygard
     + encourages using low-level code to recreate all sorts of nonsense, think on all 7 layers of OSI
     + Try having different ports set up to repeat different scenarios
     + Log requests set to the harness, and what the harness is doing so you can repeat epic failures and know what happened
-  * Decoupling middleware
+  * Decoupling middleware - architecture oriented
+    + Middleware/ enterprise application integrations help disparate systems talk to each other by letting each system talk to the middleware in the way that it wants to, then middleware translates that for the other.
+    + Supports decoupling by isolating system-specific call knowledge away from the core of each system.
+    + Synchronous systems are easier to understand, but far more bittle and could potentially lead to cascading system failures
+    + Asynchronous systems are more robust, may support storing messages in queues, but are may be harder to work with
+    + If you're in a position to make a decision about purchasing some piece of middleware for an enterprise level app, ***plan your system as much as you can in advance and wait till the last possible responsible moment to buy since this will be very costly to change***
+    + With that in mind, learn many system architectures so you can always be confident that your design will be the best fit for your app.
 1. Stability summary
+  * 10 million page views a day for 3 years is over 500 billion, and there are 400 billion stars in the Milky Way. A bug in code that has astronomical chances of actually happening will definitely happen with the right amount of traffic
+  * Remember that over 75% of projects get shut down before hitting prod, and the ones that do probably have some issues. If you fix enough problems in a buggy system, you'll look a hero, but if you design a system right from the beginning, it will probably be thankless, then users could complain it's slow. With that, update your capacity
 
 ## Capacity
 1. Trampled by your own customers
