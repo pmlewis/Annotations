@@ -99,6 +99,12 @@ Release It! - Michael Nygard
     + Try to use a "per page" model of checking out connections, like one per page, or if pages are composed of multiple independent pages that require different connections, use a "per fragment" model. "Per fragment" has more potential for deadlock though. Connection managers could be helpful for this.
     + Don't forget to mind your timeouts so piles of threads don't block forever, and it may be helpful to keep track of time spent getting connections.
   * Using caching carefully
+    + Caches need to have an upper limit on memory allowed to be used, and should be configurable.
+    + Monitor hit rates on items stored in cache (number that you actually use the cache to retrieve items). Low hit rates mean you probably don't need to cache those items. It doesn't make sense to cache things that are used once
+    + Don't cache things that are cheap to generate, or likely to change before you use them.
+    + See what kinds of caching are supported by your language and frameworks of choice
+    + Sometimes caching is rendered unnecessary when you can precompute items
+    + When you cache, you always have risk of stale data, so you need an invalidation strategy, like time based or event based. Make sure the mechanism strategy for notifying of invalidation you go for is able to scale with the number of servers / caches your system uses
   * Precompute content
   * Tune the Garbage Collector
 
