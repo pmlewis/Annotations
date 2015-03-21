@@ -90,8 +90,14 @@ Release It! - Michael Nygard
   * Database eutrophication
   * Integration Point Latency
   * Cookie Monsters
+
 1. Capacity Patterns
-  * Pool connections
+  * Tiny, opaque, and questionable code optimizations at the expense of code clarity will never pay off. Real optimization comes with design change, since good design recognizes both clarity and efficiency. 
+  * Pool connections - code oriented and configuration oriented
+    + On all but infrequently used connections (say to DBs), use connection pooling and learn how it's used in the language of your choice.
+    + Beware of bad connection threads living in the connection pool, and make sure your pool size is not too big and not too small
+    + Try to use a "per page" model of checking out connections, like one per page, or if pages are composed of multiple independent pages that require different connections, use a "per fragment" model. "Per fragment" has more potential for deadlock though. Connection managers could be helpful for this.
+    + Don't forget to mind your timeouts so piles of threads don't block forever, and it may be helpful to keep track of time spent getting connections.
   * Using caching carefully
   * Precompute content
   * Tune the Garbage Collector
