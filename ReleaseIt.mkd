@@ -24,6 +24,8 @@ Release It! - Michael Nygard
   * Users
   * Blocked Threads
   * Attacks of Self denial
+    + When your marketing creates an offer too good to pass up, it blows up online, and you can't handle the traffic coming in. Be sure to know when business wants to create a special offer, then if you can anticipate what resources or sections will be hardest hit, you can plan accordingly.
+    + If you send out a special offer though email, only include links that lead to static landing pages for at least the first click
   * Scaling Effects
   * Unbalanced Capacities
   * Slow Responses
