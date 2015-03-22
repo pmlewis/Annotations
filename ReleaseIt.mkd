@@ -13,7 +13,14 @@ Release It! - Michael Nygard
 1. Stability Antipatterns
   * Integration Points
   * Chain Reactions
+    + when one worker (server, thread, connection, etc) goes down, is blocked, or experiences failure, the remaining workers must work harder to pick up the difference. This increased load can expaserbate latent problems in the rest of the workers, thus when one worker goes down, the others are more likely to go down as well.
+    + Things like memory leaks, race conditions, unreleased resources, or deadlocks will become more apparent in chain reactions. Try to find these before they become big issues.
+    + Chain Reactions can be defended against by using *Bulkheads*.
   * Cascading Failures
+    + Similar to chain reactions
+    + When a failure in one layer of your system stack starts to cause failures in adjacent layers. For example, app code calls a database. The database goes dark. The app code tries to start a connection, fails, attempts to close the (nonexistant) connection, and that causes an unhandled exception to float up to the user.
+    + Commonly associated with exhausted resource pools and blocked threads and unbound retry attempts
+    + Cascading Failures can be defended against by using *Circuit breakers* and *Timeouts*
   * Users
   * Blocked Threads
   * Attacks of Self denial
@@ -22,6 +29,7 @@ Release It! - Michael Nygard
   * Slow Responses
   * SLA Inversion
   * Unbounded Result Sets
+
 1. Stability Patterns
   * Timeouts - code oriented
     + Timeouts tell code to stop waiting if a response from a service or thread is taking long to complete, long enough that you suspect the answer will never come, or is longer than you're willing to wait.
