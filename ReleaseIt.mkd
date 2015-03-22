@@ -98,15 +98,21 @@ Release It! - Michael Nygard
     + Beware of bad connection threads living in the connection pool, and make sure your pool size is not too big and not too small
     + Try to use a "per page" model of checking out connections, like one per page, or if pages are composed of multiple independent pages that require different connections, use a "per fragment" model. "Per fragment" has more potential for deadlock though. Connection managers could be helpful for this.
     + Don't forget to mind your timeouts so piles of threads don't block forever, and it may be helpful to keep track of time spent getting connections.
-  * Using caching carefully
+  * Using caching carefully - coding oriented
     + Caches need to have an upper limit on memory allowed to be used, and should be configurable.
     + Monitor hit rates on items stored in cache (number that you actually use the cache to retrieve items). Low hit rates mean you probably don't need to cache those items. It doesn't make sense to cache things that are used once
     + Don't cache things that are cheap to generate, or likely to change before you use them.
     + See what kinds of caching are supported by your language and frameworks of choice
     + Sometimes caching is rendered unnecessary when you can precompute items
     + When you cache, you always have risk of stale data, so you need an invalidation strategy, like time based or event based. Make sure the mechanism strategy for notifying of invalidation you go for is able to scale with the number of servers / caches your system uses
-  * Precompute content
-  * Tune the Garbage Collector
+  * Precompute content - coding oriented
+    + Even if content changes every few minutes, even if you're caching result sets of DB queries, if you have any sizeable traffic, it may be worth it to precompute content (like HTML pages), stash it, and use it, even if it is for a few minutes
+    + The direct opposite of precomputing content is *always* querying for and parsing content, and this will have huge ramifications in terms of memory and bandwidth used. Ideally, you should only have to parse anything once, and stash that, but this could be an unrealistic ideal.
+    + Personalization kind of blows precomputation away, but look for bits that can still be precomputed, then do personalization like a punch-out card
+    + Always remember that caching, precomputing, optimizing, etc are about trading one kind of resource being used for another. The key is to trade what is expensive with what is cheap, and to strike an acceptable balance.
+  * Tune the Garbage Collector - configuration oriented (also Java oriented)
+    + If your technology of choice uses garbage collecting, see about tuning it. Do it in prod, and do it after major releases
+    + Don't bother with object pooling
 
 ## General Design Issues
 1. Networking
