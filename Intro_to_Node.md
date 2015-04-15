@@ -137,3 +137,91 @@ r.on("end", function (t) {
 Instances of, and extensions to, EventEmitters with a written "Interface". Think like file streams or i/o streams. These streams can be piped, like in bash pipes. Two common interfaces seem like ReadableStream and WritableStream. ReadableStream has a `pipe()` function, a `pause()` and `resume()`
 
 The `request` function and module uses a ReadableStream. `process.stdout` is a WriteableStream. The `fs` module and object can create Streams to the local filesystem.
+
+
+## The Local System
+
+### The `process` object
+stdin, stdout, stderr, env, argv, uptime(), process.memoryUsage(), abort(), chdir(), etc. Emits 'exit', 'uncaughtException', POSIX standard events, etc.
+
+Need to run `process.stdin.resume()` to begin receiving info from stdin, it starts paused.
+
+### The `fs` module
+Writing and reading functions and streams for the file system. A lot have both synchronous and asynchronous implementations. POSIX functions like chown, rmdir, mkdir, symlink, etc. Also has a `watch()` function for watching for file or directory changes.
+
+### Buffer objects
+A Buffer handles raw binary allocation, and is needed in the case of dealing with networking and file system access. Buffers can be converted to/from different encodings. With Buffers to Strings, you can specify a portion of the buffer to be returned.
+
+### The `os` module
+Info about the currently running computer that the code is running on. Lets you pull up some interesting statistics.
+
+
+## Interacting with the Web
+
+### Making Web Requests
+Use the `http` module. Can use the `http.request()` method to send requests. Add a param for the URL to hit, or an object that lets you specify host, port, headers, method, etc. Returns `http.ClientRequest` and feeds into the callback a `http.ClientResponse` object. Emits events for response coming back. `http.get()` is also available for simple GETs.
+
+Be aware that `http` is a lower level object than `request`. For example, the `http` object may get a response that is a 304 redirect, the `http` object won't follow the redirect.
+
+### Making a Web Server
+A simple server may look like
+
+```
+var http = require("http");
+var server = http.createServer(function(req, res) {
+	//process request
+});
+server.listen(port, [host]);
+```
+
+Each request is provided via a callback like above, or as a `request` event on the server object. There is also a `https` object for SSL. http.createServer returns a `http.ServerRequest` stream and passes into its callback a `http.ServerResponse` stream.
+
+A server that replies to everything could look like:
+
+```
+http.createServer(function(req, res) {
+	res.writeHead(200, { "Content-Type" : "text/plain"});
+	if (req.url === '/file.txt') {
+		fs.createReadStream(__dirname + "/file.txt").pipe(res); //__dirname is a special var for current directory
+	} else {
+		res.end("Hello World");
+	}
+});
+```
+
+**[Socket.IO](socket.io)** - a library aiming to handle web socket connections between the client and the server. There is a 7 minute demo on how to use it. Be aware that many browsers may not support web sockets yet.
+
+For developing Web Apps in Node, you'll want to levarage a framework like [Express](http://expressjs.com/). Check out the course on using Express.
+
+
+## Testing and Debugging
+
+### The `assert` module
+You can assert like assert in C languages like
+
+* test equality
+* test exceptions thrown
+* truthiness
+* whether error was passed to a callback
+* asserts can contain a message when there is a failure of the test
+
+There is `assert.equal()`, uses `==`. `assert.strictEqual()`, uses `===`. `assert.deepEqual()` for deep value checking.
+
+### Mocha and Should.js
+Frameworks for testing. Mocha includes a lot of utilities for making debugging easier, organizes tests into suites, runs tests serially, which tests are slow, can re run tests on directory change, and more. Check it out
+
+Should.js extends the `assert` module, and adds `should.have` or `should.equal` functionality to objects.
+
+### Debugging with Cloud9
+Node.js provides hooks for debugging, and Cloud9 leverages them inside its debugging console, and includes pausing execution, breakpoints, arbitrary code execution, value inspection, and more.
+
+**Also**, there are integrations for Node into IIS available.
+
+
+## Scaling Node Apps
+
+### Creating child processes
+Node doesn't do well with long running processes since it may slow down the event loop. One strategy for dealing with this could be making child processes to free up the event loop and make it run concurrently. Use the `child_process` module with the `spawn` method, and the Events that get emitted. There is also the `exec()` method for running shell commands, and the `execFile()` method. For spawning other Node processes, use `fork()` to launch other modules
+
+### The `cluster` module
+Experimental module for creating Worker classes and forking, along with forking events. For example, you can spawn multiple Workers to scale up along with demand. Needs Node 0.8
