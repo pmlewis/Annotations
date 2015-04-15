@@ -29,8 +29,111 @@ Beware of nesting anonymous callbacks within anonymous callbacks within anonymou
 
 External code files are loaded into your code with modules. Use something like `var foo = require('foo');` Convention: modules that export variables and/or functions are referenced with camelcased variables, modules that export objects should be assigned to vars with leading Uppercase.
 
-You can require modules from built-in modules, your project files (each .js file is its own module and can be referenced with relative or absolute directories), or through NPM.
+You can require modules from built-in modules, your project files (each .js file is its own module and can be referenced with relative or absolute directories), or through NPM installs.
 
 You export your variables, functions, etc, to external code by adding them onto `module.exports` and assigning them values.
 
-NPM modules are installed to a project by invoking `npm install`, and this pulls copies of the required modules into your project. Some NPM utilities can be run from the command line, and should be installed with `npm install -g` for global. 
+NPM modules are installed to a project by invoking `npm install`, and this pulls copies of the required modules into your project. Some NPM utilities can be run from the command line, and should be installed with `npm install -g` for global. Check out [npmjs.org](npmjs.org). You can publish a module to NPM by including a `package.json` file with the required members, then create an NPM account, then run `npm publish .` from the project root. Double check your push by mkdir'ing a new dir, then run `npm install yourmodule` in there.
+
+
+## Events and Streams
+
+Node is really focused on being asynchronous, but that doesn't always mean use of callbacks. Use events and Node's `EventEmitter` class. EventEmitting can reduce used memory, enable acting on results as soon as they arrive, and deliver partial results. For example:
+
+```
+//Callback style
+getThem(param, function(err, items) {
+	//check for error
+	//operate on array of items
+});
+
+//Event driven, using EventEmitters
+var results = getThem(param);
+
+results.on('item', function(i) {
+	//do something with each one item
+});
+
+results.on('done', function() {
+	//No more item handler
+});
+
+results.on('error', function(err) {
+	//Error handling
+});
+```
+
+Events can be emitted with arguments, like `emitter.emit(event, [args]);`
+
+```
+var EventEmitter = require('events').EventEmitter;
+
+var getResource = function(c) {
+	var e = new EventEmitter();
+	process.nextTick(function() { //On the next cycle of the event loop(?)
+		var count = 0;
+		e.emit('start');
+		var t = setInterval(function () {
+			e.emit('data', ++count);
+			if (count === c) {
+				e.emit('end', count);
+				clearInterval(t);
+			}
+		}, 10);
+	});
+	return(e);
+};
+```
+
+
+Object can also extend EventEmitter, using `util.inherits(yourResource, EventEmitter)` where you'd have...
+
+```
+//Resource.js
+var util= require("util");
+var EventEmitter = require("events").EventEmitter;
+
+function Resource (m) {
+	var maxEvents = m;
+	var self = this;
+	
+	process.nextTick(function () {
+		var count = 0;
+		self.emit('start');
+		var t = setInterval(function () {
+			self.emit("data", ++count);
+			if (count === maxEvents) {
+				self.emit("end", count);
+				clearInterval(t);
+			}
+		}, 10);
+	});
+}
+
+util.inherits(Resource, EventEmitter);
+
+module.exports = Resource;
+
+//app.js
+var Resource = require("./resource");
+
+var r = new Resource(7);
+
+r.on("start", function () {
+	console.log("I've started!");
+});
+
+r.on("data", function (d) {
+	console.log("	I received data -> " + d);
+});
+
+r.on("end", function (t) {
+	console.log("I'm done, with " + t + " dataevents.");
+});
+```
+
+### Streams
+
+Instances of, and extensions to, EventEmitters with a written "Interface". Think like file streams or i/o streams. These streams can be piped, like in bash pipes. Two common interfaces seem like ReadableStream and WritableStream. ReadableStream has a `pipe()` function, a `pause()` and `resume()`
+
+The `request` function and module uses a ReadableStream. `process.stdout` is a WriteableStream. The `fs` module and object can create Streams to the local filesystem.
