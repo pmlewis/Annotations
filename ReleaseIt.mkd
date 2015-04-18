@@ -7,125 +7,158 @@ Release It! - Michael Nygard
 * Good designs are more resilient than bad, and designing for network and storage usage have sets of challenges to account for
 * You must have visibility into your system, in prod, QA, etc, and the system should be transparent and produce useful reporting that leads to actionable troubleshooting
 
-## Stability
-1. The exception that grounded an Airline
-1. Introducing Stability
-1. Stability Antipatterns
-  * Integration Points
-  * Chain Reactions
-    + when one worker (server, thread, connection, etc) goes down, is blocked, or experiences failure, the remaining workers must work harder to pick up the difference. This increased load can expaserbate latent problems in the rest of the workers, thus when one worker goes down, the others are more likely to go down as well.
-    + Things like memory leaks, race conditions, unreleased resources, or deadlocks will become more apparent in chain reactions. Try to find these before they become big issues.
-    + Chain Reactions can be defended against by using *Bulkheads*.
-  * Cascading Failures
-    + Similar to chain reactions
-    + When a failure in one layer of your system stack starts to cause failures in adjacent layers. For example, app code calls a database. The database goes dark. The app code tries to start a connection, fails, attempts to close the (nonexistant) connection, and that causes an unhandled exception to float up to the user.
-    + Commonly associated with exhausted resource pools and blocked threads and unbound retry attempts
-    + Cascading Failures can be defended against by using *Circuit breakers* and *Timeouts*
-  * Users
-  * Blocked Threads
-  * Attacks of Self denial
-    + When your marketing creates an offer too good to pass up, it blows up online, and you can't handle the traffic coming in. Be sure to know when business wants to create a special offer, then if you can anticipate what resources or sections will be hardest hit, you can plan accordingly.
-    + If you send out a special offer though email, only include links that lead to static landing pages for at least the first click
-  * Scaling Effects
-  * Unbalanced Capacities
-  * Slow Responses
-  * SLA Inversion
-  * Unbounded Result Sets
 
-1. Stability Patterns
-  * Timeouts - code oriented
-    + Timeouts tell code to stop waiting if a response from a service or thread is taking long to complete, long enough that you suspect the answer will never come, or is longer than you're willing to wait.
-    + May be helpful to establish a class that handles making the connection, executing the query, and processing the result. May be helpful to have Circuit breaking incorporated into this class
-    + Waiting indefinitely is bad, returning some kind of response, failure included, is always better
-    + Learn if Connection classes used in your language/framework of choice have timeout components and handling to them.
-    + Immediately re-trying a timed out option could sometimes work, but more often will fail again. Consider queueing the work and re-trying after some significant time
-    + Timeouts can also help with large unbound return sets, but there are better ways of dealing with that
-    + This is similar to the *Fail Fast* pattern, where *Fail Fast* handles incoming requests that can't finish and *Timeout* handles outward requests that you don't think are going to finish.
-  * Circuit Breakers - code oriented
-    + Circuit breakers stop operations from happening when a system is not in a healthy state. If 'open', any call of that operation will fail immediately saying this operation is down and needs attention. 'Closed' circuits are healthy. If too many failures occur or if manually flipped open, the circuit breaker flips open *and logs and notifies it changed*. After some time passes, the breaker can go to 'half-open' where it will retry the operation, and if it succeeds, it goes back to 'closed'
-    + Circuits can switch, say, if one operation times out, if connections are refused, maybe if there's some incompatible version differences, and these things happen repeatedly.
-    + Failure due to circuit breaker open should be a unique kind of exception, so code can handle it differently
-    + Ops team needs to have a means to monitor breakers, manually set and reset breakers, and have access to logs of state changes
-    + Protects system reliability at integration points
-  * Bulkheads - architecturally oriented 
-    + On a ship, bulkheads are compartments that can be closed water tight in case the hull is breeched.
-    + Bulkheads in architecture separate servers from each other so that if one server goes down or can't serve properly, others which may have been dependent can continue working. If two different services depend on a common service, the common service can be made available into two pools, then each different service gets its own.
-    + One option is to separate critical services into a pool while non-critical can go into another
-    + The goal is to minimize impact of failure. What is the impact of a certain loss of capability, examine your system, see what makes sense to separate in terms of system boundaries
-    + At a CPU process level, having a process bound to a CPU core instead of hopping across all is an example of using the bulkhead idea
-    + Be aware of the needs of different services dependent on a common service that you bulkhead, there could be underuse of the service if one service is more demanding than the other, but they have the same size bulkhead pools
-  * Steady State - ops oriented, deployment oriented
-    + Systems should not need to be fiddled with as part of its normal operation, as fiddling is a sign that there's something missed in creating the system. This includes cleaning up logs and purging old data.
-    + *Steady state* means that for every process that accumulates resources, there should be a process that prevents the overflow of that resource.
-    + Data purging - often neglected in first releases. Signs of this becoming a problem include increasing I/O rates and latency on the DB. Difficulties may include maintain referential integrity, and ensuring the app works still after old data is purged. If you must release data purging later, it's smart to take care of the most rapidly increasing data first.
-    + Old logs - remember to roll your logs! Many logging frameworks include this, find this in your choice of logging frameworks. Logs should never grow without having a size limit, regardless of where they're stored (they should always be stored outside of the prod system). Normally, logs from more than a week old are pretty uninteresting. If your framework doesn't have log rolling, or you have a legacy app, consider using something like `logrotate` or writing a script that runs purging old logs
-    + Memory cache - there needs to be a limit on the number of cache keys, and if cached items can change, there needs to be a way to invalidate/ refresh the cache, like using a time-based, least recently used, or working-set flushes.
-  * Fail fast - code oriented
-    + Slow responses are worse than no response, and a slow failure is the worst of all. Always check for possible failures as early as possible.
-    + Do all your parameter validation before anything else, then verify and validate you can allocate all your needed resources before you do any business logic. This includes verifying things like db and endpoint connections
-    + Use different error handling means for System failures (like failing a db connection) versus App failures (like bad parameters that are ultimately user errors) so that any Circuit Breakers don't get tripped when the system is otherwise healthy
-  * Handshaking - code oriented
-    + Handshaking really means a client asks a server if it is ready for a request, the server says yes or no, then the client behaves appropriately. This is a means for the server to throttle its workload.
-    + May rely on the use of healthchecks and heartbeats to servers. Say, a load balancer asks for healthchecks on app servers. The server may reply 'OK' so it can accept more work, or may say 'Service Unavailable' and then the load balancer won't give more work to the server
-    + Consider a healthcheck call as a part of your API you're writing, and using a handshake for any protocols you may develop
-  * Test harness - development and testing oriented
-    + Because integration testing environments are difficult to maintain and is really only reliable for testing when everything is working correctly, it's useful to write pieces of software for testing that surround one component, and emulates all sorts of failures that could occur in the real world
-    + The bigger and scarier the scenarios you can put into the test harness, the better. Harness is meant as a controllable stress test to supplement other tests, like unit testing, qa, etc
-    + see page 126 for a list of failure ideas for a test harness
-    + encourages using low-level code to recreate all sorts of nonsense, think on all 7 layers of OSI
-    + Try having different ports set up to repeat different scenarios
-    + Log requests set to the harness, and what the harness is doing so you can repeat epic failures and know what happened
-  * Decoupling middleware - architecture oriented
-    + Middleware/ enterprise application integrations help disparate systems talk to each other by letting each system talk to the middleware in the way that it wants to, then middleware translates that for the other.
-    + Supports decoupling by isolating system-specific call knowledge away from the core of each system.
-    + Synchronous systems are easier to understand, but far more bittle and could potentially lead to cascading system failures
-    + Asynchronous systems are more robust, may support storing messages in queues, but are may be harder to work with
-    + If you're in a position to make a decision about purchasing some piece of middleware for an enterprise level app, ***plan your system as much as you can in advance and wait till the last possible responsible moment to buy since this will be very costly to change***
-    + With that in mind, learn many system architectures so you can always be confident that your design will be the best fit for your app.
-1. Stability summary
+## Stability
+
+### The exception that grounded an Airline
+
+### Introducing Stability
+
+### Stability Antipatterns
+
+#### Integration Points
+
+#### Chain Reactions
+
+* when one worker (server, thread, connection, etc) goes down, is blocked, or experiences failure, the remaining workers must work harder to pick up the difference. This increased load can expaserbate latent problems in the rest of the workers, thus when one worker goes down, the others are more likely to go down as well.
+* Things like memory leaks, race conditions, unreleased resources, or deadlocks will become more apparent in chain reactions. Try to find these before they become big issues.
+* Chain Reactions can be defended against by using *Bulkheads*.
+
+#### Cascading Failures
+* Similar to chain reactions
+* When a failure in one layer of your system stack starts to cause failures in adjacent layers. For example, app code calls a database. The database goes dark. The app code tries to start a connection, fails, attempts to close the (nonexistant) connection, and that causes an unhandled exception to float up to the user.
+* Commonly associated with exhausted resource pools and blocked threads and unbound retry attempts
+* Cascading Failures can be defended against by using *Circuit breakers* and *Timeouts*
+
+#### Users
+
+#### Blocked Threads
+
+#### Attacks of Self denial
+* When your marketing creates an offer too good to pass up, it blows up online, and you can't handle the traffic coming in. Be sure to know when business wants to create a special offer, then if you can anticipate what resources or sections will be hardest hit, you can plan accordingly.
+* If you send out a special offer though email, only include links that lead to static landing pages for at least the first click
+
+#### Scaling Effects
+
+#### Unbalanced Capacities
+
+#### Slow Responses
+
+#### SLA Inversion
+
+#### Unbounded Result Sets
+
+
+### Stability Patterns
+
+#### Timeouts - code oriented
+* Timeouts tell code to stop waiting if a response from a service or thread is taking long to complete, long enough that you suspect the answer will never come, or is longer than you're willing to wait.
+* May be helpful to establish a class that handles making the connection, executing the query, and processing the result. May be helpful to have Circuit breaking incorporated into this class
+* Waiting indefinitely is bad, returning some kind of response, failure included, is always better
+* Learn if Connection classes used in your language/framework of choice have timeout components and handling to them.
+* Immediately re-trying a timed out option could sometimes work, but more often will fail again. Consider queueing the work and re-trying after some significant time
+* Timeouts can also help with large unbound return sets, but there are better ways of dealing with that
+* This is similar to the *Fail Fast* pattern, where *Fail Fast* handles incoming requests that can't finish and *Timeout* handles outward requests that you don't think are going to finish.
+
+#### Circuit Breakers - code oriented
+* Circuit breakers stop operations from happening when a system is not in a healthy state. If 'open', any call of that operation will fail immediately saying this operation is down and needs attention. 'Closed' circuits are healthy. If too many failures occur or if manually flipped open, the circuit breaker flips open *and logs and notifies it changed*. After some time passes, the breaker can go to 'half-open' where it will retry the operation, and if it succeeds, it goes back to 'closed'
+* Circuits can switch, say, if one operation times out, if connections are refused, maybe if there's some incompatible version differences, and these things happen repeatedly.
+* Failure due to circuit breaker open should be a unique kind of exception, so code can handle it differently
+* Ops team needs to have a means to monitor breakers, manually set and reset breakers, and have access to logs of state changes
+* Protects system reliability at integration points
+
+#### Bulkheads - architecturally oriented 
+* On a ship, bulkheads are compartments that can be closed water tight in case the hull is breeched.
+* Bulkheads in architecture separate servers from each other so that if one server goes down or can't serve properly, others which may have been dependent can continue working. If two different services depend on a common service, the common service can be made available into two pools, then each different service gets its own.
+* One option is to separate critical services into a pool while non-critical can go into another
+* The goal is to minimize impact of failure. What is the impact of a certain loss of capability, examine your system, see what makes sense to separate in terms of system boundaries
+* At a CPU process level, having a process bound to a CPU core instead of hopping across all is an example of using the bulkhead idea
+* Be aware of the needs of different services dependent on a common service that you bulkhead, there could be underuse of the service if one service is more demanding than the other, but they have the same size bulkhead pools
+
+#### Steady State - ops oriented, deployment oriented
+* Systems should not need to be fiddled with as part of its normal operation, as fiddling is a sign that there's something missed in creating the system. This includes cleaning up logs and purging old data.
+* *Steady state* means that for every process that accumulates resources, there should be a process that prevents the overflow of that resource.
+* Data purging - often neglected in first releases. Signs of this becoming a problem include increasing I/O rates and latency on the DB. Difficulties may include maintain referential integrity, and ensuring the app works still after old data is purged. If you must release data purging later, it's smart to take care of the most rapidly increasing data first.
+* Old logs - remember to roll your logs! Many logging frameworks include this, find this in your choice of logging frameworks. Logs should never grow without having a size limit, regardless of where they're stored (they should always be stored outside of the prod system). Normally, logs from more than a week old are pretty uninteresting. If your framework doesn't have log rolling, or you have a legacy app, consider using something like `logrotate` or writing a script that runs purging old logs
+* Memory cache - there needs to be a limit on the number of cache keys, and if cached items can change, there needs to be a way to invalidate/ refresh the cache, like using a time-based, least recently used, or working-set flushes.
+
+#### Fail fast - code oriented
+* Slow responses are worse than no response, and a slow failure is the worst of all. Always check for possible failures as early as possible.
+* Do all your parameter validation before anything else, then verify and validate you can allocate all your needed resources before you do any business logic. This includes verifying things like db and endpoint connections
+* Use different error handling means for System failures (like failing a db connection) versus App failures (like bad parameters that are ultimately user errors) so that any Circuit Breakers don't get tripped when the system is otherwise healthy
+
+#### Handshaking - code oriented
+* Handshaking really means a client asks a server if it is ready for a request, the server says yes or no, then the client behaves appropriately. This is a means for the server to throttle its workload.
+* May rely on the use of healthchecks and heartbeats to servers. Say, a load balancer asks for healthchecks on app servers. The server may reply 'OK' so it can accept more work, or may say 'Service Unavailable' and then the load balancer won't give more work to the server
+* Consider a healthcheck call as a part of your API you're writing, and using a handshake for any protocols you may develop
+
+#### Test harness - development and testing oriented
+* Because integration testing environments are difficult to maintain and is really only reliable for testing when everything is working correctly, it's useful to write pieces of software for testing that surround one component, and emulates all sorts of failures that could occur in the real world
+* The bigger and scarier the scenarios you can put into the test harness, the better. Harness is meant as a controllable stress test to supplement other tests, like unit testing, qa, etc
+* see page 126 for a list of failure ideas for a test harness
+* encourages using low-level code to recreate all sorts of nonsense, think on all 7 layers of OSI
+* Try having different ports set up to repeat different scenarios
+* Log requests set to the harness, and what the harness is doing so you can repeat epic failures and know what happened
+
+#### Decoupling middleware - architecture oriented
+* Middleware/ enterprise application integrations help disparate systems talk to each other by letting each system talk to the middleware in the way that it wants to, then middleware translates that for the other.
+* Supports decoupling by isolating system-specific call knowledge away from the core of each system.
+* Synchronous systems are easier to understand, but far more bittle and could potentially lead to cascading system failures
+* Asynchronous systems are more robust, may support storing messages in queues, but are may be harder to work with
+* If you're in a position to make a decision about purchasing some piece of middleware for an enterprise level app, ***plan your system as much as you can in advance and wait till the last possible responsible moment to buy since this will be very costly to change***
+* With that in mind, learn many system architectures so you can always be confident that your design will be the best fit for your app.
+
+
+### Stability summary
   * 10 million page views a day for 3 years is over 500 billion, and there are 400 billion stars in the Milky Way. A bug in code that has astronomical chances of actually happening will definitely happen with the right amount of traffic
   * Remember that over 75% of projects get shut down before hitting prod, and the ones that do probably have some issues. If you fix enough problems in a buggy system, you'll look a hero, but if you design a system right from the beginning, it will probably be thankless, then users could complain it's slow. With that, update your capacity
 
 ## Capacity
-1. Trampled by your own customers
-1. Introducing Capacity
-1. Capacity Antipatterns
-  * Resource pool contention
-  * Excessive JSP fragments
-  * AJAX Overkill
-  * Overstaying sessions
-  * Wasted space in HTML
-  * Reload Button
-  * Handcrafted SQL
-  * Database eutrophication
-  * Integration Point Latency
-  * Cookie Monsters
+### Trampled by your own customers
+### Introducing Capacity
+### Capacity Antipatterns
+#### Resource pool contention
+#### Excessive JSP fragments
+#### AJAX Overkill
+#### Overstaying sessions
+#### Wasted space in HTML
+#### Reload Button
+#### Handcrafted SQL
+#### Database eutrophication
+#### Integration Point Latency
+#### Cookie Monsters
 
-1. Capacity Patterns
+### Capacity Patterns
   * Tiny, opaque, and questionable code optimizations at the expense of code clarity will never pay off. Real optimization comes with design change, since good design recognizes both clarity and efficiency. 
-  * Pool connections - code oriented and configuration oriented
-    + On all but infrequently used connections (say to DBs), use connection pooling and learn how it's used in the language of your choice.
-    + Beware of bad connection threads living in the connection pool, and make sure your pool size is not too big and not too small
-    + Try to use a "per page" model of checking out connections, like one per page, or if pages are composed of multiple independent pages that require different connections, use a "per fragment" model. "Per fragment" has more potential for deadlock though. Connection managers could be helpful for this.
-    + Don't forget to mind your timeouts so piles of threads don't block forever, and it may be helpful to keep track of time spent getting connections.
-  * Using caching carefully - coding oriented
-    + Caches need to have an upper limit on memory allowed to be used, and should be configurable.
-    + Monitor hit rates on items stored in cache (number that you actually use the cache to retrieve items). Low hit rates mean you probably don't need to cache those items. It doesn't make sense to cache things that are used once
-    + Don't cache things that are cheap to generate, or likely to change before you use them.
-    + See what kinds of caching are supported by your language and frameworks of choice
-    + Sometimes caching is rendered unnecessary when you can precompute items
-    + When you cache, you always have risk of stale data, so you need an invalidation strategy, like time based or event based. Make sure the mechanism strategy for notifying of invalidation you go for is able to scale with the number of servers / caches your system uses
-  * Precompute content - coding oriented
-    + Even if content changes every few minutes, even if you're caching result sets of DB queries, if you have any sizeable traffic, it may be worth it to precompute content (like HTML pages), stash it, and use it, even if it is for a few minutes
-    + The direct opposite of precomputing content is *always* querying for and parsing content, and this will have huge ramifications in terms of memory and bandwidth used. Ideally, you should only have to parse anything once, and stash that, but this could be an unrealistic ideal.
-    + Personalization kind of blows precomputation away, but look for bits that can still be precomputed, then do personalization like a punch-out card
-    + Always remember that caching, precomputing, optimizing, etc are about trading one kind of resource being used for another. The key is to trade what is expensive with what is cheap, and to strike an acceptable balance.
-  * Tune the Garbage Collector - configuration oriented (also Java oriented)
-    + If your technology of choice uses garbage collecting, see about tuning it. Do it in prod, and do it after major releases
-    + Don't bother with object pooling
+
+#### Pool connections - code oriented and configuration oriented
+* On all but infrequently used connections (say to DBs), use connection pooling and learn how it's used in the language of your choice.
+* Beware of bad connection threads living in the connection pool, and make sure your pool size is not too big and not too small
+* Try to use a "per page" model of checking out connections, like one per page, or if pages are composed of multiple independent pages that require different connections, use a "per fragment" model. "Per fragment" has more potential for deadlock though. Connection managers could be helpful for this.
+* Don't forget to mind your timeouts so piles of threads don't block forever, and it may be helpful to keep track of time spent getting connections.
+
+#### Using caching carefully - coding oriented
+* Caches need to have an upper limit on memory allowed to be used, and should be configurable.
+* Monitor hit rates on items stored in cache (number that you actually use the cache to retrieve items). Low hit rates mean you probably don't need to cache those items. It doesn't make sense to cache things that are used once
+* Don't cache things that are cheap to generate, or likely to change before you use them.
+* See what kinds of caching are supported by your language and frameworks of choice
+* Sometimes caching is rendered unnecessary when you can precompute items
+* When you cache, you always have risk of stale data, so you need an invalidation strategy, like time based or event based. Make sure the mechanism strategy for notifying of invalidation you go for is able to scale with the number of servers / caches your system uses
+
+#### Precompute content - coding oriented
+* Even if content changes every few minutes, even if you're caching result sets of DB queries, if you have any sizeable traffic, it may be worth it to precompute content (like HTML pages), stash it, and use it, even if it is for a few minutes
+* The direct opposite of precomputing content is *always* querying for and parsing content, and this will have huge ramifications in terms of memory and bandwidth used. Ideally, you should only have to parse anything once, and stash that, but this could be an unrealistic ideal.
+* Personalization kind of blows precomputation away, but look for bits that can still be precomputed, then do personalization like a punch-out card
+* Always remember that caching, precomputing, optimizing, etc are about trading one kind of resource being used for another. The key is to trade what is expensive with what is cheap, and to strike an acceptable balance.
+
+#### Tune the Garbage Collector - configuration oriented (also Java oriented)
+* If your technology of choice uses garbage collecting, see about tuning it. Do it in prod, and do it after major releases
+* Don't bother with object pooling
+
 
 ## General Design Issues
-1. Networking
+
+### Networking
   * Multihomed servers - servers that exist in multiple networks, therefore have multiple network interfaces
     + separate interfaces for separate purposes - separate prod facing from nonprod facing, could have multiple prod facing for load balancing or for failover. 
     + be aware that a multihomed server will probably have multiple different DNS entries that point to it, and they'll probably be different than its own hostname
@@ -137,92 +170,106 @@ Release It! - Michael Nygard
   * Virtual IP Addresses - Utilizing clustering
     + Clustering uses software that assigns a virtual IP to one server, and where app traffic is sent to a DNS name that points to the virtual IP. If the server is to be shutdown, or experiences failure (say through loss of a heartbeat to the clustering switch), the cluster switch will assign the virtual IP address to a new server on standby.
     + In-memory state that is not made persistent will be lost (remember this could be an app server or a DB server). Client's that use clustered services should be written to handle sudden loss of connectivity. Catch an exception, attempt to reconnect, but be prepared to "circuit break"
-1. Security
+
+### Security
   * Principle of Least Privilege - the privilege of a process should only have as much privilege as it needs to complete its job, and no more. Never run as root or admin unless it's absolutely necessary, keep its use to a minimum. Relegate long running processes to separate users, like the "apache" user for Apache. Load balancers can add as a separator between an exposed port under 1024, which could be open for a UNIX app needing root, and reassigned ports to the load balanced machines
   * Configured Passwords - separate passwords to DB's from any other config files, and should definitely not live in the installation directory. Should be readable only to the file owner. If passwords are kept in memory, they can be recoverable through a memory dump, maybe through a kernel error that dumps its memory. Encrypt password files, but try to use software to monitor changes to those files.
-1. Availability
+
+### Availability
   * Calculating downtime and availability costs - availability as a percentage (98%, 99% 99.999%), take a 30 day month for minutes, multiply by availability for uptime
   * Figure how much your site makes in an hour during peak. Worst case loss because of availability is peak money times downtime. There's a big difference between 98% and 99.99%
   * Each '9' of availability increases implementation costs by a factor of ten and operational cost per year by a factor of two
-  * Nip future SLA (dis)agreements by writing precise SLA's early.
-    + define by how up are critical features, specific features, or services of your app
-    + You cannot offer a higher SLA than the lowest SLA of the service your app uses (ie, third party services)
-    + Have an automated system reporting on your systems availability, and have it monitor your critical services
-    + Define what good responses from your system are like, ie timeouts, too slow, throwing errors
+
+#### Nip future SLA (dis)agreements by writing precise SLA's early.
+* Define by how up are critical features, specific features, or services of your app
+* You cannot offer a higher SLA than the lowest SLA of the service your app uses (ie, third party services)
+* Have an automated system reporting on your systems availability, and have it monitor your critical services
+* Define what good responses from your system are like, ie timeouts, too slow, throwing errors
       - How often will automation perform synthetic transactions?
       - Max acceptable response time from each step of system
       - What response codes indicate success, and what codes indicate failure?
       - where will the data be recorded?
       - what formula will be used to compute availability? Based on time, or number of samples?
-  * Horizontal scaling and load balancing
-    + DNS Round-Robin - oldest of load balancing, avoid doing this today
+
+#### Horizontal scaling and load balancing
+* DNS Round-Robin - oldest of load balancing, avoid doing this today
       - DNS servers resolve requests by rotating through IPs of app servers
       - Points requests directly to app servers, not good security
       - DNS servers don't account for app server health, and doesn't guarantee load is distributed evenly
       - DNS is subject to caching the IP
-    + Reverse Proxy
+* Reverse Proxy
       - The difference between a regular Proxy server and a Reverse Proxy
         * Regular proxies multiplex many outgoing requests into a single source IP
         * Reverse proxies multiplex incoming requests for a single source IP to many addresses
       - Reverse proxies can cache static content
       - Since reverse proxies get involved in every request, reverse proxy servers can quickly become overburdened
       - Many reverse proxies may not take into account app server health
-    + Hardware load balancing - hardware that serve a similar role to reverse proxies
+* Hardware load balancing - hardware that serve a similar role to reverse proxies
       - Can often check health of app servers and remove bad servers from the active pool
       - Can often switch through any connection based protocal
       - Can make managing SSL and certs more difficult, including choosing where SSL decryption happens
       - Probably very expensive
-    + Clustering
+* Clustering
       - Servers that are aware of each other and talk to each other for load balancing and server health
       - Load balancing: active/active
       - Redundancy for failure: active/passive
       - Some applications may have built-in clustering services, where there isn't, you can run an app under a clustering server, and can be configured to perform specific actions when app health is down
       - Clustering servers/server software may be finicky to configure and may have unique sets of quirks
       - Isn't known for scaling well, and can be used to band-aid on clustering support
-1. Administration
+
+### Administration
   * An easy-to-administrate system is a happy system, and leads to happy admins and users. How can you make your system at large easier to admin?
-  * Making QA match Prod
-    + According to Nygard, the most influential differences between Prod and QA tend to not be configuration differences, but *Topology* differences
-    + Topology - the number and connectivity of servers and applications. Produce diagrams of your Topology of your System, across your environments. Other environments should mimic prod's topology
-    + Keep your environments separated! Utilize different machines or relegate separation with VM's.
-    + Practice the Zero, One, Many rule in differences between environments. In prod, you may have zero, one, or many of a given resource in your topology. If you must scale down other environments compared to prod, at least make sure your copy environment matches the zero, one, or many instances in its topology. Never have only one of a resource in nonprod when there's many in prod
-    + Do you have firewalls and load balancers in prod? Your copy environments ( **including dev!** ) must have them also at the same topology points, at the very least cheaper versions of prod. Make sure you have firewalls in place day one in dev also, avoid introducing them after development has already started
-  * Configuration Files
-    + Property files - config files that will change between environments, deployments
-    + Plumbing files - config files that should never be edited by hand, files that hold object associations, files that internally wire your application to itself
-    + Admins should never be able to touch plumbing and break object associations
-    + Plumbing should be kept separate (different files, different directories, etc) from Property
-    + Production config (property) should be kept in a different directory than the app install directory since the install dir will probably be overwritten as some point
-    + The author recommends Admins use version control on configuration files for environments that are in secure repos, a part of a larger change control process, a part of automated deployments that go directly to the repo, and have an automated audit process
-    + Configuration properties should be crystal clear in what values they hold so anyone working on editing them shouldn't have to guess making changes
-    + **Name properties by their function, not their nature** - don't name by what something is, name by what it does or means. Try to think of "what kind of thing is this?" rather than just "what is this?"`
-  * Startup and Shutdown
-    + Apps need to report errors on things that fail during startup, and needs to be aware and react accordingly if things fail during startup 
-    + Apps need to ensure all of its components are loaded properly before accepting connections/ any new work
-    + if an app requires a connection pool, the connection pool needs to verify it's made successful connections on initialization, otherwise it needs to report it's in a failure state, and the entire app should be in a failure state (not accepting new work, but perhaps still able to be examined)
-    + Clean shutdowns should not be rude to customers in the store. During shutdown, the app needs to not accept new work, but handle existing tasks by either working them to completion, or delegate work to others before closing (but temper this with a timeout so unnecessarily long customers get kicked out eventually)
-  * Administrative Interfaces
-    + GUI's are ok, but cli's are often so much more powerful and versatile (can be scripted, front-ended, works over ssh, can wrap in logging)
-    + Web interfaces (HTML pages, REST apis) are useful, and more versatile than straight OS clients since you could use HTTP scripting to automate actions or write clients against them, but cli's are still awesome and shouldn't be forgotten
-1. Design summary
+
+#### Making QA match Prod
+* According to Nygard, the most influential differences between Prod and QA tend to not be configuration differences, but *Topology* differences
+* Topology - the number and connectivity of servers and applications. Produce diagrams of your Topology of your System, across your environments. Other environments should mimic prod's topology
+* Keep your environments separated! Utilize different machines or relegate separation with VM's.
+* Practice the Zero, One, Many rule in differences between environments. In prod, you may have zero, one, or many of a given resource in your topology. If you must scale down other environments compared to prod, at least make sure your copy environment matches the zero, one, or many instances in its topology. Never have only one of a resource in nonprod when there's many in prod
+* Do you have firewalls and load balancers in prod? Your copy environments ( **including dev!** ) must have them also at the same topology points, at the very least cheaper versions of prod. Make sure you have firewalls in place day one in dev also, avoid introducing them after development has already started
+
+#### Configuration Files
+* Property files - config files that will change between environments, deployments
+* Plumbing files - config files that should never be edited by hand, files that hold object associations, files that internally wire your application to itself
+* Admins should never be able to touch plumbing and break object associations
+* Plumbing should be kept separate (different files, different directories, etc) from Property
+* Production config (property) should be kept in a different directory than the app install directory since the install dir will probably be overwritten as some point
+* The author recommends Admins use version control on configuration files for environments that are in secure repos, a part of a larger change control process, a part of automated deployments that go directly to the repo, and have an automated audit process
+* Configuration properties should be crystal clear in what values they hold so anyone working on editing them shouldn't have to guess making changes
+* **Name properties by their function, not their nature** - don't name by what something is, name by what it does or means. Try to think of "what kind of thing is this?" rather than just "what is this?"
+
+#### Startup and Shutdown
+* Apps need to report errors on things that fail during startup, and needs to be aware and react accordingly if things fail during startup 
+* Apps need to ensure all of its components are loaded properly before accepting connections/ any new work
+* if an app requires a connection pool, the connection pool needs to verify it's made successful connections on initialization, otherwise it needs to report it's in a failure state, and the entire app should be in a failure state (not accepting new work, but perhaps still able to be examined)
+* Clean shutdowns should not be rude to customers in the store. During shutdown, the app needs to not accept new work, but handle existing tasks by either working them to completion, or delegate work to others before closing (but temper this with a timeout so unnecessarily long customers get kicked out eventually)
+
+#### Administrative Interfaces
+* GUI's are ok, but cli's are often so much more powerful and versatile (can be scripted, front-ended, works over ssh, can wrap in logging)
+* Web interfaces (HTML pages, REST apis) are useful, and more versatile than straight OS clients since you could use HTTP scripting to automate actions or write clients against them, but cli's are still awesome and shouldn't be forgotten
+
+### Design summary
   * Define application / system architecture early to make everyone's lives easier, changes further down the road will be harder to deal with.
 
+
 ## Operations
-1. Case Study: Phenomenal Cosmic Powers, Itty-Bitty Living space
+
+### Case Study: Phenomenal Cosmic Powers, Itty-Bitty Living space
   * Holiday seasons can cause an 1000%(!) increase in online store traffic, the most serious real world predictable load test.
   * Learn the normal rhythm of the system by regularly observing the system through admin interfaces and monitoring interfaces. Watch these for a while, and you'll learn what looks normal and can then see quickly what looks off
   * If crap is going down on your servers, taking thread dumps can show helpful info on the running application
   * Don't schedule maintenance during expected high traffic times (like holiday weekends)
   * Know your system, know how to access components of your system, know how to control your system through scripting
   * Check out Recovery Oriented Computing - encourages component-level restartability, damage control treatment, and automatic fault detection
-1. Transparency
-  * to be transparent is to be able to see system's current state, view what's happening right now, and be able to see the system's history
-  * systems must be built with transparency and feedback
+
+### Transparency
+  * To be transparent is to be able to see system's current state, view what's happening right now, and be able to see the system's history
+  * Systems must be built with transparency and feedback
   * Benefits of transparency
     + Debugging issues becomes way easier
     + Gives data that adds to business decisions. Hard data can't be disputed
-  * Four perspectives on transparency
-    1. Historical Trending
+
+#### Four perspectives on transparency
+  1. Historical Trending
       + With systems, past behavior can predict today's behavior both with
         - business metrics (sales, orders, revenue,etc)
         - system metrics (storage, CPU usage, network bandwidth, number of errors logged)
@@ -230,14 +277,14 @@ Release It! - Michael Nygard
       + Author believes that Historical data like this doesn't require dashboards since this data is not immediate
       + Questions related to historical trending
         - TODO: fill me in
-    1. Predictive Forecasting
+  1. Predictive Forecasting
       * Future predictions tend to be about correlations and linkages
       * "Good enough" models of system behavior should be fine for ebusinesses to predict future behavior
       * Author believes projections should not be in a dashboard view since this data can be sensitive and is not immediate
       * App releases may invalidate past correlations of the system, so correlations should be evaluated after versions, so any set of correlations of the system should include app versions
       * Questions related to forecasting
         - TODO: fill me in
-    1. Present Status
+  1. Present Status
       * Immediate health of the system, which is a short history, and includes the state of every piece of hardware, app server, application, and batch job
       * Should measure required events like batch jobs or feeds and parameters, continous metrics or states of the system.
       * Statistics of both operating system metrics and application metrics, page 268 includes examples of each and what may be useful to collect
@@ -248,110 +295,124 @@ Release It! - Michael Nygard
         + Green: all true - All expected events occurred, no abnormal events, all metrics nominal, all states operational
         + Yellow: at least 1 true - an expected event hasn't happened, at least one abnormal event with medium severity occurred, one or more parameters is out of normal range, some noncritical function is not fully operational
         + Red: at least 1 true - a required event hasn't happened, at least one abnormal event with high severity occurred, one or more parameters is outside of acceptable values, a critical function is not at expected value
-    1. Instantaneous Behavior
+  1. Instantaneous Behavior
       * What kinds of things are immediately happening, observing the running app and monitoring output of the system, like log files, stack traces, thread dumps, failed user requests
       * These things can be watched with monitoring software
       * You may choose to restrict views into this since observing every single request or ever error could cause undue alarm from others not familiar with normal operation. Pressure for this kind of info normally indicates a need for more visibility into present status
-  * Designing for Transparency - systems are built with transparency in mind, it is not tacked on, at least not without much greater cost
-    + Local transparency leads to local optimization, beware that optimizing one transparent component for one problem is actually undue to a different nontransparent component
-    + Aim for transparency with all components
-    + Be aware that building your transparency does not couple the app to any particular monitoring framework, that your transparency is written so monitoring can act around it, not woven into it. Also, making decisions about alerts, thresholds, and policy items should be outside the actual writing of transparency
-  * Whitebox vs blackbox technologies for enabling transparency
+ 
+#### Designing for Transparency
+
+* Systems are built with transparency in mind, it is not tacked on, at least not without much greater cost
+* Local transparency leads to local optimization, beware that optimizing one transparent component for one problem is actually undue to a different nontransparent component
+* Aim for transparency with all components
+* Be aware that building your transparency does not couple the app to any particular monitoring framework, that your transparency is written so monitoring can act around it, not woven into it. Also, making decisions about alerts, thresholds, and policy items should be outside the actual writing of transparency
+* Whitebox vs blackbox technologies for enabling transparency
     + Whitebox is built into the app itself to report on internal state to provide more info, but produces coupling
     + Blackbox observes generated output from the app, and can be implemented after getting the app
-  * Logging - using log files is awesome and you should definitely be able to generate logs. It's whitebox but nearly any monitoring framework can scrape logs, so you're loosely coupled
-    + Locations to hold logs should be configurable, ideally able to be moved to different drives - don't roll your own logging, use a framework that already has this in place for you
-    + Try to generate logs that'll be especially helpful for ops guys reading prod logs, not necessarily developers. Anything logged at "Error" or "Severe" levels should be something that requires ops intervention
-    + Beware of overlogging. Not every exception needs to be logged, "Error" level logging should be able to lead to actionable fixes
-    + Don't default run "debug" level or similarly low-level logging in prod, as it'll create too much noise to be useful
-    + If you could catalog error log messages into key values with error message number / message, it will be easy for users to look through, and keys could be good error codes that could help tell you where the error occurred
-    + Log files need to be **human readable, easily skimmed over**
-      - a single log should only be on one line, don't add newlines, don't take up more than one line
-      - space delimited, with even columns that line up nicely with subsequent lines
-      - severity levels should be clear, author likes levels indicated with one character
-      - remember that ops will read error messages outside the context of surrounding app code. Beware of ambiguous messages or warnings that sound like ops should do something when intervention isn't necessary
-    + Including some id that is consistent over a session to a log can really help parsing logs for a certain transaction over its requests and state changes
-    + State changes of a transaction are interesting and should definitely be logged
-  * Monitoring systems - app logging is no good if the app/job is hung or dead, so you need to monitor it
-    + app hosts and db hosts run a monitoring agent that ping the server and combs logs. it reports status to a message broker, and the monitoring console reads the message broker to display info to the client using the console
-    + if a server goes down, a monitoring agent goes down with it. Any monitoring software worth its salt will detect this.
-    + Traffic generated by the monitoring system talking to agents should **not** go across the public side of prod's network - this traffic will contain internal ip's, host names, user names, etc. Configure your system and network so this doesn't happen.
-    + Commercial monitoring systems can provide a lot of info and can be handy, but there probably be some gaps in what it can over, like identifying was business features each server provides, or missing that some services are up and running but responding all wrong
-    + Avoid monitoring solution lock-in by designing your system to support some common standards supported by monitoring solutions
-      - SNMP (Simple network management protocol) - "800lbs gorilla of monitoring standards"
-        - everything is a variable
-        - SNMP defines both a protocol and data models to define/describe interfaces
-        - You use MIBs to describe the interface of the app so the monitoring system can read these
-        - Alarms are raised through traps
-        - Many common big software packages, like common servers or operating systems, can come with SNMP packages or plugins to enable monitoring
-        - Writing SNMP into your app should be considered a serious undertaking, by no means trivial or easy, and still, admins may be reluctant to install SNMP packages from untrusted services
-      - CIM - a newer "competitor" to SNMP that the author regards as a superior technology, but is far less common than SNMP
-      - JMX - for Java apps, great if you're in the Java world, can provide shell interfaces to enabled app servers
-    + Choosing what to expose
-      - The author lists a bunch of metrics that he's found consistently good to have, pg 295
-  * Operations Database (OpsDB)
-    + complements monitoring and logging by providing a means for historical analysis and prediction
-    + accumulates status and metrics from servers, apps, jobs, and feeds
-    + use this to begin building correlations between metrics across your whole system, not just your app
-    + useful for building system baselines, what's normal for your system
-    + on page 299, the author describes high level structure of an OpsDB, which is very structured similarly to the Observation pattern. Composed of Features, Nodes, Observations, Observation types, Measurements, Events, and Statuses
-    + use client side API to feed the OpsDB. There is absolutely no reason for your system to be affected by a failure on the OpsDB. Record start ups, necessary components starting up, if there is failure starting up, and if there's abnormal terminations
-    + pg 301 describes Expectation pattern for Observations which describe normal acceptable ranges for collected metrics and should be used for triggering alerts
-    + expectations start loose, then should be refined over time, so false positive alarms don't become normal and ignorable
-    + remember to handle data accumulation over time so it doesn't blow up your capacity, and shed ancient data
-  * Supporting processes - Making observations
-    + Beware of regular reports that everyone eventually ignores and  autotrashes. It means no one is looking at it seriously and questioning it, calls for a need for more system observation
-    + How to make observations / create feedback loops (Some examples: OODA or Plan-Do-Check-Act)
-      - Examine, Interpret, Evaluate, Decide, Implement, Observe
-      - Routines help : weekly problem ticket reviews, monthly volume of problem reviews, daily/weekly log reviews for exceptions or errors, Review help desk calls for common problems- if too much, review by top category plus randomly sampling, ever .25 or .5 years, recheck system correlations, monthly data volume, query statistics, and expensive queries/procs, weekly demand and system statistics including traffic
-    + Once you start building a collection of data, try comparing new data to history, spot trends, and if some data stops becoming useful to review, lose it
-1. Adaptation
+
+#### Logging
+* Using log files is awesome and you should definitely be able to generate logs. It's whitebox but nearly any monitoring framework can scrape logs, so you're loosely coupled
+* Locations to hold logs should be configurable, ideally able to be moved to different drives - don't roll your own logging, use a framework that already has this in place for you
+* Try to generate logs that'll be especially helpful for ops guys reading prod logs, not necessarily developers. Anything logged at "Error" or "Severe" levels should be something that requires ops intervention
+* Beware of overlogging. Not every exception needs to be logged, "Error" level logging should be able to lead to actionable fixes
+* Don't default run "debug" level or similarly low-level logging in prod, as it'll create too much noise to be useful
+* If you could catalog error log messages into key values with error message number / message, it will be easy for users to look through, and keys could be good error codes that could help tell you where the error occurred
+* Log files need to be **human readable, easily skimmed over**
+  - A single log should only be on one line, don't add newlines, don't take up more than one line
+  - Space delimited, with even columns that line up nicely with subsequent lines
+  - Severity levels should be clear, author likes levels indicated with one character
+  - Remember that ops will read error messages outside the context of surrounding app code. Beware of ambiguous messages or warnings that sound like ops should do something when intervention isn't necessary
+* Including some id that is consistent over a session to a log can really help parsing logs for a certain transaction over its requests and state changes
+* State changes of a transaction are interesting and should definitely be logged
+
+#### Monitoring systems
+* App logging is no good if the app/job is hung or dead, so you need to monitor it
+* App hosts and DB hosts run a monitoring agent that ping the server and combs logs. It reports status to a message broker, and the monitoring console reads the message broker to display info to the client using the console
+* If a server goes down, a monitoring agent goes down with it. Any monitoring software worth its salt will detect this.
+* Traffic generated by the monitoring system talking to agents should **not** go across the public side of prod's network - this traffic will contain internal ip's, host names, user names, etc. Configure your system and network so this doesn't happen.
+* Commercial monitoring systems can provide a lot of info and can be handy, but there probably be some gaps in what it can over, like identifying was business features each server provides, or missing that some services are up and running but responding all wrong
+* Avoid monitoring solution lock-in by designing your system to support some common standards supported by monitoring solutions
+  + SNMP (Simple network management protocol) - "800lbs gorilla of monitoring standards"
+    - Everything is a variable
+    - SNMP defines both a protocol and data models to define/describe interfaces
+    - You use MIBs to describe the interface of the app so the monitoring system can read these
+    - Alarms are raised through traps
+    - Many common big software packages, like common servers or operating systems, can come with SNMP packages or plugins to enable monitoring
+    - Writing SNMP into your app should be considered a serious undertaking, by no means trivial or easy, and still, admins may be reluctant to install SNMP packages from untrusted services
+  + CIM - a newer "competitor" to SNMP that the author regards as a superior technology, but is far less common than SNMP
+  + JMX - for Java apps, great if you're in the Java world, can provide shell interfaces to enabled app servers
+* Choosing what to expose
+  - The author lists a bunch of metrics that he's found consistently good to have, pg 295
+
+#### Operations Database (OpsDB)
+* Complements monitoring and logging by providing a means for historical analysis and prediction
+* Accumulates status and metrics from servers, apps, jobs, and feeds
+* Use this to begin building correlations between metrics across your whole system, not just your app
+* Useful for building system baselines, what's normal for your system
+* On page 299, the author describes high level structure of an OpsDB, which is very structured similarly to the Observation pattern. Composed of Features, Nodes, Observations, Observation types, Measurements, Events, and Statuses
+* Use client side API to feed the OpsDB. There is absolutely no reason for your system to be affected by a failure on the OpsDB. Record start ups, necessary components starting up, if there is failure starting up, and if there's abnormal terminations
+* pg 301 describes Expectation pattern for Observations which describe normal acceptable ranges for collected metrics and should be used for triggering alerts
+* Expectations start loose, then should be refined over time, so false positive alarms don't become normal and ignorable
+* Remember to handle data accumulation over time so it doesn't blow up your capacity, and shed ancient data
+
+#### Supporting processes - Making observations
+* Beware of regular reports that everyone eventually ignores and  autotrashes. It means no one is looking at it seriously and questioning it, calls for a need for more system observation
+* How to make observations / create feedback loops (Some examples: OODA or Plan-Do-Check-Act)
+  - Examine, Interpret, Evaluate, Decide, Implement, Observe
+  - Routines help : weekly problem ticket reviews, monthly volume of problem reviews, daily/weekly log reviews for exceptions or errors, Review help desk calls for common problems- if too much, review by top category plus randomly sampling, ever .25 or .5 years, recheck system correlations, monthly data volume, query statistics, and expensive queries/procs, weekly demand and system statistics including traffic
+* Once you start building a collection of data, try comparing new data to history, spot trends, and if some data stops becoming useful to review, lose it
+
+### Adaptation
   * Systems rarely do everything you want them to do on first release, and if you hope to keep afloat with the system, they must change
   * Many systems change more often because of what flaws they have versus what good they bring
   * The key to adaptation comes from making changes that bring in more money than it takes to introduce them
-  * Adaptable Software Design - many of these fall into Agile Methodology
-    + Dependency Injection - Components interact through interfaces without knowing underlying implementation. Allows pieces to be replaced or improved without out components having to know about it. Allows creation of mocks to be used in development and in unit testing
-    + Object Design - loose coupling and tight cohesion
+
+#### Adaptable Software Design - many of these fall into Agile Methodology
+* Dependency Injection - Components interact through interfaces without knowing underlying implementation. Allows pieces to be replaced or improved without out components having to know about it. Allows creation of mocks to be used in development and in unit testing
+* Object Design - loose coupling and tight cohesion
       - Coupling refers to how dependent a class is on other classes
       - Cohesion refers to focused a class is on what it intends to do. Classes that do too much or represents multiple things at once have lower cohesion
-      - it is hard to develop around tightly coupled systems and tightly coupled systems tend to be very inflexible
-      - loosely cohesive classes may be broken in multiple more tightly cohesive classes
-    + XP practices - Refactoring and Unit testing
-      - improving code design without changing functionality is best done with Unit tests to stop unintentional functionality change
+      - It is hard to develop around tightly coupled systems and tightly coupled systems tend to be very inflexible
+      - Loosely cohesive classes may be broken in multiple more tightly cohesive classes
+* XP practices - Refactoring and Unit testing
+      - Improving code design without changing functionality is best done with Unit tests to stop unintentional functionality change
       - Following TDD forces components to be reusable and injectable
       - If a component is difficult to unit test, that may be a sign that your components are too dependent on context, and as a consequence not reusable
-    + Agile Databases - Never happens without intention and work to keeping data schemas changeable
+* Agile Databases - Never happens without intention and work to keeping data schemas changeable
       - App behavior and data must be equally important to each other - app code changes, thus data schemes must be able to change also, since if data doesn't change, app code will convolute the meaning of the data
       - ORMs can help make app code able to handle schema change, but must be able to handle database changes gracefully. Metadata and schema matching should be handled at startup.
       - Schemas should include a table with structure version numbers. Versions should be updated when the structure changes and when interpretation of data changes also. The app should support schemas at certain versions and should fail if there's a version incompatibility
-  * Adaptable Enterprise Architecture
-    - The author warns against top-down architectures where everything is in its place like a machine, and everything is designed and set in stone.
-    - A more realistic view is that enterprise systems are closer to ecosystems than machines, where there may be much more inefficiencies but the ecosystem is far more robust. Ecosystems evolve continuously to survive
-    - Evaluating architecture could be done with asking "Does this help IT better to respond to user needs?"
-    - There are patterns to interactions with ecosystems that promote success
-    - Dependencies within a system
-      + loose clustering: a loss of a tree should not affect the whole forest. Trees should be able to be brought up and down without time ordering. Trees should not have to know about every other tree
-    - Dependencies between systems
+
+#### Adaptable Enterprise Architecture
+* The author warns against top-down architectures where everything is in its place like a machine, and everything is designed and set in stone.
+* A more realistic view is that enterprise systems are closer to ecosystems than machines, where there may be much more inefficiencies but the ecosystem is far more robust. Ecosystems evolve continuously to survive
+* Evaluating architecture could be done with asking "Does this help IT better to respond to user needs?"
+* There are patterns to interactions with ecosystems that promote success
+* Dependencies within a system
+      + Loose clustering: a loss of a tree should not affect the whole forest. Trees should be able to be brought up and down without time ordering. Trees should not have to know about every other tree
+* Dependencies between systems
       + Protocols
-        * protocols must be versioned, and able to speak to multiple versions, to avoid tight coupling        * Test harness can be used to ensure all protocol combinations can be handled
-        * sending and receiving protocol version should be easy
-        * systems should be able to support older formats, and be able to detect formats
+        * Protocols must be versioned, and able to speak to multiple versions, to avoid tight coupling        * Test harness can be used to ensure all protocol combinations can be handled
+        * Sending and receiving protocol version should be easy
+        * Systems should be able to support older formats, and be able to detect formats
       + Databases
         * Don't do integration databases!
         * Wrap access to a DB through a web service, make it redundant and accessible through a virtual IP
         * Multiple systems interacting directly to databases make it impossible to make schema changes because everything touching it will need to be updated at the same time
-  * Releases shouldn't hurt - must be regular, frequent, boring, and must take minimal manual effort
-    + Releases are often unaccounted for in cost budgeting, where planning, analysis, development, and testing do.
-    + Also, downtime required for releases. Downtime for releases is downtime for availability measurements, all the more reason to automate it
-    + Don't risk customers for arbitrary release dates. A buggy experience is a potential loss of a customer
-    + Zero downtime deploys
-      - many times, there's downtimes for deployments cause otherwise there'll be different versions of the app running between your servers and that can cause some problems
-      - implementing zero downtime deploys often require effort and co-ordination between dev and ops, so often times it never gets done
-      - author says key is to break up the deployment process into phases that can be spread out over an extended period (though things can be done all at once if you can codify deployment of new environments with deployed code, and then switch the new environment live)
-      - Expansion - add new stuff that being around doesn't break old stuff
-        + Url based assets - like JS and CSS - assets should be reachable by unique paths incorporating the version number into the URL
-        + Web services - new revisions of interfaces should have a new endpoint name. Remote object interfaces need a new interface name
-        + Protocols - protocols should contain a version identifier, and receiving apps should support the now multiple protocols. Another option is to create separate app pools supporting the different versions, or map the new protocol to a new port
-        + Adding DB tables and columns to old tables - new columns should be nullable first if they are intended to become NOT NULL. Existing procs inserting or updating old tables should *always* be explict about columns and values, and `select *` should never be in prod code. Triggers can be helpful to update new column data if old code doesn't fill in the new column and will continue to run
-      - Rollout - pushing the new app code version and getting it started. If downtime is absolutely necessary, downtime should be minimized and start up and shut down should not be rude to users. Deploying new app code to a new pool could be an option
-      - Cleanup - removing the unnecessary things or helpers for deployment, like triggers or extra service pools, columns and tables no longer used, old assets. Now you add NOT NULL to columns and enforce referential integrity
+
+#### Releases shouldn't hurt - must be regular, frequent, boring, and must take minimal manual effort
+* Releases are often unaccounted for in cost budgeting, where planning, analysis, development, and testing do.
+* Also, downtime required for releases. Downtime for releases is downtime for availability measurements, all the more reason to automate it
+* Don't risk customers for arbitrary release dates. A buggy experience is a potential loss of a customer
+
+##### Zero downtime deploys
+* Many times, there's downtimes for deployments cause otherwise there'll be different versions of the app running between your servers and that can cause some problems
+* Implementing zero downtime deploys often require effort and co-ordination between dev and ops, so often times it never gets done
+* Author says key is to break up the deployment process into phases that can be spread out over an extended period (though things can be done all at once if you can codify deployment of new environments with deployed code, and then switch the new environment live)
+  - Expansion - add new stuff that being around doesn't break old stuff
+    + Url based assets - like JS and CSS - assets should be reachable by unique paths incorporating the version number into the URL
+    + Web services - new revisions of interfaces should have a new endpoint name. Remote object interfaces need a new interface name
+    + Protocols - protocols should contain a version identifier, and receiving apps should support the now multiple protocols. Another option is to create separate app pools supporting the different versions, or map the new protocol to a new port
+    + Adding DB tables and columns to old tables - new columns should be nullable first if they are intended to become NOT NULL. Existing procs inserting or updating old tables should *always* be explict about columns and values, and `select *` should never be in prod code. Triggers can be helpful to update new column data if old code doesn't fill in the new column and will continue to run
+   - Rollout - pushing the new app code version and getting it started. If downtime is absolutely necessary, downtime should be minimized and start up and shut down should not be rude to users. Deploying new app code to a new pool could be an option
+   - Cleanup - removing the unnecessary things or helpers for deployment, like triggers or extra service pools, columns and tables no longer used, old assets. Now you add NOT NULL to columns and enforce referential integrity
