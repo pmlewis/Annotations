@@ -39,15 +39,27 @@ Release It! - Michael Nygard
 * If you send out a special offer though email, only include links that lead to static landing pages for at least the first click
 
 #### Scaling Effects
+* Remember why we'll never see elephant sized spiders, weight scales with volume O(n^3) and leg strength O(n^2). This is sustainable at small values of n. Your software will crumble just the same if one resource doesn't scale as fast as others. Somethings will work in QA when servers are limited to one or two, but in prod, there are far more resources needed.
+* Avoid Point-to-Point communication unless that is what your app needs to do. Leverage UDP broadcasts or TCP/UDP multicasts, Publish/subscribe messaging, or message queues.
+* Beware of shared resources, common resources that be used underlying most of your architecture. See if in your stack layers, if one layer can scale, dependent layers should be able to scale too. If it is hard for underlying layers to scale, then that is a real problem. Try to account for the possibility that the shared resource can lock up or get slow.  
 
 #### Unbalanced Capacities
+* Let's assume your system has a limited set of hardware resources that can not dynamically create new instances of resources on demand. Unbalanced capacities mean some parts of the system are allocated too much resources for how often they are used, and others may be starving for resources that are used frequently. The front end can overwhelm the back end. Frontend should leverage circuit-breakers, backend should leverage handshaking for health, and critical services should be separated into bulkheads.
+* Again, this problem may not appear in QA due to environment size. To counter this, the frontend should work in a test harness that can mimic a backend under heavy load, then should react gracefully. Load test your backend, make sure it leverages fail fast patterns.
+* The author mentions checking the thread count of your front end processes versus your backend, and if there's a gross imbalance of threads, that's a problem (How relevant is this today?)
 
 #### Slow Responses
+* Beware of slow I/O, especially if for some reason, you're dealing with some hand-rolled protocol, or if it is blocking I/O.
+* Slow responses can lead to users attempting to refresh the webpage, or unveil memory leak issues
 
 #### SLA Inversion
+* Your availability is only as good as the lowest availability of a (third party) service you rely on
+* Decouple where you depend on services working so you can attempt to continue working if the service is down. Leverage circuit breakers that can notify ops when a service is down
+* Be very specific in your SLA's! Craft your SLA's around sets of functionality your system provides. Any functionality you provide that depends on a third party, you can only provide a max availability of the third party (or your own service, whichever has the lowest availability). 
 
 #### Unbounded Result Sets
-
+* When querying for data, **always** have a limit on the number of records that can be returned. Provide some means of paging if you need more data than what is provided back.
+* Try to get a prod-size amount of data into your system during development so you have a realistic idea if your system can handle it.
 
 ### Stability Patterns
 
