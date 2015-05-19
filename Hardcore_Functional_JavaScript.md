@@ -31,9 +31,13 @@ Reacts the same to the same inputs. Purity make functions testable, portable, me
 
 Treat functions like nouns. Remember that mathematically a function has only one output set from one input set. Separating arity from functions: removing the number of arguments or operands they may need. Lends itself to currying. Order of arguments may matter
 
-#### Currying example
+#### Currying example, hints, and solutions
 
 Presenter endorses Ramda.js for its currying function where lodash and underscore are less so.
+
+Try to find the source and work through the example. https://github.com/DrBoolean/hardcorejs.
+
+Hint: recognize libs that do currying for you
 
 ## The Voyage
 
