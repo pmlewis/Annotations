@@ -1,0 +1,50 @@
+Building End-to-End Multi-Client Service Oriented Applications - Angular Edition - Miguel Castro
+--------------------------------------------
+
+This is a comprehensive course in building a complete app, full stack, business logic, etc. Uses Unit tests at several layers, Dependency Injection, including into WCF.
+
+We'll be building a Car rental system that uses a Service Oriented Architecture. There are client entities and business entities, and we'll define why there should be the distinction.
+
+Data base and data access, writing the data access layer.
+
+WCF services and business engines, adding security, unit tests.
+
+Service hosting, and the line that business logic will be behind.
+
+Proxy layer, accessing the services, start of the client side.
+
+Web site using ASP .NET MVC, Angular, Bootstrap, Web API, etc.
+
+Desktop app using WPF.
+
+The author will write and describe in detail several key components that are representitive of the project, but not everything is written in front of you.
+
+## Demo of Service Oriented Application
+
+The key is to spot the patterns that work and add to cleanliness, ease to work with, and good experience.
+
+Author recommends Dot-notation for project and foldernaming, and that the file structure remains pretty flat. Abstractions and implementations should be in separate projects for unit testing and dependency injection.
+
+## SOA & Technology
+
+SOA systems are loosely coupled, using standards and protocols over network connections and exposes an API to use. The author sees SOA as the next step after Procedural Programming, Object oriented programming, and component oriented programming.
+
+SOAs should be easy for clients to use, and clients shouldn't have to know too much business logic in order to use the APIs. Nearly all business logic should be behind the service, and should serve as the single point of entry to the system.
+
+The service should handle faults, leave the system in a consistent state, be secure, and handle threading properly. Should otherwise be considered a blackbox.
+
+Sample diagram of a typical architecture using SOA
+
+The author will use WCF and Web API, where he doesn't see them as totally competing, but as two different tools that handle certain tasks well. This app will use SQL Server, Entity Framework (Code First), Managed Extensibility Framework (MEF), ASP .NET MVC, Angular JS, Bootstrap, WPF, and other libraries.
+
+## Architecture and Database
+
+Uses 4 tables, and tables created by Simple Membership.
+
+Two major use cases: customer and employee. Customers can reserve an available car for a set of dates, cancel an existing reservation, and view rental history. Employees can manage car inventory, rent a reserved car to customers, accept a returned car, and view customer information.
+
+Three major service divisions: Inventory service, rental service, and account service. These services manage the respective subsystems of the rental business. These services work with DI. The website uses Forms Authentication and the Desktop app uses Windows Auth since it is an intranet app. Authorization of access of data from user to user needs to be secured also, which is important to handle right.
+
+Diagram of the Architecture used in this project. Note that both the client and server sides of the architecture use Service Contracts, at the line of separation between client and server. Both have their own sets of Entities that are not passed through for passing-through's sake. The server side uses Data Repositories, Data Repositories Factories, and miscellaneous DTOs between SQL server and the Business Service Layer. This is the Data Access layer.
+
+Note that the architecture has points that sometimes skips layers, reaching around others. He describes the reason for this is to avoid "pass through" code, that for really simple calls, going through all the layers becomes tedious.
