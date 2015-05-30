@@ -18,9 +18,24 @@ Release It! - Michael Nygard
 
 #### Integration Points
 
+Basically when your system depends on interfacing or receiving data from another system. Integrations happen in the following ways, and have the following ways in which they can go bad.
+
+##### Socket-based protocols
+
+##### "The 5AM Problem" - Working against locked connections, firewalls, and TCP/IP
+
+##### Http Protocols
+
+##### Vendor API Libraries
+
+##### Countering these problems
+
+* Make your systems more robust using Circuit Breakers, decoupling middleware, and writing test harnesses for components that spit all kinds of nastiness at your system, and can impose load.
+* Packet sniffers and other network monitoring can be your best friend when things get hairy.
+
 #### Chain Reactions
 
-* when one worker (server, thread, connection, etc) goes down, is blocked, or experiences failure, the remaining workers must work harder to pick up the difference. This increased load can expaserbate latent problems in the rest of the workers, thus when one worker goes down, the others are more likely to go down as well.
+* When one worker (server, thread, connection, etc) goes down, is blocked, or experiences failure, the remaining workers must work harder to pick up the difference. This increased load can expaserbate latent problems in the rest of the workers, thus when one worker goes down, the others are more likely to go down as well.
 * Things like memory leaks, race conditions, unreleased resources, or deadlocks will become more apparent in chain reactions. Try to find these before they become big issues.
 * Chain Reactions can be defended against by using *Bulkheads*.
 
@@ -31,6 +46,16 @@ Release It! - Michael Nygard
 * Cascading Failures can be defended against by using *Circuit breakers* and *Timeouts*
 
 #### Users
+
+A number of issues originate from users interacting with your system.
+
+##### Traffic
+
+##### Expensive Users
+
+##### Unwanted Users
+
+##### Malicious Users
 
 #### Blocked Threads
 
