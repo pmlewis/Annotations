@@ -22,7 +22,13 @@ Basically when your system depends on interfacing or receiving data from another
 
 ##### Socket-based protocols
 
+* If working directly with sockets, be aware that connections may take (very) long to accept and establish a working connection. Quick refusals are far better than waiting forever, which can happen if you do not have timeouts in place. Be sure to watch socket connection values from whatever API you're using.
+* Synchronous connections always have the potential to block threads, make sure your UI won't lock up because of this.
+
 ##### "The 5AM Problem" - Working against locked connections, firewalls, and TCP/IP
+
+* The author presents an anecdote where he solved a site locking issue that involved connections that were for all intensive purposes dead and should have been closed, but because of interactions with firewalls and OS level socket timeout (which are very long) were kept open and unresponsive.
+* The solution involved setting up what was basically heartbeat pinging to clients at some interval, so live clients would reply to the ping, dead ones wouldn't, and the firewall's "last packet" time would be reset, keeping everything orderly.
 
 ##### Http Protocols
 
