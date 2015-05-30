@@ -48,3 +48,25 @@ Three major service divisions: Inventory service, rental service, and account se
 Diagram of the Architecture used in this project. Note that both the client and server sides of the architecture use Service Contracts, at the line of separation between client and server. Both have their own sets of Entities that are not passed through for passing-through's sake. The server side uses Data Repositories, Data Repositories Factories, and miscellaneous DTOs between SQL server and the Business Service Layer. This is the Data Access layer.
 
 Note that the architecture has points that sometimes skips layers, reaching around others. He describes the reason for this is to avoid "pass through" code, that for really simple calls, going through all the layers becomes tedious.
+
+## Entities & Core Functionality
+
+2 sets of entities, the business and client. They do not cross the client/server separation. They can travel up and down each layer on their side of the archetecture. Each set has their own realm of knowledge and duties that probably don't need to be present in both sides of the separation.
+
+We start with two projects CarRental.Business.Entities and CarRental.Client.Entities, and start with creating classes for `Car` on each side, where we use them as Data Contracts. Decorate the classes with `[DataContract]` and the properties with `[DataMember]`. Note that he decorates this only on the business entity, and the client uses full `get` and `set` on the class since the client will have more to do and will me more exposed and busy, but both do have property names that the other has to fulfill the data contract.
+
+The author shows a way around declaring DataContract namespaces by chaing the AssemblyInfo.cs file under `Properties` of the project. There is a declaration for `ContractNamespace` on the business side that you can copy/paste into the client side one, and then you have data contract equivalency.
+
+The author has a project `Core` that does not contain any business logic. It's code that can shared across projects, solutions, businesses, etc that are not particular to the app you're building. He has classes here called `EntityBase` and `IIdentifiableEntity`, which `Car` can implement, basically returning an Id.
+
+Business entities map to a db table. DAL can provide ORM mapping if needed.
+
+Client entities may leverage property change notification and dirty tracking. When a client class instance changes value, it can through properties notify others of the change, and UI, etc can update because of it.
+
+The author shows a way of avoiding inadvertently allowing a property changed event handler having multiple of the same handler being added.
+
+The author also shows a way of adding property changed events through Lambda expressions.
+
+The author also shows a way of using a Lambda expression to do an recursive object graph walk and grab and return all dirty values.
+
+
