@@ -26,12 +26,19 @@ Basically when your system depends on interfacing or receiving data from another
 
 ##### Http Protocols
 
+* Using protocols such as SOAP, XML-RPC, REST and using http clients
+* The same blocking and timeout problems with socket-based protocols happen here, since HTTP travels over sockets.
+* Need to account for endpoint security
+
 ##### Vendor API Libraries
+
+* Relying on libraries that are not open can mean having to rely on buggy, vulnerable, or just plain bad code that you don't control. Furthermore, reported issues may take forever to fix.
+* Could contain blocking code also, so be aware of performance changes.
 
 ##### Countering these problems
 
 * Make your systems more robust using Circuit Breakers, decoupling middleware, and writing test harnesses for components that spit all kinds of nastiness at your system, and can impose load.
-* Packet sniffers and other network monitoring can be your best friend when things get hairy.
+* Packet sniffers and other network monitoring can be your best friend when things get hairy. Digging into what is happening below the surface can be very revealing.
 
 #### Chain Reactions
 
@@ -51,11 +58,36 @@ A number of issues originate from users interacting with your system.
 
 ##### Traffic
 
+* More users means more traffic, where your system will be stressed. It should be able to handle your heaviest load, and be able to scale.
+* More users means more memory used on your servers, and machines with maxed out memory will behave more unpredictably.
+* Write code that will allow objects to be easily garbaged collected. Learn how to do this in your language of choice. The author describes methods useful for Java.
+* Given a enough people accessing your service, things that could happen in 1 in 10,000 times *will* happen.
+
 ##### Expensive Users
+
+* If you're in eCommerce, having users checkout tends to be the most expensive operations your system goes through. Things like page browsing and search results can be cached and therefore cheap.
+* If your system can be tested against its most expensive operations under load, then you can end up being in a good place for stability. The author says if you expect about a 2% conversion rate, then test between double to 5 times that amount. You could conceivably test at a 100% conversion rate, but *don't allocate prod resources according to that*. Your system will be far more expensive to maintain.
 
 ##### Unwanted Users
 
+* Screen scrapers, impolite robots, trying to find best prices, frequently requesting deep links in your site without sending cookies or caching.
+* Keep a robots.txt file on your site, robust enough to keep unwanted spiders away.
+* If you get into a problem of constant scraping of your site, you can try blocking them at the CDN level or at IP level through reverse DNS. You can also define a Terms of Service and when scrapers violate it, sic your lawyers at them, if you got enough firepower with them.
+* Don't try to be clever and "trap spiders". Remember that Search Engine will almost always have more bandwidth than you.
+
 ##### Malicious Users
+
+* There's script kiddies
+  + Common XSS and SQL Injection scripts on account creation and user input fields.
+  + Brute force password cracking
+  + DDoS using automated tools
+* And then there's the pros.
+  + APT with professional criminals and military/government forces.
+  + Attacks based on long, hard-to-detect observation of your system and precise or custom attacks.
+  + Attacks using a company insider,
+  + Professional penetration testers
+* Look for DDoS mitigation solutions from CDNs, network equipment, Web App firewalls.
+* Proper monitoring solutions, logging, and alerts on your system will at least let you get a jump on when obvious attacks begin.
 
 #### Blocked Threads
 
