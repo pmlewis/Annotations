@@ -97,6 +97,13 @@ A number of issues originate from users interacting with your system.
 
 #### Blocked Threads
 
+* Blocked threads can occur when the multiple requests are made to the same critical section and only one can be served at one time.
+* Hard to test in development since it is rare that dev serves as many requests to the app that will be served in prod, and that sometimes the system has to be hit in a very specific sequence to generate a blocking issue.
+* Use proven libraries when doing things like checking out connections, don't roll your own if you can.
+* Beware of synchronizing domain objects when multiple threads are live in your app, rethink design.
+* It may behoove you to test third-party libraries when unsure of its reliability under stress. Try hitting it with like 20 invocations in parallel and monitor any change in responsiveness. If the library breaks, you must take measures on your end to protect the library.
+* Timeouts will help if connections begin to hang.
+
 #### Attacks of Self denial
 * When your marketing creates an offer too good to pass up, it blows up online, and you can't handle the traffic coming in. Be sure to know when business wants to create a special offer, then if you can anticipate what resources or sections will be hardest hit, you can plan accordingly.
 * If you send out a special offer though email, only include links that lead to static landing pages for at least the first click
