@@ -200,12 +200,44 @@ A number of issues originate from users interacting with your system.
 ### Introducing Capacity
 ### Capacity Antipatterns
 #### Resource pool contention
-#### Excessive JSP fragments
+
+* Too many threads attempting to access a pool of too few connections will result in most of the threads waiting forever to get a connection, and everyone will hang.
+* Try to make as many connections as there are threads that can access the resource.
+* Remember to timeout/give up when connections are taking too long.
+
+#### Excessive JSP fragments - Java specific really
+
+* Don't use a class as content. Content should be able to be cached and objects in memory should be able to be garbage collected as necessary.
+
 #### AJAX Overkill
+
+* Remember the user when using AJAX. It should be clear what the app is doing and at least behave responsive. Little things matter, like still being intuitive to use and fall in line with how users normally use sites.
+* Constantly sending AJAX is a good way to bog down your servers, and drain mobile devices of power. Send requests when necessary, but not constantly.
+* If transmitting data, be as least verbose as you can. Prefer JSON to XML or sending straight HTML.
+* Remember AJAX should respect user sessions, you may need to send a session ID or cookie when making requests.
+
 #### Overstaying sessions
+
+* The author recommends clearing sessions after one standard deviation of "think time", the normal amount of time it takes your user to perform a next action. If you can make some of the users' results persistent, you should. Users don't expect their shopping carts to be cleared because of a timeout.
+* Keep keys in session, not objects.
+
 #### Wasted space in HTML
+
+* Minimize the whitespace you send over the wire to the client. Practice minification on JS, CSS, and HTML. Concatenation of JS and CSS can help also.
+* There is absolutely no reason nowadays to have "spacer images". Learn CSS foo.
+* Get rid of table-formatting for sites, CSS makes lives easier and servers happier.
+
 #### Reload Button
+
+* It's a problem if users on your site feel the need to click "reload" to make things work faster, since that is bad UX but also since it can cause more work on your server. 
+* Best way around this is to just keep your site fast.
+
 #### Handcrafted SQL
+
+* It should be a red-flag when developers have to start writing SQL by hand. Use ORMs when you can, and if something more is needed, talk with your DBA.
+* Developers may not have the same knowledge about the tuning your DB has which can result in some real inefficient queries. Devs may also write just plain bad monster queries, again, if substantial work is needed, get your DBA involved, or at least show it to him/her and see if they immediately laugh or reticule you.
+* If you are doing some substantial development that involves working with data and you don't have a realistic volume of data you can expect in prod, try to generate that much data, and see how you app performs then.
+
 #### Database eutrophication
 #### Integration Point Latency
 #### Cookie Monsters
