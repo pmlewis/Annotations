@@ -69,4 +69,16 @@ The author also shows a way of adding property changed events through Lambda exp
 
 The author also shows a way of using a Lambda expression to do an recursive object graph walk and grab and return all dirty values.
 
+For validation in the client objects, there can be a lot of framework specific implementations you can use, and your choice will be specific to the software the client objects will be used in. The author will go over a framework FluentValidation for the Desktop client of the system.
 
+Unit tests are present to test his property change notification, dirty tracking, and validation. The author use two different naming conventions for test names, one indicates a test just against a method, the other for a sequence of events, or larger behavior testing.
+
+## Data Access
+
+The author uses EF Code-first for ORM, Data repositories with DI, uses Repository Factory, Abstractfactory pattern. Also includes unit tests and data-transfer objects.
+
+Code First is a manual way of setting up your Entities, bypassing autogeneration. You control everything, but you have to set up everything. Context classes need a constructor that points to a connection, `DbSet<T>` properties for tables, and override `OnModelCreating` method, where you can use `DbModelBuilder` fluent-interface for the ORM.
+
+There tends to be one context class for each DB you'll use. There is one `DbSet<>` public property for each table.
+
+**Start again at the start of 'Setting up the ORM'**
