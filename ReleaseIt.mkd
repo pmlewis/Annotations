@@ -199,6 +199,7 @@ A number of issues originate from users interacting with your system.
 ### Trampled by your own customers
 ### Introducing Capacity
 ### Capacity Antipatterns
+
 #### Resource pool contention
 
 * Too many threads attempting to access a pool of too few connections will result in most of the threads waiting forever to get a connection, and everyone will hang.
@@ -239,6 +240,13 @@ A number of issues originate from users interacting with your system.
 * If you are doing some substantial development that involves working with data and you don't have a realistic volume of data you can expect in prod, try to generate that much data, and see how you app performs then.
 
 #### Database eutrophication
+
+* Basically, your DB's getting crusty, cluttered, filling up with crap.
+* While there's DB development happening, you should test your schemas with as close to prod data as possible, along side performance with your app code development. It may be useful when a green field project is going on to recommend to the DB what data appears frequently in your app code.
+* ORM tools and queries that ultimately live in code may beguile necessary indexing and performance tuning. For this and the above, DBA's should be involved and not removed from application development to make these changes when it is still easy to do so.
+* Keep an eye on amount of data stored in a table and how frequently it's used and partition/segment your tables accordingly.
+* Always move historical (old) data off of transactional servers and to reporting servers or data warehouses. If you're making old data available to users, look into multilevel storage.
+
 #### Integration Point Latency
 #### Cookie Monsters
 
