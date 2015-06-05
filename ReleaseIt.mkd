@@ -248,6 +248,10 @@ A number of issues originate from users interacting with your system.
 * Always move historical (old) data off of transactional servers and to reporting servers or data warehouses. If you're making old data available to users, look into multilevel storage.
 
 #### Integration Point Latency
+
+* Remember that any time your code goes out to another system, whether it is through DCOM, CORBA, web services, whatever, there will be latency and there will be additional failure modes that don't happen otherwise. Going remote has speed and dependency costs. The less chatty you are over a network, the better.
+* Remember not to block your threads when you go I/O.
+
 #### Cookie Monsters
 
 ### Capacity Patterns
