@@ -254,6 +254,11 @@ A number of issues originate from users interacting with your system.
 
 #### Cookie Monsters
 
+* Keep your cookies small, try to use it only for session tracking. If you're going to try to do something more with it, keep it limited and think if there are other ways you can implement the same thing.
+* Remember that cookies are passed back and forth from client to server through a http header. Clients can change that value at will, and send it back to your server. This can present security issues. Always make sure the server validates the session.
+* The larger your cookies are, the more bandwidth you use, and the more your server, and your client, need to parse.
+* Don't send serialized objects as cookies, if you need to sent or get objects, do it through a real web API.
+
 ### Capacity Patterns
   * Tiny, opaque, and questionable code optimizations at the expense of code clarity will never pay off. Real optimization comes with design change, since good design recognizes both clarity and efficiency. 
 
