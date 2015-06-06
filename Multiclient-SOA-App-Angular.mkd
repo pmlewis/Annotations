@@ -81,4 +81,12 @@ Code First is a manual way of setting up your Entities, bypassing autogeneration
 
 There tends to be one context class for each DB you'll use. There is one `DbSet<>` public property for each table.
 
-**Start again at the start of 'Setting up the ORM'**
+Using `protected override void OnModelCreating(DbModelBuilder modelBuilder){...}`, you can remove the `PluralizingTableNameConvention` and ignore `ExtensionDataObject` and `IIdentifiableEntity`, so you can manually specify the table names and model names.
+
+You then specify the mapping using `modelBuilder.Entity<YourModel>.HasKey<int>(e => e.Id).Ignore(e => e.EntityId)` and so forth. Use the `Ignore` to say a property is not found in a column from the corresponding table in the database.
+
+Try to keep database specific data, like actual table names, out of the DataContext class, there's a practice the author will show.
+
+Data Repositories - one data repository per table - using Linq-to-Entities. Going to define a pattern for CRUD, with methods defined through an interface. Repositories will be exported through MEF for testing. There is a interface for the standard CRUD, but then there will be additional methods for specific repositories that have their own separate interfaces they also implement.
+
+The author shows examples of the interfaces and inherited classes of the data repositories, check this out again.
