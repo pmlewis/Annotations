@@ -90,3 +90,7 @@ Try to keep database specific data, like actual table names, out of the DataCont
 Data Repositories - one data repository per table - using Linq-to-Entities. Going to define a pattern for CRUD, with methods defined through an interface. Repositories will be exported through MEF for testing. There is a interface for the standard CRUD, but then there will be additional methods for specific repositories that have their own separate interfaces they also implement.
 
 The author shows examples of the interfaces and inherited classes of the data repositories, check this out again.
+
+Data Repositories encapsilate functionality from a table, or a number of joined tables but have one table as a central table.
+
+Finish watching Custom methods and repository interface with DI setup
