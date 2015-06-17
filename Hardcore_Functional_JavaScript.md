@@ -39,6 +39,14 @@ Try to find the source and work through the example. https://github.com/DrBoolea
 
 Hint: recognize libs that do currying for you
 
+#### Compose, hints, and solutions
+
+Like mathematical composion of functions. Again, check the above github repo for the code to try and to solve.
+
+#### Point-Free code
+
+Points refer to arguments being passed from one function call to another within a function. The idea behind Point-Free is in being able to not reference arguments to functions directly, writing it where you use function composition and currying instead of declaring additional variables.
+
 ## The Voyage
 
 ## The Demo
