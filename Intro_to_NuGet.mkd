@@ -1,0 +1,23 @@
+# Intro to NuGet
+
+NuGet is used to manage third-party libraries, and is similar to Ivy for Java and RubyGems for Ruby apps. The NuGet Gallery hosts many publicly available NuGet packages, and you can install NuGet from here if you wish. MyGet is a hosting service for NuGet feeds and Chocolatey is an app for installing machine dependencies and programs, and NuGet Package Explorer lets you explore NuGet packages.
+
+NuGet is probably already installed alongside Visual Studio for you. If not, look up online how to install it for your version.
+
+The author shows how to upgrade a currently installed NuGet reference in a basic MVC project. Right click your project, select Manage NuGet Packages. If you search for your already installed package, and install a newer version, it should upgrade for you.
+
+You can also go to the Package Manager Console, which is basically PowerShell. Check out the Package Manger Console reference page for commands you can run. `Install-Package` lets you install packages, and you can pass it a number of options. After you install packages, your local code will contain a `packages` directory that contains all the NuGet packages. In your Project directory, there is a file `packages.config`, which is XML with all the packages installed and stores things like version attributes.
+
+NuGet packages are found from Package Sources. The default source is the offical NuGet package Source. A Package source can be as simple as a directory that contains NuGet packages. If you can reference the directory, it can be a source/feed. `Get-Package` can be used to list what packages are available.
+
+## Hosting your own NuGet Feed
+
+Local directories are good and all, but its not oData-capable, meaning you can use LINQ to query it, and you can't use tools to publish/push packages, and you can't use the NuGet Gallery.
+
+Standing up a NuGet.Server feed. Install an empty ASP.Net web app. Install through the package console the nuget.server package. There's a directory in here called Packages which holds the packages you wish to host. Run the app and you should have the server running. Starting the app should bring you to a default web page that has a basic how-to on working with the server, adding it as a repository and pushing packages to it.
+
+To work programatically with your NuGet server, you need to set up an API key to allow authorized commands to run. You can go to the Web.config of the NuGet server, under `<appSettings>`, add an element `<add key="apiKey" value="SECRETKEY">`, and now you can use that API key in commands. You can push using  `nuget.exe push YourPackage.1.1.0.nupkg -s http://yourserver:8888/ SECRETKEY`. You can also delete packages from a server using `nuget.exe`.
+
+If you want, you can actually download and host your own version of NuGet Gallery, so you have all the functionality it provides. By default, when it first runs, it creates a SqlExpress database for the packages it will host.First, create an Account for yourself when the app is running. This can send an email to you once you create the account, but locally, an email server is probably not config'd, so it'll store the email locally. Fetch it. Open it, and click the link to complete registration. Log on, go to your account, and itll list your API key, and you can upload a package from there.
+
+You can add your copy of NuGet Gallery as a source/feed by basically copying the URL of the offical NuGet Gallery, and replacing the domain name with the domain your app is living, leaving the path alone.
