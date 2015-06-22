@@ -10,6 +10,34 @@ You can also go to the Package Manager Console, which is basically PowerShell. C
 
 NuGet packages are found from Package Sources. The default source is the offical NuGet package Source. A Package source can be as simple as a directory that contains NuGet packages. If you can reference the directory, it can be a source/feed. `Get-Package` can be used to list what packages are available.
 
+## Creating packages
+
+A Nuget package is simply files plus some metadata, like Ids, descriptions, dependencies, license info, etc.
+
+Protip: You can use LINQPad to query nuget feeds.
+
+NuGet Package Explorer can help with creating Package MetaData, defining contents, and building the package. Go download and install it, it doesn't come with NuGet. You can open up locally installed NuGet packages to poke around and see what come packages look like. You can do "Edit" > "Edit package metadata" to edit metadata. Or if you want, you can simply unzip a .nupkg file and see the contents, the package itself is just zipped.
+
+Through Package Explorer, you can select "Create new package", drop in files, and edit metadata, then save. This should create the new .nupkg file, where you can serve it as you will.
+
+You can specify where in your project the content of your nuget packages should be added to when you add the NuGet package. In Package Explorer, you will want to add a `content` folder by going to "Content" > "Add" > "Content folder". Once there's a content folder in your Package contents, add a directory structure that mirrors that of how you want the content to be organized in your project, i.e. if you are adding a .js file and a .css file and you want these to be in `scripts/` and `styles/` respectively in your project, create both a `scripts/` and `styles/` under `content` and then add your .js and .css files to those.
+
+NuGet packages handle cascading dependencies on other NuGet packages. To create a package with dependencies, you can depend on the top most dependency. In Package Explorer, when you edit metadata, there's a section to dependencies, where to add a dependency, you specify a package that's available through a NuGet feed. After that, when you finish creating the package and add it, it will pull in your dependency chain.
+
+You can also open Packages from feeds from Package Explorer. "Official" Packages or widely available packages may contain a `lib` content, similar to `content`, but `lib` can have artifacts for, say, different versions of .NET. IE, try opening the package for `log4net`. You can also specify in `content` a `web.config.transform` that will add to existing web.configs.
+
+## Publishing NuGet Packages
+
+You can publish through NuGet Gallery, NuGet Package Explorer, and `nuget.exe`. To publish to NuGet Gallery, you need to add an account to the instance of NuGet Gallery. After you do that, find your API on your account, you'll need it to push. There should be links on Gallery to help with publishing, or with a web page interface for uploading.
+
+To publish through Package Explorer, go to "file" > "publish".
+
+You can mark packages as *hidden* and *unlisted* on Gallery, but you can't actually delete uploaded packages. Check twice, push once.
+
+`nuget.exe` is similar to Package Explorer, but runs from the command line. If you want, you can actually copy files out of NuGet packages and paste then elsewhere useful. Run `nuget.exe help` for a short list of commands available, including `install`, `pack`, `setApiKey`, `publish`, and `push`. If you're pushing, and running into version conflicts, go into the package metadata, and update the version there, then try pushing again.
+
+`nuget.exe` has a `delete` command, but if you try that against Gallery, it won't work.
+
 ## Hosting your own NuGet Feed
 
 Local directories are good and all, but its not oData-capable, meaning you can use LINQ to query it, and you can't use tools to publish/push packages, and you can't use the NuGet Gallery.
