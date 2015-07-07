@@ -49,4 +49,18 @@ Points refer to arguments being passed from one function call to another within 
 
 ## The Voyage
 
+*Category Theory* - To use Categories, you need to have a composition identity and an id identity, meaning a value with id is equal to itself, and two functions composed must take the same input and generate the same output if they were not composed. There are Category Laws that can be followed if you use Category Theory.
+
+So what about null checks, callbacks, error handling, etc? Let\'s think of Objects as Containers/Wrappers for values, that have no methods, are not nouns, and that you\'ll not be creating your own very often. Containers hold a value, that's it, like an object with a property called `val` and you pass a value into a `new Container()` constructor.
+
+*Drop in the code defining Container, _Container, Container.prototype.map, and compose using Containers*
+
+You can then have functions that operate on Containers. For example, `map()` on a Container takes a function, and `map` passes the Container's val into the argument function, executes it, throws the output into a new Container, and returns the new Container. Basically, with Containers, you can chain `map`s and chain output from functions. We also introduce `map(f, obj)` as the same as `Container.map(f)`.
+
+### Functors
+
+Hah, you've been learning about Functors all along! Functors are objects or data structures you can map over. But what about null checks? Meet the **"Maybe" functor**. "Maybe" functors are a Container that when calling `map`, if the val is truthy, it executes the mapped function and returns a Maybe functor, else it will return a Maybe functor with "null" as the returned Maybe functors value.
+
+*Drop in the code defining Maybes, _Maybes, Maybe.prototype.map, and compose using Maybes*
+
 ## The Demo
