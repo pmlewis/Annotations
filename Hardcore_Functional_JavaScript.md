@@ -7,7 +7,7 @@ It helps going into this understanding `map`, `reduce`, JavaScript's notion of `
 
 ## The Silence
 
-To write functional code, you must exercise restraint, since a lot of times, "Why couldn't I just do ___, like use `go to`" leads to "Why is the code breaking all the time".
+To write functional code, you must exercise restraint, since a lot of times, "Why couldn't I just do blank, like use `go to`" leads to "Why is the code breaking all the time".
 
 Symptoms of code that can be improved with functional techniques
 * custom names - loops with names
@@ -62,5 +62,7 @@ You can then have functions that operate on Containers. For example, `map()` on 
 Hah, you've been learning about Functors all along! Functors are objects or data structures you can map over. But what about null checks? Meet the **"Maybe" functor**. "Maybe" functors are a Container that when calling `map`, if the val is truthy, it executes the mapped function and returns a Maybe functor, else it will return a Maybe functor with "null" as the returned Maybe functors value.
 
 *Drop in the code defining Maybes, _Maybes, Maybe.prototype.map, and compose using Maybes*
+
+Also, Containers are actually referred to as the Identity functor.
 
 ## The Demo
