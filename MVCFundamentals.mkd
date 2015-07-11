@@ -1,0 +1,17 @@
+# ASP.NET MVC Fundamentals - Scott Allen
+
+Some history - next generation of Microsoft's web app programming framework, after Web Forms. Web Forms does not really leverage the Model/View/Controller design pattern like most other popular web app frameworks in other languages.
+
+MVC still runs on the ASP.NET runtime, so you can still use your knowledge of ASP, like caching, modules, masterpages, handlers, sessions, etc, but MVC is far more transparent than WebForms. MVC embraces the Web, where Web Forms abstracts away the web, and MVC lends itself far more for testing. Note that controllers themselves are not supposed to hold any state, state should belong to the model, and the model shouldn't hold anything much more than that.
+
+Note that the version of MVC covered here uses .aspx pages for views, and they look quite a bit like Web Forms still, the Razor view engine hasn't been introduced yet.
+
+`System.Web.Routing`, while present in .NET 3.5, is now used to handle sending Http requests to the right controller, where you specify the patterns acceptable for your controller. Your `Global.asax.cs` file defines a method `RegisterRoutes` that handles ignoring routes and mapping routes for you controllers, etc, and also it the point of Application_Start.
+
+Your default route is your catch-all route, that if you request a path that isn't specified elsewhere, MVC will route you to the default.
+
+Controllers inherit from `Controller`, which implements `IController`, which MVC really looks for. For each public method of your controller, you can return whatever you'd like, but more often, you'll return an `ActionResult` or something that is a child of `ActionResult`, through calling `return View()`. Controllers always have `Controller` at the end of its class name.
+
+Always remember to Html.encode data if you're displaying it directly in your form, don't let XSS slip in.
+
+Views can use View Helpers to help build snippets of html from model data, like Html helpers, AjaxHelpers, and UrlHelpers
