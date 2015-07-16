@@ -1,0 +1,13 @@
+# Mocking with Moq
+
+For use with .NET 3.5 or higher. Get started with Moq by installing the NuGet package to your project.
+
+## Test Doubles
+
+Test doubles helps with testing code that is complex, coupled to other classes, or accesses external resoures. Using test doubles can help abstract away dependent classes so you can have repeatable deterministic unit tests.
+
+## Hand rolled mock objects
+
+To hand roll objects, they, and dependent classes, need to implement interfaces that you can make specific for your unit tests to give you repeatable outcomes.
+
+Doing handrolling means you have complete control over your mocks, you don't have to learn any new frameworks. On the other hand, manually handling mocks means when your mock object grows or changes, you'll have to spend time manually updating it to make sure the tests don't break.
