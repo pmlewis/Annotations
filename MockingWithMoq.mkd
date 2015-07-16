@@ -11,3 +11,9 @@ Test doubles helps with testing code that is complex, coupled to other classes, 
 To hand roll objects, they, and dependent classes, need to implement interfaces that you can make specific for your unit tests to give you repeatable outcomes.
 
 Doing handrolling means you have complete control over your mocks, you don't have to learn any new frameworks. On the other hand, manually handling mocks means when your mock object grows or changes, you'll have to spend time manually updating it to make sure the tests don't break.
+
+## Using Moq
+
+Moq uses the AAA pattern for mock objects, and the objects get passed to the System Under Test (SUT). Mock objects are created like `var myobj = new Mock<IMyObjectInterface>();` The mock object then gets passed into creating your object, like dependency injection. After you create, you setup, and all set up in Moq is done using Lambda expressions. Look more into this.
+
+After setup up, you do your logic that you need to test, then after, you verify that your test completed. Use something like the `VerifyAll()` method on the mock object you create.
