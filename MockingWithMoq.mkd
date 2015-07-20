@@ -47,4 +47,16 @@ You can mock your objects to throw exceptions when evoked to test flow, can mock
 
 To verify properties, you can use `.VerifySet()` and `.VerifyGet()` and then configure with lambdas. You can also stub properties so that they return different values when called, using `.SetupProperty()`. Moq can also raise events with `.Raise()`
 
+## Advance mocking
+
+Strict vs Loose Mocking - Strict means an exception is raised whenever anything acts on a mock object and we don't define an expectation. Loose will allow this and return default values. Loose is default behavior in Moq. To use strict, in the constructor of your mock object, pass in the value `MockBehavior.Strict`.
+
+Base Class implementations / "Partial Mocks" - allows an implementation for a base object, like those in the `System.` namespace
+
+Recursive mocking - complex types as members of mock objects should also get mocked by the framework.
+
+Centralizing Mock creation - use a MockRepository. You can create a MockRepository with some startup settings, then use the MockRepository to create your many mock objects. After your do your actions, you can call `mockRepository.VerifyAll()` to verify all mocks created with the repository.
+
+Protected members - you can create a mock object using `new Mock<ConcreteClass>()` and then call `.Protected()` on the mock object before you do any Setup. For Setup, use `ItExpr` instead of calling `It`. At the end of your Setup chain, you need to have `.Verifiable()`.
+
 
