@@ -14,6 +14,37 @@ Doing handrolling means you have complete control over your mocks, you don't hav
 
 ## Using Moq
 
-Moq uses the AAA pattern for mock objects, and the objects get passed to the System Under Test (SUT). Mock objects are created like `var myobj = new Mock<IMyObjectInterface>();` The mock object then gets passed into creating your object, like dependency injection. After you create, you setup, and all set up in Moq is done using Lambda expressions. Look more into this.
+Moq uses the AAA pattern for mock objects, and the objects get passed to the System Under Test (SUT). Mock objects are created like `var myobj = new Mock<IMyObjectInterface>();` The mock object then gets passed into creating your object, like dependency injection. After you create, you setup, and all set up in Moq is done using Lambda expressions, including specifying what should be called upon our mock objects. Look more into this.
 
-After setup up, you do your logic that you need to test, then after, you verify that your test completed. Use something like the `VerifyAll()` method on the mock object you create.
+After setup up, you do your logic that you need to test, then after, you verify that your test completed. Use something like the `VerifyAll()` method on the mock object you create. If you're passing a Mock into a constructor that is looking for a specific type, try using the `.Object` property of the mock to work.
+
+You can set up mock objects with "return values", in the case your mock object returns a value from a method call, uses out parameters, or uses ref parameters. By default, return values from mock objects are the default value for the type it returns, or null if it returns a complex type. You can set up the Linq for this by something like
+
+```
+mockAddressBuilder
+    .Setup(x => x.From(It.IsAny<CustomerToCreateDto>()))
+    .Returns(() => new Address());
+```
+
+that says set up the mockAddressBuilder so that when its `From` method is called with any CustomerToCreateDto object as a parameter, instead of returning null, return a new Address.
+
+For setting up out parameters, you can do something like
+
+```
+var mailingAddress = new MailingAddress {Country = "Canada"};
+mockMailingAddressFactory
+    .Setup(x => x.TryParse(It.IsAny<string>(), out mailingAddress))
+    .Returns(true);
+```
+
+Your out parameter is the object you have defined.
+
+For multiple calls, you can set up callbacks to return programatic values, like increasing Id numbers.
+
+*Go back to Arguments and Execution flow*
+
+You can mock your objects to throw exceptions when evoked to test flow, can mock property getters/setters, and can mock recursively.
+
+To verify properties, you can use `.VerifySet()` and `.VerifyGet()` and then configure with lambdas. You can also stub properties so that they return different values when called, using `.SetupProperty()`. Moq can also raise events with `.Raise()`
+
+
