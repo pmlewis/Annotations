@@ -1,3 +1,15 @@
 # Intro to Sitefinity
 
 ASP .NET CMS for building web sites, has pluggable modules to extend functionality.
+
+## The Architecture of Sitefinity
+
+Sitefinity offers built in support for things like security, localization, search, automation, notifications, and synchronization.
+
+Sitefinity has a concept of a Page that is composed of Appearance and Functionality structures. Appearances are built of templates and themese. Functionality controls are broken into Widgets and Modules, where users see the widgets on the rendered page and work with modules connected to infrastructure. Sitefintity uses Data Providers that work off of things like databases or static content files, and devs can implement new Data Providers to work with different data stores. Many services are offered through REST APIs to make integrations easier.
+
+Sitefinity leverages Master pages for Templates and themes are collections of CSS, JavaScript, et al.. files. 
+
+Sitefintity uses OpenAccess as its ORM.
+
+Devs can use a Fluent API for developing against Sitefinity.
