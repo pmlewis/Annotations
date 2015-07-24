@@ -13,3 +13,23 @@ Sitefinity leverages Master pages for Templates and themes are collections of CS
 Sitefintity uses OpenAccess as its ORM.
 
 Devs can use a Fluent API for developing against Sitefinity.
+
+There is a provider model for sitefinity data storage. User Interfaces use a Manager, and Managers uses Providers. Providers interact with the data storage. You can write your own Provider in case you want to use a data storage system that doesn't yet have a Sitefinity Provider.
+
+The CMS can expose web services for you, leveraging RESTful APIs written in WCF.
+
+## How Sitefinity Works
+
+This section contains an overview of the backend and describes the interactions between Sitefinity's architectural constructs.
+
+### Overview of backend
+
+The author says his simple example web app runs in the web server that comes with Sitefinity, not IIS. It is based on Microsoft's Cassini. To enter the administrative pages, add `/sitefinity` to the end of your home url and get.
+
+One of the top tabs on the default dashboard page is `Content` where you can manage content. `Ecommerce` can let you manage products. `Design` lets you work with page templates, widget templates, and responsive design elements. Sitefinity also comes with Google Analytics baked in, check out the `Marketing` tag. `Email Campaigns` lets you manage email campaigns(!).
+
+### Content Interactions
+
+There is a WYSIWYG editor for creating new content pages. You can select from here which CSS and JS files you'd like to include on the page. It also comes with controls for users, user profiles, account creation, search, and tagging. The inline content editor lets users just create content directly from the editor (the style controls can be restricted to prevent a style disaster).
+
+It's pretty straightforward to create new pages and specify templates, content, layout, etc.
