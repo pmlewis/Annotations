@@ -33,3 +33,29 @@ One of the top tabs on the default dashboard page is `Content` where you can man
 There is a WYSIWYG editor for creating new content pages. You can select from here which CSS and JS files you'd like to include on the page. It also comes with controls for users, user profiles, account creation, search, and tagging. The inline content editor lets users just create content directly from the editor (the style controls can be restricted to prevent a style disaster).
 
 It's pretty straightforward to create new pages and specify templates, content, layout, etc.
+
+### Layout interactions
+
+Sitefinity comes with some preloaded layout templates you can use with your pages. These can be found under 'Design'. You can also create and design new templates from the console GUI. When creating a new template, you can start editing off of a pre-existing template. You have to choose whether or not it is a WebForms, MVC, or Hybrid widgets capable page.
+
+You can include widgets as part of the design of the template, which may be content blocks, images, etc.
+
+### Content Modules
+
+There are a number of content 'items' that sitefinity is aware of, where you can create additional content independent of the widget that may display the content. The console gives you a form to more or less fill in the content of each section of content necessary for the item. Here, you can also define multiple URLs for each content item you create. You can specify publish and unpublish dates for your content items. Be sure though that you have a page that uses the widget to display your content items you create.
+
+### Images and Videos
+
+You can upload your own images or select images that are stored in sitefinity libraries of images. You can edit images that are already uploaded and also change images so that any image link that resolved to one image can point to another without breakage.
+
+You can upload videos in much the same way, but be sure to dive into settings, and adjust allowed file extensions so that it is comma delimited with your dot file names you want to be able to upload.
+
+### Responsive design
+
+When editing pages / templates, you can click on "Preview for smartphones and tablets", and under 'Design' you can see a section for responsive design. You can define groups of rules that will apply to each device group (grouped by width). There are some options for "Transform the layout" to transform a layout on the fly, or you can redirect to basically a separate mobile site. You can upload specific CSS files to be loaded at specific widths. Sitefinity gives you a GUI for defining what happens to template rows and groups as the browser window resizes.
+
+## Creating a new site, pages, and templates
+
+To create a new site locally, you need to download Sitefinity Project Manager, start it up on your machine, follow instructions to create a new project, add a license, connect it to your choice of databases, and add an admin account.
+
+While creating pages, you can specify some SEO properties and things like indexing, SSL, script parameters, multiple Urls, and caching. Remember that pages are sets of data in sitefinity-made data tables, not actual files.
