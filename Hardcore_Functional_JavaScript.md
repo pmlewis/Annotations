@@ -66,3 +66,5 @@ Hah, you've been learning about Functors all along! Functors are objects or data
 Also, Containers are actually referred to as the Identity functor.
 
 ## The Demo
+
+Try finding the demos/exercises for this part of the course. Try looking at jsbin.com/kamak.
