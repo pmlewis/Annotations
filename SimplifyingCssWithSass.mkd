@@ -1,0 +1,25 @@
+# Simplifying CSS in Visual Studio with Sass
+
+## Sass Fundamentals
+
+**Variables** - declare variables using syntax `$store-stuff-in-me: #fff`. Variables can hold values used in a rule. A variable is not the rule itself. Protip: ctrl-f5 in IE to force a refresh without cache?
+
+**Mixins** - let's you "mix in" a set of properties and values. Syntax like `@mixin mixin-name() { /* props */ }`. Reference and use mixins like `.some-class { @include mixin-name; /* more rules */ }`. Mixins can receive parameters through your braces that replace variables in the mixin definition. Nice for vendor prefixes, button styles across different sizes.
+
+**Nested rules** - You can declare rules within rules, and will, on compilation, generate rules using ancestor selectors. Stick to 3 to 4 layers of nesting.
+
+**Multiple style files, merged into one on compilation** - Naming a `.sccs` file with a leading underscore will not generate a matching `.css` file on compilation. Use the import directive in another `.scss` file to merge the contents of the underscored file in. Syntax like `@import '_variables.scss';`. Useful for separating mixins, maybe variables, helps keep your styles DRY.
+
+**Sass Inheritance** - got html like...
+
+```
+<div class="btn btn-yes">Yes</div>
+<div class="btn btn-no">No</div>
+<div class="btn btn-maybe">Maybe</div>
+```
+
+Sass inheritance lets you easily reduce the two needed classes on each line to one. In a Sass file, you can `@extend` already existing classes (Sass documentation says this actually includes any selector.) This can be tricky though, basically, *any rule* that may apply in case of one class will also apply to the extended class as well. The end result will have any extendee selector copied to the rules of the extended selector(s).
+
+**Comments** - `/* This style */` will show in compiled CSS files. `//This style` will get filtered out through compilation.
+
+**Error and debug messages** - the Sass compiler will generate messaging in case of things like missing params in mixins, use of undeclared variables, and may refuse to compile. You can also include `@debug`, `@warn`, `@error` directives along with `if` directives to emit custom debug logging that will be shown as build output.
