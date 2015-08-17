@@ -1,0 +1,153 @@
+# Ethical Hacking: Sql Injection - Troy Hunt
+
+Injections are very easy to discover, very prevalent, very easy to exploit, and can have a severe impact on your system, hence, it is the number one attack on the OWASP Top Ten. Generally, the attacker sends a specially formatted request to a web app, where part of that request is included in a db query. The query contains the "payload" which interacts with the DB system in unintended ways. The impact of the payload is constrained by the credentials and permissions of the user the web app uses to connect to the DB.
+
+## Understanding Sql Queries
+
+Case differences are a result of data colation. The author covers simple SQL select queries using wildcard (\*), where causes, order by causes, equality. Simple update queries using "update ... set... where". Simple insert using "insert into ... values...". Sql statements can (should) use termination with semicolons, but are not necessary. A statement can complete with just a space before the new query.
+
+Comments use `--` at the start of the comment and comment all the way to a new line, and can also use `/* ... */` for multiline comments. Comments are a way your injection can be crafted to ignore parts of the query that are beyond your control.
+
+Injection can happen from hitting URLs that contain parameters, or otherwise reads from the URL. For example, if the web app reads an id from a URL and drops the id into a query using string concatentation, your URL could be formatted so that there's a malicious query parameter after the id.
+
+Even if your payload doesn't do want you intend it to do, error messages that come back can help you refine your payload by slowly leaking information.
+
+## The Mechanics of Sql Injection
+
+### Types of injection
+
+**Error based** - First and simplest. See what errors come back, take it from there. Can test with a single character in the case of having a URL with a query parameter that is fed into the query, single quote. Single quotes are string delimiters in SQL, so having an unclosed SQL string can generate a SQL exception. 
+
+Note that this technique can work regardless of HTTP method used. If that works, then you can add additional conditions to the WHERE clause, and drop a `--` at the end of it. Try using a condition that is always true in the case of selecting by id to grab every item, or simply dropping `--` to negate everything else in the query.
+
+**Union** - Injecting an additional query and getting multiple result sets back.
+
+**Blind** - When neither error based nor union works, basically asking "yes" or "no" queries, or altering run time on a query and measuring that.
+
+### Modifying Data
+
+Dropping a single quote semicolon can let you then execute additional lines that can update, insert, maybe even drop and create. Remember to add your double dashes at the end.
+
+### Risks in code
+
+Beware of string concatentation of directly executed queries, note a lack of passing in values in procs with parameters, note a lack of input validation and scrubbing before hitting the DB. Consider whitelisting allowed values/characters and/or regex.
+
+A list of characters to check for can include
+
+```
+' " * / \ - -- = % # @ @@ ; + ? | . : [a-zA-Z] [d]
+```
+
+## Discovering Schema and Extracting Data
+
+### Understanding Union
+
+`Union` operators in SQL merge two result sets into one. Plain `union` can merge two result sets if they have the same number of columns, of the same data types. To do parameter number speculation and type speculation, you can pass in something like `select 1,1 ....` or `select 1,1,1 ...` or `select `1, '1' ...` and if things don't blow up, you know your parameter amount and types.
+
+### Schema discoverery
+
+You can manually discover database objects by using an equivalency condition and a sub-select with error based discovery if the messaging tells you whether or not the object exists, or type conversion failed, or too many rows are returned, etc.
+
+A better use of your time would be querying system tables, like `sys.tables` or `sys.columns` in SQL Server and coaxing this out into your output. Couple queries from `sys.columns` using a where including `object_id` which should be table ids to get the list of columns in a table.
+
+If you're working with a limited amount of messaging, you can use a sub-query technique for enumerating, say, tables with a query like
+
+```
+select top 1 name from (select top 4 /* this number changes */ name from sys.tables order by name) t order by name desc
+```
+
+to go through each one one by one. Beware though that issues may occur with this that have to do with how the column data is indexed and typed. You may need to tweak the query based on your poking. The more you can learn out of band about the server implementation you are working with, the better you can extract information during attack.
+
+## Blind Sql Injection
+
+Error based attacks need to echo out internal exception messaging. Union attacks need to have the query able to accept the union operator and the app needs a way to display result sets. If neither of these are available, you can use blind injection. You need a command that can be executed on the database by the attacker. If you can get a generic "Something bad happened" web page, you might be heading on the right track. Try to guess what the query might look like if you saw the source and work from there. If you can put something in and the app doesn't blow up, you can start getting somewhere.
+
+**Boolean questions** - This is the point where you can "ask yes or no questions" with your query. Lump "questions" together with `case when ... then ... else ... end` statements to make poking go faster and more complex. In the author's example app, the answers to the "yes or no questions" are the order of cars, where you specify the order by column in certain conditions.
+
+For enumerating table names, you can enumerate by ASCII values, where you can specify ranges of the first character in a table name. Traverse the ASCII values logirhythmically while converting the character to lowercase, then to ascii. Doing this by hand will take forever so in practice, you'll want to automate this.
+
+**Time based** - Resort to this when you can't coax a visual response back from the UI. You want to use the `waitfor delay` command as a part of the query, where you can specify an amount of time for the query to sleep during execution.
+
+The example context the author uses for example is in a request submitting a vote to a web app on a button click. You can use Fiddler to view/edit/resubmit the POST made to the server. You can edit the POST body to include our injection payload. This too can be laborious, and too can be automated.
+
+## Advanced Injection Concepts
+
+### Syntax differences
+
+SQL statements may be written differently across RDBMS's. For example, selecting the first N number of rows is different from SQL Server to MySQL. Check out [troels.arvin.dk/db/rdbms] for a list of differences, or google something like "lists of SQL differences". SQL can also differ across different versions of the same series of an RDBMS. Beware even if the web app could be using something other than a RDBMS, where SQL is an invalid query language. Injection could still be a possibility, but you'll want to use the language the data store uses.
+
+### Account Identity and Rights
+
+Similar to querying the system objects for table names and column names, you can attempt to query system objects or execute policy statements to learn the logged in user, the permissions and roles the user has, etc.
+
+### Enumerating other databases on the system
+
+Look up the system objects for querying for actual databases on a server. You can use similar techniques as above, but note you may run into collation issues. Learn to use the `collate` operator in your query to get around this.
+
+### Creating Database Logins
+
+Beware that newer systems have better defenses for stopping this, but the author demonstrates this using a local db that doesn't have this. Learn to use the `alter` command for pretty much administering the server.
+
+### Sql Server Passwords
+
+SQL Server passwords should be stored as hashes but PWDCOMPARE can be used to find null or empty passwords.
+
+*Check out OPENROWSET for exfiltrating data from old and busted versions of SQL Server, or if access to that command has been enabled.*
+
+### Executing commands on the OS
+
+SQL Server allows queries a means to run cmd commands through `xp_cmdshell`, but must be enabled on modern versions of SQL Server. Pass in your cmd as a string to `exec xp_cmdshell`.
+
+## Defending against attacks
+
+### Proper error handling
+
+**Yellow screen of death?** Enable custom error page to reduce the amount of messaging and error/implementation leakage.
+
+**No server side validation of user supplied data?** Validate before passing to the DB. Consider using a whitelist, but be aware of maintanance needed. Consider regex, but be aware that poorly written regex could be overly/underly restrictive. Be cautious of using blacklists, as this is a reactive approach to security, and we really want proactive security.
+
+**Building manual queries in code using string concantenation?** Use parameterization. If you need to build a dynamic query from code, your string will something like `select * from mytable where date = @userdate`, and then pass in a value for `@userdate`.
+
+Consider using stored procedures if you can, let your DBAs write SQL and let your devs write app code. Beware though that stored procedures can still be vulnerable to SQL injection if you're building queries through string concatenation.
+
+**ORMs** - Using something like EF and Lambda queries can help you fall into the pit of success, where it is not full-proof, but helps by generating parameterized queries for you.
+
+**Principle of Least Privilege** - Administrative philosophy where logins are given ***only*** the previledges they need to complete the task at hand. Great for security. Consider a whitelist approach to permissions and make them granular. Least privilege leads itself to having handfuls of logins for different purposes or projects.
+
+**Isolate the DB network segment** - Web apps should have to go though firewalls to access the db, shouldn't be open to connections from just anywhere. Consider having a web service layer on the db, where the web app never talks to the db, only the web service that is on the same segment as the db, but be aware this can be clunky and add complexity that blows up the cost of implementing and runnning it.
+
+**Using an Intrusion detection system or a web application firewall** - these are products you can stand up for your system to help keep you secure and alert when attacks occur.
+
+**Patch your system** - look out for OS updates, server updates, stack application updates (like updates to CMSs), and software framework updates. Updated software fixes problems present in older versions.
+
+## Evasion techniques
+
+Detection systems look for incoming attacks through patterns called signatures, and signatures are normally blacklist based. To avoid detection, you have to get creative.
+
+Your `or 1=1--` syntax is pretty common, so look for other conditions that generate true statements.
+
+Encoding obfuscates your query, so your query can do the same thing, but looks very different on the outside. Check out URL encoding, Hex encoding, UTF-8/Unicode, SQL's `char()` function.
+
+Spliting strings and concatenating also makes your query look different but will execute the same query. Consider mixing up your whitespace, like having multiple spaces or using tabs and nl's.
+
+Inline comments can break up your query into pieces.
+
+Consider using variables to hold noticible values. You can store hex values into your variable and then reference them.
+
+Consider transforming the string through a kind of cypher and then executing the restored query.
+
+## Attack automation
+
+Keep an eye out for things that seem repetative and laborious. That is a sign your task can use some automation. There are a handful of tools that are made to help automate your testing.
+
+**Browser Add-ons** - there are plugins/add-ons that can run a number of attacks for you. Check out SQL Inject Me for Firefox.
+
+**Fuzz testing** - using automation to produce invalid, valid, unexpected, or random input to find bugs. For sql injection, fuzz testing can include things that look like injection payloads. Check out Burp Suite. Burp is a proxy you configure your browser to use. It intercepts your request and holds it till you tell it, records the request and sets positions that can be fuzzed. You can mark the positions to fuzz and configure the payloads for burp to use. What you want to do is look for responses that are unique, like say they are very short in length, or are returning uncharacteristic HTTP status codes. This assumes most attempts will fail in a kind of average way, so you look for things that break the average.
+
+**Havij** is an GUI based tool that is pretty easy, and prevalent (caviet emptor), to use. It basically is point and click injection testing and data exfiltration.
+
+**sqlmap** is a pretty comprehensive advanced tool that is opensource and command line based for injection testing and data exfilatration that is capable of also doing blind sql testing with timing attacks and returning database schema.
+
+**NetSparker** is a comprehensive scanner where you can point it at a website root, and optionally provide login/logout info, and let it run. It will build a site map along with a lists of resources and diagrams of reporting. As a side effect, it may end up doing things like creating a bunch of user posts that contain sql injection strings, so it is by no means subtle and could affect live data. If you run this, do it away from prod.
+
+Be aware though that these tools are not end all for injection. They can be helpful in starting out learning about how attacks work, but you need to know what to do with the information they give back to you. Tools that are widely available may also have widely available canned exploits, hence, there is still room for novel attacks/payloads.
