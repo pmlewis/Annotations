@@ -68,3 +68,11 @@ Also, Containers are actually referred to as the Identity functor.
 ## The Demo
 
 Try finding the demos/exercises for this part of the course. Try looking at jsbin.com/kamak.
+
+## Either
+
+Like Maybe, but for error handling. The author uses `Right()` and `Left()` where it is a part of the functor? If the value is bad, `Left()` with an error message runs.
+
+## IO
+
+You set up a series of computation with an IO object, and then execute with `runIO`. Think of this as promises or awaits.
