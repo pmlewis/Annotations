@@ -67,7 +67,7 @@ Also, Containers are actually referred to as the Identity functor.
 
 ## The Demo
 
-Try finding the demos/exercises for this part of the course. Try looking at jsbin.com/kamak.
+Try finding the demos/exercises for this part of the course. For a listing of the jsbin exercises and solutions, try looking at https://frontendmasters.com/courses/functional-javascript .
 
 ## Either
 
