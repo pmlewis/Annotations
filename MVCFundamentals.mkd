@@ -14,4 +14,46 @@ Controllers inherit from `Controller`, which implements `IController`, which MVC
 
 Always remember to Html.encode data if you're displaying it directly in your form, don't let XSS slip in.
 
-Views can use View Helpers to help build snippets of html from model data, like Html helpers, AjaxHelpers, and UrlHelpers
+Views can use View Helpers to help build snippets of html from model data, like Html helpers, AjaxHelpers, and UrlHelpers. Views can be strongly typed.
+
+Control methods will react to HTTP verbs that hit the server, like GET's or POST's, then the parameters to the call of each controller action are scraped from the request that comes in.
+
+You can apply Action Filters to action methods, and controllers, also. These often come in the form of Attributes that are applied to method definitions or controllers.
+
+MVC is really focused on being testable though, and uses abstract base classes and interfaces for things like HttpContext and Session that are hard to stub in WebForms.
+
+## Controllers
+
+Controllers are the pin that holds your App together and really operate off of Http requests. However, requests that come in get to the controller through the Routing table and engine in MVC. The request pipeline as a request comes in goes through the UrlRoutingModule, to MvcRouteHandler, and to the MvcHandler. The MvcHandler finds the control it needs to complete the request by going to an IControlFactory, where it will then load an IController.
+
+Remember that when adding MapRoutes to your routes, when you specify a controller, you'll want something like `new { controleler = "Hello" }` and that will get resolved to the `HelloController` controller.
+
+Inversion of Control - in this case, it bascially means any dependent components a control may need are abstracted as interfaces passed to the constructor of the control. An external component then determines what concrete implementation of the interface should go in. The external component that does that in MVC is the ControllerFactory.
+
+The author shows an example of using IoC and then making a custom ControllerFactory that inherits from DefaultControllerFactory. You create the controller factory under 'infrastructure' and then during `Application_Start` call `ControllerBuilder.Current.SetControllerFactory` passing in your custom Controller Factory.
+
+Most of the time though you'll want to use an Dependency Injection container or an IoC container, where there's a lot of choices available to use. Check out the documentation for your framework choice on how to set it up, but you'll almost certainly be tieing into `Application_Start`.
+
+Most of the time, your controller methods will return `ActionResult`s but they don't have to. If a request comes in and invokes a method that doesn't return `ActionResult`, the value returned will be converted to a string by that value's `.toString()`. If you want that method to be invoked though on request, your routing needs to include that method as an `action` somewhere, like as in `new { controller = "Hello", action = "SayHello" }`, where "SayHello" is your method name.
+
+The author shows a neat technique for using the Immediate Window in Visual Studio to query variables during stepping on debugging, where you can query `this.RouteData.Values["controller"]` and `this.RouteData.Values["action"]` to see the controller and resolved action that is currently executing.
+
+The controller methods react to the different Http requests that come in through the Action Selector filters. The author covers `ActionName` that rewrites the name of the method, and `AcceptVerbs`, which restricts the action to certain Http Verbs.
+
+Action Parameters - basically the parameters that get passed to your action method call. They can accept `int`, `bool`, and `string`, where MVC will match name values of your method parameters with name values coming in through the request's route data (like providing a default value like `new { controller="Default", action="index", id=99 }`, or providing a url mapping like `{controller}/{action}/{id}`), then form data, then query string, then null if not found. Parameter matching is not case-sensitive. That said, it seems like you can have only one instance of a particular action method name associated with an Http verb. Signature overloading for any one verb doesn't seem to work?
+
+Your action methods can take complex type parameters also, but you need to use the framework's (or your own) model binder, where the complex object passed in will be the result of having all the public properties' name/value pairs provided similiar to the above.
+
+Other filter attributes your methods could have are `OutputCache`, telling your app server to cache the output from this, `ValidateInput`, allowing dangerous input to be received, `Authorize`, restricting based on users or roles, `ValidateAntiForgeryToken`, to prevent XSRF, and `HandleError`, for a special view on unhandled exception.
+
+You can write your own action filters by deriving ActionFilterAttribute. You can then override handlers fired on Action Execution, Action executed, result executing, and result executed.
+
+Action Results - you'll probably want to return ActionResults from your action methods most of the time, and there's a bunch of derived Results you can choose from. Interesting ones include `FileContentResult`, `EmptyResult`, `JavaScriptResult`, `JsonResult`, `RedirectResult`, `RedirectToRouteResult`, and `ViewResult/PartialViewResult`. Note that simply returning `ActionResult` means you can return any of these derived instances, which may or may not be desireable.
+
+## Views
+
+With MVC, you can choose a view engine to use. This course uses the WebForms Engine, but nowadays, Razor seems to be the de facto in ASP .NET MVC.
+
+Views are not "pages", like in the Web Forms sense. Views also don't use Web Forms ASP:Controls, like asp:GridView, or asp:Button. Views remove the cruft those brought. Views are templates for your model.
+
+The author gives a refresher on Http and how HTML forms work by sending the request with an action, the path it will send the request to, and the method, the http verb used. Each `<input>` on the form will get sent along on `submit`, where each `<input>` has a `name` attribute, and may have a `value`, which are the name/value pairs that get sent along on the request.
