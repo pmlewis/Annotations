@@ -57,3 +57,17 @@ With MVC, you can choose a view engine to use. This course uses the WebForms Eng
 Views are not "pages", like in the Web Forms sense. Views also don't use Web Forms ASP:Controls, like asp:GridView, or asp:Button. Views remove the cruft those brought. Views are templates for your model.
 
 The author gives a refresher on Http and how HTML forms work by sending the request with an action, the path it will send the request to, and the method, the http verb used. Each `<input>` on the form will get sent along on `submit`, where each `<input>` has a `name` attribute, and may have a `value`, which are the name/value pairs that get sent along on the request.
+
+MVC project structure has Controller and View placment by convention in the `Controllers` and `Views` directories. Views associated with a specific controller are looked for under `Views/{controller}`, so views for the `AccountController` are found under `Views/Account`. If the view you specify in calling `View()` is not found, MVC will look under the `Shared` directory.
+
+The author reviews how you can use Master Pages and Views. In this video, views using the Web Forms engine are files with `.aspx` files, but you don't use code-behind files nor page lifecycle events.
+
+Views inherit from ViewPage, and contain a property `Html` of HtmlHelper. You can use Html to create Html elements based off of Model data. If you need any real complicated View logic to happen, you could consider writing an extension method to HtmlHelper.
+
+ViewPages can use strongly typed Models, or can not. If not, ViewPage will use a dictionary called ViewData for each item that fills the view. Strongly typed, ViewPage<T>, uses the Model property.
+
+You can also use Partial views for only portions of pages being rendered. Useful for AJAX updates, or for filling in content spaces. Master pages do not apply when using Partial views. You can render partial views using HtmlHelpers.
+
+The author goes over a project called MVCContrib that contains a handful of helpers for working with MVC. There is also a project called MVC Futures.
+
+The author covers some tips for security writing MVC apps. Always use Html.Encode when displaying user input. When using authenticated POSTs, use Html.AntiForgeryToken() in your form, and decorate your POST action method wit `[ValidateAntiForgeryToken]`.
