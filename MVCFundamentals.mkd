@@ -71,3 +71,15 @@ You can also use Partial views for only portions of pages being rendered. Useful
 The author goes over a project called MVCContrib that contains a handful of helpers for working with MVC. There is also a project called MVC Futures.
 
 The author covers some tips for security writing MVC apps. Always use Html.Encode when displaying user input. When using authenticated POSTs, use Html.AntiForgeryToken() in your form, and decorate your POST action method wit `[ValidateAntiForgeryToken]`.
+
+## Models
+
+The author opens with questioning what models should be? Are they Business Objects? Entities? DTOs? Models could be any really. It's up to you to decide, but the author thinks Entities and Business Objects are pretty good fits for forms over data, but as views display more and different kinds of data, DTOs become better.
+
+There is a Models folder in the project, but you don't have to use this, they can live anywhere. Models and Views are supposed to be really simple and not contain anything too complicated. Controller actions are intended to be small also, with the idea being your controller passes/receives data through the Business Layer, that does do the heavy lifting.
+
+Model Binders - map requests that come in into a complex CLR types for your controller actions, like say `Employee` objects you create.
+
+The lowest level collection you can use as a param to an action method is `FormCollection` which is the collection of posted values from the incoming request. Check out use of the `UpdateModel()` method for resolving a model based off of FormCollections?
+
+You can specify White Lists and Black Lists of parameters that should be accounted when model binders build the Model from request parameters. 
