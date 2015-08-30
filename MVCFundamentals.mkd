@@ -83,3 +83,19 @@ Model Binders - map requests that come in into a complex CLR types for your cont
 The lowest level collection you can use as a param to an action method is `FormCollection` which is the collection of posted values from the incoming request. Check out use of the `UpdateModel()` method for resolving a model based off of FormCollections?
 
 You can specify White Lists and Black Lists of parameters that should be accounted when model binders build the Model from request parameters. 
+
+If you want some parameters to be optional with your action methods, be sure to make the parameters nullable with `?` at the end of the type in the method definition.
+
+You can specify Attributes to action method parameters. One attribute `BindAttribute` can be used on complex types to specify what request parameters are bound to that types' properties. You can also specify request parameters to exclude from binding.
+
+You can work with Models and Entity Framework to create Entity Data Models, where EF will import tables and columns from your data base and generate Model objects based off what it finds. You can tweak the names of each object pulled in so it may make more sense. Be sure to copy the connection string EF creates from App.config into Web.config so your app can find the DB at runtime.
+
+Working with EF, you'll work with Data Contexts whenever you work data. Your Data Context is like your "Connection" to the DB, but it includes associated EF data objects also. You'll want to use something like `using(var dc = new MyDataContext()){ /*...*/ }` in the span of your action method.
+
+Data Transmission Objects (DTOs) - Can be objects that are not necessary direct Data Objects/Data Model Objects, but could maybe contain some derived properties. Maybe consider DTOs kind of 'shallow' objects that are good for passing into views, but don't reflect a Data Model object or a Business Logic object.
+
+The author goes through implementing examples of CRUD operations for a page with a table of data that the user can edit, and how those interactions look working with EF.
+
+If you wish to implement a custom Model Binder, you should create a class that implements `IModelBinder`. You can then selectively register your Binder to work with certain types while leaving other objects to work with the default model binder.
+
+Your model binder implements a method `public object BindModel(ControllerContext cc, ModelBindingContext mbc)` that has access to the context of the controller and the binding context, which interacts with the Model. You'll get dirty parsing the request looking for parameters where if you find what you're looking for, you need to assign those values to your model, or if you don't, you need to handle model errors. You register your model binder in Global.asax with a method you should invoke on `Application_Start()`. You'll end up using something like `ModelBinders.Binders.Add(typeof(SpecialClass), new SpecialClassModelBinder());` Then, for any control that has `SpecialClass` listed as a parameter for an action method, your Model Binder will fire when an incoming request matches that action method.
