@@ -75,4 +75,16 @@ Like Maybe, but for error handling. The author uses `Right()` and `Left()` where
 
 ## IO
 
-You set up a series of computation with an IO object, and then execute with `runIO`. Think of this as promises or awaits.
+You set up a series of computation with an IO object, and then execute with `runIO`. Think of this as promises or awaits. Be aware thought that to run computations with several IOs, you'll want to use Monads to have them all be able to run together.
+
+## Other Functors
+
+EventStreams - streams can send out "infinite" streams of data. In this case, your EventStream functor will have a method `OnValue(function)` that executes the parameter when your EventStream gets a new value.
+
+Futures - will eventually have a value, very similar to IO, think of this as a "lazy" promise. You have to `fork()` the Future to start it.
+
+Now, eventually, when you start making some serious lines of functors, you may run into things like nested maybes... this is where Monads come in.
+
+## Functor Laws
+
+Functors though obey laws, like `map(id) == id` or `compose(map(f), map(g)) == map(compose(f, g))`. Given this information, for any line of computation, you may be able to rewrite the computation according to the laws to gain more efficiency or cleaner code.
