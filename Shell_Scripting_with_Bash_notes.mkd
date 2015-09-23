@@ -1,9 +1,9 @@
 # Bash scripting with Reindert Ekker on Pluralsight
 
-# dont forget to make your scripts executable and shebang it
+# Don't forget to make your scripts executable and shebang it
 
 
-## Vairables
+## Variables
 * don't use whitespace around assignment
 * get it's value with $x
 * $(ls or whatever)
@@ -28,12 +28,40 @@
 * ${topic}
 	* use the contents of $topic in a string
 * single quotes escape $
-	* excape single qutoes with \
+	* escape single quotes with \
 * double quotes around a var will still use the value in the var
-	* always try to use double qutoes to avoid weird bugs
+	* always try to use double quotes to avoid weird bugs
 **for help with any bash shell command, do help {cmd}**
 
-## pattern matching
+## If, Then, and Else
+
+Basic syntax like
+```
+if mkdir a; then echo "ok"; else echo "error"; fi
+```
+
+To evaluate expressions, you'll want to use double braces around the evaluation, like
+```
+if [[ $value ]]; then
+    echo $value;
+fi
+```
+
+Remember to lead lines with your `if`, `then`, `else`, `fi`, or have them immediately after semi-colons.
+
+For evaluating success from command completion, exit 0 means no problems, anything else looks like an error. Return 0 from your scripts for good success.
+
+Some useful conditional expressions may test if something is a file or a directory. You may test a string. You may test some arithmetic. Use the double braces like above.
+
+Sample Expression        | True if...
+-----------------------------------------------------------------
+[[ $str ]]               | str is not empty
+[[ $str = "something" ]] | str contains a str equal to "something"
+[[ $str="something" ]]   | always true! 
+[[ -e $filename ]]       | file $filename exists
+[[ -d $dirname ]]        | $dirname is a directory
+
+## Pattern Matching
 * $x =~ ^[a-g0-9]+$
 * $x == [aA]*
 	* true if x starts with a's and/or A's
@@ -70,17 +98,18 @@
 	* useful for setting custom environment vars for your session
 
 * Arrays
-	* x[0]="start"
-	* x[1]="end"
-	* echo ${x[1]}
-	* ${x[@]} or ${x[*]}
-	* declare -a, or just assign an index
-	* count of elements in an array ${#x[@]}
+  * Are dynamically sized
+	* `x[0]="start"`
+	* `x[1]="end"`
+	* `echo ${x[1]}`
+	* `${x[@]}` or `${x[*]}`
+	* `declare -a storedVals`, or just assign an index on `storedVals
+	* count of elements in an array - `${#x[@]}`
 	* arrays cannot be exported
-	* declare -A for associative arrays
-	* list the indexes being used ${!x[2]}
+	* `declare -A` for associative arrays
+	* list the indexes being used - `${!x[2]}`
 
-## Handling script parameners
+## Handling script parameters
 * special variables
 	* $*
 		* similar to $@
