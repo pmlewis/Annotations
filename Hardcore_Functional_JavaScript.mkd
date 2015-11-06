@@ -88,3 +88,7 @@ Now, eventually, when you start making some serious lines of functors, you may r
 ## Functor Laws
 
 Functors though obey laws, like `map(id) == id` or `compose(map(f), map(g)) == map(compose(f, g))`. Given this information, for any line of computation, you may be able to rewrite the computation according to the laws to gain more efficiency or cleaner code.
+
+## Monads
+
+Monads are "pointed" functors that have an additional method `mjoin` or `chain`, where it flattens the mapped nested containers.
