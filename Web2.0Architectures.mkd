@@ -1,0 +1,20 @@
+# Web 2.0 Architectures #
+
+High level patterns and common architecture features that help make up "Web 2.0". This book covers patterns called
+
+* Service Oriented Architecture (SOA) - See OASIS Reference for SOA. Exposing and interacting with systems over the web where the functionality of a service resides on the endpoint. Interactions with the service endpoint take place through the use of APIs.
+* Software as a Service - A model of business where users often subscribe to use a Web App that takes place of other applications that may otherwise exist as stand-alone locally installed applications.
+* Participation-Collaboration - A model of use where users are encouraged to join in on conversations or sign-up as a participant or contributor. Users may upload new content, or edit existing content, or comment on content.
+* Asynchronous Particle Update - Often through the use of AJAX, providing dynamic content, updates, notifications, etc... using partial web page refreshes without reloading the entire web page. Consider also streaming media?
+* Mashup - Aggregating several sources of information and data to create a unified or composite view. Consider something along the lines of grabbing information provided from one source, and overlaying it over your own or another source.
+* Rich User Experience - Providing a set of means for interacting that aim to cover all means of interaction.
+* Synchronized Web - Describes many clients connecting together in a session and being able interact or view something at the same time, in real time.
+* Collaborative Tagging - Interaction model where content can be "tagged" with certain words or phrases by creators or users. Tags may be able to be "voted" upon for the accuracy of tag used for the associated content.
+* Declarative Living and Tag Gardening - Interaction model and functionality model where users are encouraged to upload content describing what they are doing, or what they experience, and can optionally tag the content. The content can then be searched or analysed, where searching tags can be beneficial for finding related content.
+* Semantic Web Grounding - Process model of analysing content and making connections between content where there has been no explicit connection.
+* Persistent Rights Management - Process model where content is managed by users. Includes CRUD operations and permissions management.
+* Structured Information - Technical models where keeping information in a structured or standardized format gains benefits in analysis, search, and adaptability.
+
+### Chapter 2
+
+Pages 15,16 have some bulletpoints for creating/documenting solution architectures for a web system
