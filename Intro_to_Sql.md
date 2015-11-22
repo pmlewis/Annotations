@@ -144,3 +144,43 @@ Transactions in SQL have qualities that are described by an acronym, ACID.
 * Durable - Transaction is stored and recoverable in case of failure beyond the DBS
 
 Note that if you are attempting to delete a row that has contains a column that is a foreign key in another table, the rows in that another table with that foreign key need to be deleted also. Otherwise, the delete may not occur, or the row with the foreign key will get orphaned.
+
+
+## Creating Tables ##
+
+SQL has a subset of the language designed for creating your schema for holding your data, like for creating databases and tables, and adding columns. This is typically called DDL - Data Definition Language.
+
+This is not ANSI SQL, but you can typically do
+
+```
+  CREATE DATABASE YourDb;
+  USE DATABASE YourDb;
+```
+
+and this will create your database and set your current working database to YourDb.
+
+Creating tables is done with `CREATE TABLE` followed by your tablename, then a list of columns. Each column item starts with a column name, followed by data type, and constraints.
+
+For example, one constraint is on allowing or not allowing `NULL` into the column. Allowing `NULL` is default behavior, but to not allow null values, you follow the data type in the column definition with `NOT NULL`.
+
+Another constraint is `PRIMARY KEY`. `NULL` values can not be inserted into a primary key column. You can use `PRIMARY KEY` multiple times in a table definition to create a compound primary key.
+
+If you'd like to have multiple constraints, you can move your declarations to the end and use the `CONSTRAINT` clause, where you name your constraint, list your constraints, then specify the column that set applies to.
+
+If you wanted to add a foreign key constraint, it could look like `CONSTRAINT FOREIGN KEY (local_column) REFERENCES other_table (other_table_id)`
+
+`ALTER TABLE` lets you change existing tables' columns or constraints. It may be useful if you're scripting DB creation, like in the case of adding all your constraints last to prevent conflicts during script runtime. Altering a table will fail if there is data in the table that would conflict with the alter statement.
+
+`DROP TABLE` removes the table you specific, and all the data it holds. **BEWARE.** Dropping a table will fail if there are constraint that would conflict with the table being gone, i.e. foreign key constraints.
+
+Adding a column looks like
+
+```
+  ALTER TABLE local_table ADD new_column INTEGER;
+  -- or to add multiple columns
+  ALTER TABLE local_table
+          ADD (first_column INTEGER,
+              second_column VARCHAR(128));
+  -- To change an existing column, use MODIFY instead of ADD
+  -- To remove a column, use DROP instead of ADD
+```
