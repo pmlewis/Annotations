@@ -106,3 +106,41 @@ Beware of `CROSS` joins, which may occur if write something like `FROM test.a, t
 
 `INNER JOIN` is the most typical join you'll see, where it finds the rows in table a that have a key value that matches a key value in table b, and the rows are connected into one. `INNER JOIN` takes an `ON` clause, which needs a boolean expression to determine whether to match the rows. Rows are only joined if there is a successful match.
 
+Outer joins work differently. Outer joins will return rows even if there isn't a match, but where there isn't a match, columns from the unmatched table will hold `NULL`.
+
+`FULL OUTER JOIN` will return at least all the rows in both tables, and works like both a `LEFT OUTER JOIN` and `RIGHT OUTER JOIN`. This is useful for showing all information you might have, even if it's incomplete or missing. Note that the author showed that MySQL errored when using `FULL OUTER JOIN` and that it needs left outer joins or right outer joins.
+
+`LEFT OUTER JOIN` will return at least all rows in the "left hand side" of the table, or the table that is declared before the words `LEFT OUTER JOIN` in your query. If there is a match on the join to the table declared after `LEFT OUTER JOIN`, the columns from the "right hand table" are returned with their values. If there is no match on the join, all the columns from the "right hand table" will be filled with `NULL`.
+
+`RIGHT OUTER JOIN` behaves like LEFT OUTER JOINS, except all the rows from the "right hand side" table, the table declared after the words `RIGHT OUTER JOIN`, will be returned, and columns from the table declared before the words `RIGHT OUTER JOIN` will return their values if matched, else return nulls.
+
+Sometimes, it can be useful to join a table to itself, like for describing managerial relationships in an "employees" table. You simply follow the same syntax described above and give your left and right hand side table declarations different aliases.
+
+
+## Insert, Update, and Delete ##
+
+`INSERT INTO` is the means to add new records to a table. You can only insert into one table per `INSERT` statement. After you declare the table, list the columns you are inserting data into *always*. After your list, you use `VALUES` to then list the data records you wish to insert. Each record is a parens-wrapped list of data where the position of each data is inserted into the matching position column listed after the table. You can insert multiple rows into one table with one insert statement.
+
+Note that you can also `INSERT INTO … SELECT` if you would like to insert data from one table to another, or insert while transforming data, etc.
+
+`UPDATE` let's you change existing data using a syntax like `UPDATE table SET /* list of assignment statements */`. You *almost always* need to qualify this with a `WHERE` clause, otherwise you'll change every record in the table. There are more variations on syntax and qualifiers you can use with `UPDATE`, but those are more advanced, and may vary with RDBS.
+
+`DELETE FROM` deletes records from the database. `DELETE FROM` without qualifiers deletes all rows from a table! Can only specify one table per `DELETE`. This can be very dangerous, so it may be helpful to issue commands to start/end a *transaction* while making a delete.  Transaction syntax may vary from DBS, but ANSI syntax for starting a transaction is like
+
+```
+  START TRANSACTION;
+  -- Issue some commands, like a DELETE
+  -- Before you commit, you can verify your results
+  COMMIT;
+  -- Or recover
+  -- ROLLBACK;
+```
+
+Transactions in SQL have qualities that are described by an acronym, ACID.
+
+* Atomic - all of it happens, or none of it does
+* Consistent - database is left in a consistent state
+* Isolated - changes don't leak out(?)
+* Durable - Transaction is stored and recoverable in case of failure beyond the DBS
+
+Note that if you are attempting to delete a row that has contains a column that is a foreign key in another table, the rows in that another table with that foreign key need to be deleted also. Otherwise, the delete may not occur, or the row with the foreign key will get orphaned.
