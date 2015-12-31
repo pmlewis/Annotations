@@ -1,0 +1,27 @@
+# Python Fundamentals #
+
+Python is a popular open source programming language that is commonly used for scripting, web programming, data analysis, and hobbyist projects. Python is object oriented, strongly typed, dynamically typed, and uses duck typing. Python is flexible, and can be interpreted or compiled. Python uses white-space to limit syntax. Multiple Python runtimes exist, written to many platforms and in different languages.
+
+## Getting Started ##
+
+Python is probably available on your development platform of choice, look up how to install it on your system if you don't know how.
+
+For quick scripting you can use a REPL by running Python in your command window. Note that you may have to specify `python`, `python2`, or `python3` depending on your install. This course will use Python 3, though remember you may come across Python 2 code in the wild that can't run on Python 3. The REPL lets you type in code and can immediately evaluate what you write. *Protip: you can use an underscore to refer to the value returned by the last evaluation you ran, but only in the REPL*.
+
+Remember to use the `print(some_string)` function to print to the shell, python 2 uses `print some_string`. Remember to use 4 spaces for your indentation as convention. Avoid using tabs, and do not mix tabs and spaces. If you must break convention, do it consistently. Breaking convention for readability will probably be begrudgingly accepted.
+
+Python has a series of documentation called PEPs, Python Enhancement proposals, and is similar to RFCs. PEP-20 is called "The Zen of Python", and tries to capture the spirit of using it. Check it out by running `import this` at a REPL.
+
+### Syntax basics ###
+
+`import` brings in module libraries. Object methods are accessed using `.` like C-style languages. You can import module functions more selectively using `from some_module import your_function_choice` and `your_function_choice` is accessible in your namespace. You can give aliases to imported code using `as` after the import, but this is not heavily encouraged, remember code clarity.
+
+Python numbers grow as the value grows, can be abitrarily large. Python types can be grouped into "Scalar" types, which are not collections. Scalar types include `int`, `float`, `None`, and `bool`.
+
+`int` values hold integer values. You can specify binary, octal, and hex values using `0b`, `0o`, and `0x` before your value. To convert a value of a different type into an int, just pass it into `int()`. When rounding, the value is floored. You can use scientific notation for int values.
+
+Python has values `nan` for a value that can not be interpreted as a number, and `inf`, and `-inf` for infinite values.
+
+`float()` can convert other values into floats.
+
+`None` is Python's `null` value. `True` and `False` are `bool` values. You can pass in values to `bool()` to generate a `True` or `False` value. `0` and `0.0` are falsy values, positive and negative numbers are truthy. Empty arrays and empty strings are falsy. Arrays with values and non-empty strings are truthy. The string "False" is truthy.
