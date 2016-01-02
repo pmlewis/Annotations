@@ -125,3 +125,61 @@ with urlopen(my_url) as response_data:
 
 ```
 
+
+## Modularity ##
+
+Modules are how you create smaller, reusable code files in larger Python programs.
+
+To use modules you've written, you use `import firstscript` if the file you made is called "firstscript.py" and it's in your local directory. When you import a module, its code is executed immediately, so you may want block your code into smaller sized functions.
+
+You define functions in blocks like
+
+```
+def my_first_function():
+    print("hello world!")
+
+def my_second_function():
+    return "hello world!"
+
+def my_empty function():
+    return
+
+what_am_i = my_empty_function()
+if what_am_i is None:
+    print("I am nothing!")
+else:
+    print("I am significant")
+```
+
+### Double Underscores ###
+
+Python uses some special syntax, wrapping some attributes in double underscores. For example, `__name__` will resolve to the name of this module or "__main__" if it's being run as a script.
+
+You can use this to your advantage if you want to be able to run your code as both a module in Python or from a shell. You check
+
+```
+if __name__ == "__main__":
+    # python you want to run if called by
+    # name in the shell
+
+```
+
+It is conventional to write your code in such a way that can be used when called directly from the command line, or imported as a module.
+
+If you'd like to import a handful of useful functions from a module, you can use `from words import (fetch_words, print_words)` or you can even (while testing) use `from words import *`, though is isn't recommended for prod code.
+
+It's recommended to create a `main()` function if you intend your code to be run as a script, and to parameterize your functions as much as you can to facilitate reuse.
+
+It's convention to space your function definitions with two newlines.
+
+### Doc Strings ###
+
+Python has a special syntax for creating documentation, called doc strings. Doc strings are triple double-quotes the first line after the `def` line for a function. There are different conventions for formatting doc strings, it may vary from project to project. Google has a convention available, that allows the doc string to be parsed for a number of utilities.
+
+Docstings can be looked at using `help()`, check this out to see about calling it from the shell.
+
+### Comments ###
+
+If you need to use comments, use `#`. This will comment out the rest of the line after the `#`. It may be useful to put in UNIX shebangs in your python files so you can just call the filename, and it runs as a command under the right version of Python.
+
+Windows has a utility called PyLauncher that will associate UNIX shebangs to the right version of Python on Windows, without changing the shebang. Check it out.
