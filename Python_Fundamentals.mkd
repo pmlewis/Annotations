@@ -16,6 +16,8 @@ Python has a series of documentation called PEPs, Python Enhancement proposals, 
 
 `import` brings in module libraries. Object methods are accessed using `.` like C-style languages. You can import module functions more selectively using `from some_module import your_function_choice` and `your_function_choice` is accessible in your namespace. You can give aliases to imported code using `as` after the import, but this is not heavily encouraged, remember code clarity.
 
+#### Value Types ####
+
 Python numbers grow as the value grows, can be abitrarily large. Python types can be grouped into "Scalar" types, which are not collections. Scalar types include `int`, `float`, `None`, and `bool`.
 
 `int` values hold integer values. You can specify binary, octal, and hex values using `0b`, `0o`, and `0x` before your value. To convert a value of a different type into an int, just pass it into `int()`. When rounding, the value is floored. You can use scientific notation for int values.
@@ -25,3 +27,101 @@ Python has values `nan` for a value that can not be interpreted as a number, and
 `float()` can convert other values into floats.
 
 `None` is Python's `null` value. `True` and `False` are `bool` values. You can pass in values to `bool()` to generate a `True` or `False` value. `0` and `0.0` are falsy values, positive and negative numbers are truthy. Empty arrays and empty strings are falsy. Arrays with values and non-empty strings are truthy. The string "False" is truthy.
+
+#### Relational Operators ####
+
+Python uses
+
+```
+==
+!=
+<
+>
+<=
+>=
+```
+
+#### Conditionals ####
+
+```
+if True:
+    print("Hello World!")
+
+if bool("More?"):
+    print("Yes please")
+
+if "Really more":
+    print("YES")
+
+print("Are sure sure?")
+anser = input()
+if answer == "Really more":
+    print("OK THEN")
+elif anwser == "Nah not really":
+    print("move along")
+else:
+    print("WHAAT?")
+```
+
+#### Looping ####
+
+Python has `while` loops and `for` loops
+
+```
+c = 5
+# the below can be written like
+# while c:
+# but remember "Explict is better than implict"
+while c != 0:
+    print(c)
+    c -= 1
+
+```
+
+Python does not have a "do-while" loop in the language. Instead, use `while True:` then use the `break` keyword to get out of the loop early as you can. This is a language idiom.
+
+## Strings and Collections ##
+
+Python has `str`, `bytes`, `list`, and `dict` types.
+
+`str` are immutable sequences of Unicode "codepoints", and are Python's strings. `str` literals can be delimited with single or double quotes.
+
+Literal strings can be concatenated with a space between the two values. Multi-line strings are delimited with 3 quotes/double quotes, or you can use `\n`. `\n` is Universally supposed, meaning it will use your OS's conventions for newlines, like carrage return, newline on Windows.
+
+In the case of strings with backslashes, if you don't want to escape every backslash, you can use "raw strings", where you lead the string like `r'Hello!'`
+
+You can use `str()` to convert values to strings. `str` is considered a sequence type, so you can index it like arrays in other languages. Python has no character type, a character is just a `str` of `len(mystring) == 1`
+
+Strings are Unicode, and you can refer to characters using character codes and Python will resolve them for you on print.
+
+`byte` are immutable values that written as `b'some data'`. You must know the encoding of a `byte` or `str` to decode or encode.
+
+`list` are mutable sequences of objects and are literally written as `[1, 2, 3, "four", some_var]`. `list` has many methods you can use to manipulate them. You can create lists from other collections using `list("my character list")`. 
+
+If you have a long literal list, you can break up the declaration on separate lines as long as they end with a comma. You can also have a "trailing comma" at the last element in the list, and this will not be a syntax error.
+
+`dict` is Python's dictionary or associative array type. `dict` literals are written like `{k1: v1, k2: v2}`. To add a new key and value to a `dict`, use something like `my_dictionary['best_key'] = "best_value"`, and it'll be added.
+
+### `for` loops ###
+
+Python's `for` loops are like "for each" loops, like
+
+```
+for member in iterable:
+    print(member)
+
+```
+
+If you want a loop that's closer to a C-style for loop, you can use a "range", like `for x in [0..10]:`
+
+### `with` ###
+
+`with` is like C#'s `using`, for manipulating resources that maintain an open state. You use it like
+
+```
+with urlopen(my_url) as response_data:
+    for line in response_data:
+        print(line)
+
+```
+
