@@ -183,3 +183,70 @@ Docstings can be looked at using `help()`, check this out to see about calling i
 If you need to use comments, use `#`. This will comment out the rest of the line after the `#`. It may be useful to put in UNIX shebangs in your python files so you can just call the filename, and it runs as a command under the right version of Python.
 
 Windows has a utility called PyLauncher that will associate UNIX shebangs to the right version of Python on Windows, without changing the shebang. Check it out.
+
+
+## Objects ##
+
+Python is an Object Oriented language, and has language features that enable object oriented style programming.
+
+Python has a build-in `id()` function that may be useful for testing and debugging some code that will create an id for the object to it, the idea being that if two different objects, but they point to the same value, the ids will be the same. If you really want two objects pointing to two separate values that are equal to each other, you basically need to clone the value.
+
+If you pass in a mutable object into a function, and modify it, the changes will persist when the function returns. However, if you pass in an object, assign it to a new object in the function, it will revert back to the prior assigned value on return. This is pass by reference.
+
+### Function Arguments ###
+
+You can specify optional arguments to functions by specifying default values in the definition.
+
+```
+# Optional parameters must come after
+# required parameters
+def banner(message, border='-'):
+    line = border * len(message)
+    print(line)
+    print(message)
+    print(line)
+
+banner("Hey welcome!")
+banner("What's up", "*")
+```
+
+Python lets you change order of parameters by using the name of the parameter equal to a value. Otherwise, Python resolves parameters by position.
+
+```
+banner(border="=", message=some_message)
+```
+
+Be wary when you used a derived value as a parameter default value, as this value is evaluated when imported and only evaluated once.
+
+Also be wary of using mutable collections as default values for functions. Python will close over this collection and if you modify its contents, the changes will persist over function calls. Therefore, it's a best practice to always use immutable values as defaults. In the case of collections, like a list, try setting its default value to `None` like so
+
+```
+# menu is intended to be a list
+def add_spam(menu=None):
+    if menu is None:
+        menu = []
+    menu.append('spam')
+    return menu
+
+```
+
+### Python's type system ###
+
+Python is dynamically typed (meaning you don't have to declare what type a variable is) and is strongly typed (meaning there are no implicit type conversions) However, values do have an evaluated `bool` value in the case of conditionals and loops that you don't necessarily have to wrap in a `bool()`
+
+### Variable scope ###
+
+Python has four levels of scoping
+
+Local | in the current function
+Enclosing | any and all enclosing functions (like closures?)
+Global | Defined at top level, accessible everywhere
+Builtin | come in from the Python runtime
+
+Suppose though you have a module that are a collection of functions that have some value you want to close over like if you were writing JavaScript. If you want to access/change that value in your functions, you must declare you are referring to a global variable using `global` followed by the name of that variable.
+
+### Everything is an object ###
+
+Including modules, functions, builtin values, and "basic" values. To find the type of a value, you can pass it into `type()`. To find the attributes of an object, you can pass it into `dir()`.
+
+`__name__` in the case of functions or modules will return the name of the function or the module. `__doc__` will return the docstring for that object if available.
