@@ -250,3 +250,106 @@ Suppose though you have a module that are a collection of functions that have so
 Including modules, functions, builtin values, and "basic" values. To find the type of a value, you can pass it into `type()`. To find the attributes of an object, you can pass it into `dir()`.
 
 `__name__` in the case of functions or modules will return the name of the function or the module. `__doc__` will return the docstring for that object if available.
+
+
+## Collections ##
+
+We revisit `str`, `list`, and `dict`, but also introduce `tuple`, `range`, and `set`.
+
+### `tuple` ###
+
+`tuple` is an immutable sequence of objects where the objects can not be changed, nor can any other elements be added. `tuple` is written like `x = ("Hello", "world", 2)` and are accessed like `x[0]`. 
+
+You can find the length of a tuple using `len()`, you can iterate over them with `for` loops, and you can concatenate tuples together with `+`. `tuple` can be nested. If you really want a tuple of length 1, you must have a trailing comma. 
+
+You can write tuple literals with parens, or you can omit them, and just write them as comma separated values. This is useful for returning multiple values from a function. Tuples can be *unpacked* by assigning a comma separated list of values to a tuple, like
+
+```
+lower, upper = minmax([1, 2, 50, 4])
+# the tuple returned by minmax will have its first value saved into lower
+# and the second into upper
+```
+
+Tuple unpacking works with nested tuples, and you can write a value swap like `a, b = b, a`
+
+You can create tuples from other collections by passing them into `tuple()`, and you can test if a value is contained in a tuple by using the `in` keyword, perhaps together with `not`. `in` and `not in` can be used with other collections also.
+
+### `str` ###
+
+You can use `len()` for finding the length of a `str`. You can use `+` for string concatenation, but it is more idiomatic to use `join` to put together strings from a collection, with `__self__` (is this right?) being a separator between each string in the collection.
+
+```
+''.join(['high', 'way', 'man'])
+# returns 'highwayman'
+# this is considered idiomatic
+
+'|'.join(['age','gender','location'])
+# returns 'age|gender|location'
+```
+
+`split()` and `partion()` separate strings into multiple values based on a delimiter. `partion()` returns a tuple which will contain three strings. The author shows that if you don't want to save the separator return value, you can assign it to `_`, which is a little bit of a convention for temp or dummy values.
+
+`format()` is used in python3 for string interpolation. 
+
+```
+"The age of {0} is {1}".format("Jim", 32)
+
+"The age of {} is {} and weighs {}".format("Jim", 32, 170)
+
+"Current position: {lat}, {long}".format(lat="60N", long="120w")
+```
+
+You can pass in objects as a parameter, and access by index into them in your template string.
+
+### `range` ###
+
+A `range` is a progression of integers, written like
+
+```
+range(5)
+# represents values 0, 1, 2, 3, 4
+
+range(10, 20)
+# represents values 10 - 19
+
+range(2, 10, 2)
+# represents values 2, 4, 6, 8
+```
+
+Be care with range though: If you're looping over some values, always prefer iterating over the collection versus looping over a count of a collection passed into range
+
+It's better to use the `enumerate()` function, passing into it your collection. Iterating over the return value of `enumerate` creates tuple pairs, in the case of lists, of the index, and the value at that index. This is more idiomatic than using a range. You can then use unpacking to create more concise and intentional statements.
+
+### `lists` ###
+
+You can access lists, and other collections, using negative indexes to work from the end of the list.
+
+You can specify a *slice* of a list, a range of values from a list, using something like
+
+```
+scores = list(range(11))
+only_game_ratings_that_matter = scores[6:10]
+```
+
+You can write `s[3:]` to slice from the 3 position to the end, or `s[:7]` to slice from the start up to, but not including, the 7 position.
+
+You can leverage slices to idiomatically clone a list.
+
+```
+new_list = old_list[:]
+# new_list is not old_list
+# but new_list == old_list
+
+```
+
+Be aware there are other ways to copy a list, like using the `.copy()` method, or passing a collection into `list()`. 
+
+Note that copies of collections will be shallow copies, meaning that its elements will still be the same objects, even if the collections themselves are different objects.
+
+The author illustrates this with an example of creating a list that contains a list `[-1, 1]`, and creates a new list that generates 5 shallow copies of `[-1, 1]`. The author then appends 7 to the list at index 3, yet when we look at the data structure, every list is now `[-1, 1, 7]`. This is because these shallow copies all pointed to the same list object, even if the references themselves are different.
+
+To find where a value is in a list, you can use the list method `.index()` and pass in the value you'd like to find.
+
+To remove elements from lists, you use the del keyword to delete by index (like `del s[4]`), or use the `.remove()` method to remove by value. You can insert values using the `.insert()` method.
+
+To simply add values to the end of the list, use `+` or `+=` or `.entend()` and pass in your value, or collection value. These operators work with other collection types also. Try it!
