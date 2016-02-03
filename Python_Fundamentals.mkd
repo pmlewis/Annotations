@@ -422,3 +422,69 @@ Python tends to work better embracing "Asking for forgiveness" with catching spe
 You can use try/finally to do actions after either the happy path works, or exceptions occur. For larger projects, check out "Resource Managers" that sound like they provide more robust garbage cleanup.
 
 Be aware that Python has modules that may be platform-specific if they handle lower-level APIs, like in the case of handling specific key events
+
+
+## Iterables, Comprehensions, and Generators ##
+
+Comprehensions are a declarative and functional means to create collections using "filtering", projection, mapping, etc. A list comprehension can look like
+
+```
+numbers = range(100)
+
+evens = [x for x in numbers if x % 2 == 0]
+```
+
+This form takes iterables as acceptable values to iterate over, so think strings, sets, tuples, lists, dicts, etc.
+
+You can create sets, dicts also with comprehensions. Their syntaxes are like
+
+```
+{ x % 5 for x in range(100) }
+
+# Note the colon delimits key and value
+{ x : 2 * x for x in range(100) }
+```
+
+If you want to iterate over dicts, remember to use tuple unpacking, iterating over your dict.items() like `for country, capital in country_to_capital.items()`
+
+Beware if you are generating dicts that if your key expression happens to create duplicate keys, you will overwrite values for as many times as you create a matching key.
+
+Comprehensions are very powerful, but can turn into an unreadable mess. Be curteoeous to your fellow programmers by writing comprehensions that are straight forward, purely functional, and readable. Break things up if you got something crazy.
+
+*Iterable* and *Iterator* are some fundamental Python protocols. When you have an Iterable object, you can grab its Iterator by passing the object into `iter()`. Iterator objects support the `next()` function and return the next object in the collection. When iterators have completed iterating over the collection, they throw `StopIteration` exception. The language watches for this.
+
+
+*Generators* are similar to comprehensions, but are defined as functions that `yield` values. You iterate over a generator like an iterable, but comprehensions are completely evaluated on call. Generators only generate the next value on each call to `next()`, and the value returned is the value followed after`yield`. You can use `return` statements to stop the iteration in a generator.
+
+```
+# From the course
+def gen246():
+    print("About to yield 2")
+    yield 2
+    print("About to yield 4")
+    yield 4
+    print("About to yield 6")
+    yield 6
+
+for x in gen246():
+    print(x)
+```
+
+Generators are, by nature, stateful. Local variables will persist their values. When a generator is called subsequent times, execution will start not at the start of the generator function, but at the next instruction after the last `yield` statement.
+
+Because generators only do enough work to get the next yielded value, they can be used to work with massive sequences, input streams, mathematical series and calculations that are otherwise infinite.
+
+You can write a generator expression similarly to comprehensions
+
+```
+# Note the parens below, this means this is a generator
+# not a "tuple comprehension" or anything like that
+
+million_squares = (x*x for x in range(1, 1000001))
+```
+
+Suppose you want more control over how you iterate over values. Python has under `itertools` a number of iterators you can use for your generators, like infinite iterators, or accumulation iterators.
+
+The `any()` and `all()` functions may be useful when working with generators. They iterate over the values passed into it and do logical OR and AND of the values.
+
+
