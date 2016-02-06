@@ -488,3 +488,46 @@ Suppose you want more control over how you iterate over values. Python has under
 The `any()` and `all()` functions may be useful when working with generators. They iterate over the values passed into it and do logical OR and AND of the values.
 
 
+## Classes ##
+
+Python can support OOP with classes if you want them. When you define a new class, use PascalCase to name them, by convention.
+
+```
+class MyFirstClass:
+    pass
+    # Remember Python does not allow empty code blocks
+
+f = MyFirstClass()
+
+class MySecondClass:
+    # Your class is always the first argument to a class method
+    # By convention is it called self
+    def hello(self):
+        print("Hello world!")
+
+s = MySecondClass()
+s.hello()
+# The above convention lets you write code like
+MySecondClass.hello(f)
+```
+
+Python class constructors are defined with the `__init__()` method. This is refered to as an initializer. You can define this passing in parameters, `self` being the first one of course, then you can assign (and declare! think javascript) your fields like `self._message = 'Hello world!'` Fields meant to be private are by convention named with a leading underscore.
+
+Python does *not* make use of `public`, `private`, and `protected` accessors like Java and C# do. There's nothing to stop you from messing around with the implementation fields. However, just because you can doesn't mean you should. Code like an Adult. "Private" methods also follow the convention of being named with a leading underscore.
+
+Python encourages the use of class invariants when making classes, promises that will only be true with correct use of the class. Your `__init__` should check for these and raise Errors if not good. Remember your `self` when you init, and with each method you write!
+
+It's not unusual to put functions related to a class in the same module as the class.
+
+Python supports polymorphism with its dynamic typing just by having two different classes just having the same methods or "interface". There are no static interface declarations like in C# and Java.
+
+Inheritance however is more explicit. Syntax is like
+
+```
+class AirbusA319(Aircraft):
+    # The rest of the definition here. Aircraft is the ancestor class of
+    # AirbusA319. Any methods defined in Aircraft are usable on Airbus
+    # instances.
+```
+
+In case you really need it, Python lines can be split over multiple lines using backslashes. Try to avoid this if you can.
