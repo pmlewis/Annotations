@@ -61,6 +61,36 @@ Partials (your "view"), can be named like your module, or maybe append "Display"
 
 Really though, the conventions you choice are less important than simply having one and sticking to it. Your conventions should serve your needs, quickly finding what you need and not having accidents, just have it be a little sane.
 
+## Using Angular with ASP .NET MVC ##
+
+In the grand scheme of things, you could have your web page be entirely an html page with Angular object talking to web services, but perhaps you have an existing MVC project, or perhaps you want to have your web page work without JavaScript. Using Angular lets you have both.
+
+Get started by creating your MVC project with a simple View that is returned. You can decorate your View with HTML and Angular markup, and if you drop in your script reference to Angular and have your `ng-app`, after MVC processes the View, Angular will process it when the HTML is returned to the client. You can consider including your script into your _Layout.cshtml
+
+When you're considering getting data to your Angular app, there's two strategies: either having your app start up calling AJAX, or "bootstrapping" your page with data on page load, meaning that your page has embeded in it, rendered in it, the data it needs to start.
+
+Check out `bootswatch.com` for some free Bootstrap templates you can work with. Also, if you add your client libraries through NuGet, you can click and drag the downloaded file into your View file, and Visual Studio will add a link or script reference to it.
+
+If you really need to, you can leverage the `ng-init` attribute to bootstrap some data in the scope of your child elements. Another (not excellent) strategy is to set some global JavaScript, and then you *need to assign that global value to a property of `$scope` in your Angular controller you define for the sections of mark up. Remember, say, in the case of `ng-repeat`, your expression is an **Angular expression, not plain JavaScript**.
+
+Really though, even if you have some bootstrapped data, it's better to still leverage an Angular service that returns the data, even if that's the only data it will ever get. For example, if you had a module named `mymodule`, your bootstrap data code could look like
+
+```
+<script type="text/javascript">
+    mymodule.factory("bootstrappedData", function() {
+        return {
+            courses = @Html.Raw(Model.Course)
+        };
+    });
+</script>
+```
+
+You could then pass that service into your controller when you register it.
+
+The author shows a process for setting up your existing MVC app to leverage Angular for your views and creating a mini SPA out of it, letting you remove some existing controllers and views while being more sophisticated with client routing.
+
+Client routing however may have implications on deep linking in your app. The author recommends adding a "catch all" route that can accept any url with any parameters, and then passing that to your mini SPA controller with your default action as `defaults`.
+
 ## Getting Ready for Prod - Using Grunt within Visual Studio ##
 
 * Must have Node and Grunt installed on the building machine in order to use Grunt
