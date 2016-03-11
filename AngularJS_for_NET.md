@@ -91,6 +91,20 @@ The author shows a process for setting up your existing MVC app to leverage Angu
 
 Client routing however may have implications on deep linking in your app. The author recommends adding a "catch all" route that can accept any url with any parameters, and then passing that to your mini SPA controller with your default action as `defaults`.
 
+
+## Communicating with the Server ##
+
+This section focuses on making requests to your MVC app from Angular using AJAX.
+
+You'll want to create a service that gets passed to your controller, and that service will probably use the `$http` service to make AJAX calls to you MVC Action Methods. The author leverages `$q` for managing JavaScript Promises to your controller from your service that uses `$http`.
+
+Remember that if you're sending Json from your MVC Action Method and you're using JSON.NET, don't forget to implement a means of serializing your classes into camelCase to fit in with JS conventions. The author shows means to only allow GET requests to your Action Method when returning Json.
+
+For sending POST's to your server, create an Action method and decorate it with your `HttpPost` attribute. In your Angular view, if you are sending a "form", say with a button click, and you have a bunch of `<input>` tags decorated with `ng-model`, your button can use `ng-click` to call your Angular control's save method. Use `$http.post` to the route of your MVC action method, and pass you model data.
+
+After you send data with your AJAX call, you'll want to show something after it sends, whether the POST was successful or not to the user. Chain your post call with `success`, `error`, and `then` callbacks. With Angular, you can use `ng-show` directives to show sections of html based on conditions, like if you set a `$scope.error` value to true or false.
+
+
 ## Getting Ready for Prod - Using Grunt within Visual Studio ##
 
 * Must have Node and Grunt installed on the building machine in order to use Grunt
