@@ -104,6 +104,12 @@ For sending POST's to your server, create an Action method and decorate it with 
 
 After you send data with your AJAX call, you'll want to show something after it sends, whether the POST was successful or not to the user. Chain your post call with `success`, `error`, and `then` callbacks. With Angular, you can use `ng-show` directives to show sections of html based on conditions, like if you set a `$scope.error` value to true or false.
 
+You can really use either MVC or WebAPI as your endpoint when making Angular apps in .NET, as long as you are able to hit the endpoints and methods of your API controller and it returns some data you can make your app understand. If you are just using Web API, you can work with plain HTML files and no longer use MVC Views. If you do use HTML, you can leverage URL Rewriting to tell IIS to redirect to, say, /registration.html when the client sees /Registration.
+
+The author shows how you can use angular-resources and the '$resource' service that can be cleaner when making URL requests to your server. '$resource' has promises built in and can include other useful data regarding your request and the resource returned. Having resources also handles your data binding, so it can handle page updating when the request completes. '$resource' is meant to hit RESTful endpoints, keep that in mind.
+
+You can combine .NET model validation and html5 validation of form data if you wish and Angular can work with them. If you have a html form, and you want to use validation for each input, add the `novalidate` attribute to the form, then add any other validation attributes to your inputs. You can make use of a directive like `ng-pattern` that validates the input against some regex. `ng-show` can help with hiding and showing elements in case of, say, invalid values to the model. `ng-disabled` works similarly to `ng-show`, but selectively disables elements. Your controller's model has a property `.$invalid` that you can check and this should account your markup validation you put in.
+
 
 ## Getting Ready for Prod - Using Grunt within Visual Studio ##
 
