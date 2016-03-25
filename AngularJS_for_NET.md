@@ -111,6 +111,20 @@ The author shows how you can use angular-resources and the '$resource' service t
 You can combine .NET model validation and html5 validation of form data if you wish and Angular can work with them. If you have a html form, and you want to use validation for each input, add the `novalidate` attribute to the form, then add any other validation attributes to your inputs. You can make use of a directive like `ng-pattern` that validates the input against some regex. `ng-show` can help with hiding and showing elements in case of, say, invalid values to the model. `ng-disabled` works similarly to `ng-show`, but selectively disables elements. Your controller's model has a property `.$invalid` that you can check and this should account your markup validation you put in.
 
 
+## Using Angular with Legacy .NET ##
+
+This will mostly be focused on getting Angular into WebForms. You can use Page Methods, though it's pretty constrainted and limited. You can add MVC to a WebForms project and use an MVC controller for your Ajax calls from Angular. You can also use RESTful WCF services, and Web Services too.
+
+However your pages are set up, don't forget to add your script reference to Angular.js, whether it's through adding it to your Master page for your site/page, or adding it to your Head controller.
+
+You'll probably want to keep your Angular app code separate from your framework code. The author stashes his in `app/` in his web root. `app` is fairly conventional for Angular. Your app files need to be referenced on your page also. You'll want to be conservative on where you place your `ng-app` attribute on your page, if you load it on most/all of your "webpages" and you're only using Angular on a few of them, try to load it only on those pages.
+
+The author makes use of an asp:Content control at the end of the body of his Master page, then any Web Forms pages can load its required scripts and reference the Content control.
+
+For bootstrapping your app, you can decide to just template your Server Side data into an inline script on your Code Forward if your data is really simple and you just need to get it done. The author uses an asp:Repeater to inline script an array of data between brackets in some JavaScript, or even use an asp:Literal to construct the JS serverside, then pass it into the Code Forward.
+
+Page Methods are pretty simple to use, but are restricted to the Web Form you're on. You decorate your controller methods on an aspx file with `[WebMethod]`, then you can call it with some Ajax. On the client side, WebForms generates client code for using PageMethods, and each method gets namespaced to the `pageMethods` object on the page. You then need to include your runat server form and an asp:ScriptManager with `EnablePageMethods="True"`. You can then call your Page Methods from your Angular app, but always remember on your callback functions you supply to each client Web Method call to end it with `$scope.$apply()` to rebind the updated model to your page.
+
 ## Getting Ready for Prod - Using Grunt within Visual Studio ##
 
 * Must have Node and Grunt installed on the building machine in order to use Grunt
