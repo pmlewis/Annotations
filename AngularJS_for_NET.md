@@ -125,6 +125,10 @@ For bootstrapping your app, you can decide to just template your Server Side dat
 
 Page Methods are pretty simple to use, but are restricted to the Web Form you're on. You decorate your controller methods on an aspx file with `[WebMethod]`, then you can call it with some Ajax. On the client side, WebForms generates client code for using PageMethods, and each method gets namespaced to the `pageMethods` object on the page. You then need to include your runat server form and an asp:ScriptManager with `EnablePageMethods="True"`. You can then call your Page Methods from your Angular app, but always remember on your callback functions you supply to each client Web Method call to end it with `$scope.$apply()` to rebind the updated model to your page.
 
+If you're are using a service to call a page method, and you don't have access to `$scope`, you can reinitialize Angular by passing the `$rootScope` service to your service and call `$rootScope.$apply()`, however this is kind of hacky.
+
+To save things using Page Methods, you call your Page Method from the client passing the needed parameters, and save as usual from your Web Forms code.
+
 ## Getting Ready for Prod - Using Grunt within Visual Studio ##
 
 * Must have Node and Grunt installed on the building machine in order to use Grunt
