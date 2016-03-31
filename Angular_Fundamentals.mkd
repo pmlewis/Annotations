@@ -1,0 +1,7 @@
+# Angular Fundamentals #
+
+Angular components can be thought of as being either Controllers, Views, Services, Routing, Directives, and Testing. Angular is opinioned, so to get the most out of it, and reduce dependencies on other libraries, you should understand how things work the Angular way.
+
+When reading markup, remember that Angular can both leverage directives, and controllers, where you can create new tags that refer to larger controllers or add in ng attributes for leveraging directives.
+
+Remember that Angular can be set up to leverage *end-to-end* testing.....
