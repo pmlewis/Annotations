@@ -11,4 +11,12 @@ Angular uses two way binding so your view is updated when you model changes.
 
 ## Markup and Controllers ##
 
+Note that this course focuses on Angular 1, but Angular 2 is out, and has some significant changes you should be mindful of.
 
+In Angular, modules are the collections of files that together form some bigger purpose. Your controllers, services, templates, etc are bundled into modules. You add a module to a page load like
+
+```
+// Let's add the eventsApp module to our page and it has no dependencies on
+// other modules, but we still pass the empty array
+var eventsApp = angular.module('eventsApp', []);
+```
