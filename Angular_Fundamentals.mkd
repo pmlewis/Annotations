@@ -5,3 +5,10 @@ Angular components can be thought of as being either Controllers, Views, Service
 When reading markup, remember that Angular can both leverage directives, and controllers, where you can create new tags that refer to larger controllers or add in ng attributes for leveraging directives.
 
 Remember that Angular can be set up to leverage *end-to-end* testing.....
+
+Angular uses two way binding so your view is updated when you model changes.
+
+
+## Markup and Controllers ##
+
+
