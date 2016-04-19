@@ -24,3 +24,7 @@ var eventsApp = angular.module('eventsApp', []);
 Controllers create a *scope* which is the means to communicate with the view. The scope helps deliver the model to the view, and actions through the view to change the model may go through the scope. The scope may have methods that your view binds to.
 
 After you create a controller in your app, and have markup that uses that controller, you write your controller function, where you pass as the first parameter your scope, which really should be called `$scope`. Any properties, fields, or methods you put onto `$scope` will be accessible in your controller.
+
+Remember you can use `ng-repeat` on elements to repeat them for a given interable in JavaScript.
+
+You can add click events with `ng-click`, and you can specify a click handler function that is a method on your scope (put your click handler as a scope method).
