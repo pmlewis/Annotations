@@ -119,6 +119,8 @@ However your pages are set up, don't forget to add your script reference to Angu
 
 You'll probably want to keep your Angular app code separate from your framework code. The author stashes his in `app/` in his web root. `app` is fairly conventional for Angular. Your app files need to be referenced on your page also. You'll want to be conservative on where you place your `ng-app` attribute on your page, if you load it on most/all of your "webpages" and you're only using Angular on a few of them, try to load it only on those pages.
 
+#### WebForms
+
 The author makes use of an asp:Content control at the end of the body of his Master page, then any Web Forms pages can load its required scripts and reference the Content control.
 
 For bootstrapping your app, you can decide to just template your Server Side data into an inline script on your Code Forward if your data is really simple and you just need to get it done. The author uses an asp:Repeater to inline script an array of data between brackets in some JavaScript, or even use an asp:Literal to construct the JS serverside, then pass it into the Code Forward.
@@ -128,6 +130,12 @@ Page Methods are pretty simple to use, but are restricted to the Web Form you're
 If you're are using a service to call a page method, and you don't have access to `$scope`, you can reinitialize Angular by passing the `$rootScope` service to your service and call `$rootScope.$apply()`, however this is kind of hacky.
 
 To save things using Page Methods, you call your Page Method from the client passing the needed parameters, and save as usual from your Web Forms code.
+
+#### MVC
+
+You can call MVC Controller methods from Angular using your typical Http requests to routes you define for your controllers. Promise for responses, and process your response accordingly. The author notes that MVC actions don't all get requests by default?? What does he mean...
+
+The author also describes how to set up and make requests using WCF, if you're curious.
 
 ## Getting Ready for Prod - Using Grunt within Visual Studio ##
 
