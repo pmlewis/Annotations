@@ -11,3 +11,40 @@ Reference the `d3` object to use the D3 library. D3 uses a fluent function-chain
 You can use `rect` and `circle` elements in an `svg` tag for basic shapes, and each have properties for defining the position and size of the shape. Your `svg` tag can have `width` and `height` properties...what happens when you don't define them? Do they default to full-width, height? 
 
 You use `data()` and `enter()` to register your dataset to the selected elements, then if you use `append()`, d3 will apply that for each piece of data you pass in. If you use `attr()`, you can pass in a function as the second value that will map over each data value. That function will take value as 1st param, index as 2nd.
+
+
+## Basic Charting ##
+
+This will cover Bar charts, labels, line charts, and scatterplots.
+
+For bar charts, remember you will append an svg, set a width and height on the svg, and you'll pass in an array of values. For example
+
+```
+var svg = d3.select("body").append("svg").attr("width", yourWidth).attr("height", yourHeight);
+
+svg.selectAll("rect")
+  .data(yourData)
+  .enter()
+  .append("rect")
+  .attr("x", function(d, i) { return i * (yourWidth / yourData.length); })
+  .attr("y", function(d) { return yourHeight - (d); })
+  .attr("width", yourWidth / yourData.length - barSpacing)
+  .attr("height", function(d) { return (d); });
+```
+
+There are many svg attributes you can play with in code. `fill` lets you choose the color that fills a given shape. You can get real interesting when you work with functions that generate rgb (maybe rgba?) values.
+
+The `attr` method can accept a object as a parameter where each property name is the attribute name you wish to create, and the value of each property gets generated for each data record you pass in.
+
+You can now add some labels to you bars which, haha, is just a `text` svg element. If you wanted to add a text label for each data record you have, you could do
+
+```
+svg.selectAll("text")
+  .data(yourData)
+  .enter()
+  .append("text")
+  .text(function(d) { return d; })
+  .attr( { /* go to town on positioning, fonts, color, etc */ });
+```
+
+Building a line chart is a bit different
