@@ -44,7 +44,41 @@ svg.selectAll("text")
   .enter()
   .append("text")
   .text(function(d) { return d; })
+  .attr("x", /*...*/)
+  .attr("y", /* ... Remember to place things correctly ... */)
   .attr( { /* go to town on positioning, fonts, color, etc */ });
 ```
 
-Building a line chart is a bit different
+Building a line chart is a bit different, you have a bunch of points, and you'll connect each point sequentially. You'll use the `d3.svg.line` method to create a *line-drawing function*. You'll pass your data records into this *line-drawing function* and pass the value that spits out as a `d` property of a `path` element. You can follow `line` with `x` and `y` methods that'll define the x and y values for each data record. Then you can call `interpolate` to connect the dots.
+
+```
+var myLineDrawingFunction = d3.svg.line()
+	.x(function(d) { return d.month * 2; })
+	.y(function(d) { return yourVizHeight - d.sales; }) // Remember to correctly orient yourself
+	.interpolate("linear"); // There are different ways you can connect the dots
+
+var myViz = mySelectedSvg.append("path") // Path elements are your lines in SVG
+	.attr({
+		d: myLineDrawingFunction(mySalesData),
+		"stoke" : /* ... */
+		"fill" : /* ... */
+	});
+```
+
+You can also build Scatter Plots, which ends up just being placing `circle` elements for each data record you have.
+
+```
+var dots = mySelectedSvg.selectAll("circle")
+	.data(monthlySales)
+	.enter()
+	.append("circle")
+	.attr({
+		cx : function(d) { return d.month * myXConstant; },
+		cy : function(d) { return mySvgHeight - d.sales; },
+		r  : radiusConstant,
+		"fill" : myDotColor
+	});
+```
+
+Note that D3 has a lot of helper methods you can work with for doing data calculations, like `d3.max` and `d3.min`. Check out the docs. Remember that D3's strength is in being dynamic and interactive. You hook up interactive controls into your viz, and let users play with it. 
+
