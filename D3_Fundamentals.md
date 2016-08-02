@@ -19,7 +19,7 @@ This will cover Bar charts, labels, line charts, and scatterplots.
 
 For bar charts, remember you will append an svg, set a width and height on the svg, and you'll pass in an array of values. For example
 
-```
+```javascript
 var svg = d3.select("body").append("svg").attr("width", yourWidth).attr("height", yourHeight);
 
 svg.selectAll("rect")
@@ -38,7 +38,7 @@ The `attr` method can accept a object as a parameter where each property name is
 
 You can now add some labels to your bars which, haha, is just a `text` svg element. If you wanted to add a text label for each data record you have, you could do
 
-```
+```javascript
 svg.selectAll("text")
   .data(yourData)
   .enter()
@@ -51,7 +51,7 @@ svg.selectAll("text")
 
 Building a line chart is a bit different, you have a bunch of points, and you'll connect each point sequentially. You'll use the `d3.svg.line` method to create a *line-drawing function*. You'll pass your data records into this *line-drawing function* and pass the value that spits out as a `d` property of a `path` element. You can follow `line` with `x` and `y` methods that'll define the x and y values for each data record. Then you can call `interpolate` to connect the dots.
 
-```
+```javascript
 var myLineDrawingFunction = d3.svg.line()
 	.x(function(d) { return d.month * 2; })
 	.y(function(d) { return yourVizHeight - d.sales; }) // Remember to correctly orient yourself
@@ -67,7 +67,7 @@ var myViz = mySelectedSvg.append("path") // Path elements are your lines in SVG
 
 You can also build Scatter Plots, which ends up just being placing `circle` elements for each data record you have.
 
-```
+```javascript
 var dots = mySelectedSvg.selectAll("circle")
 	.data(monthlySales)
 	.enter()
@@ -89,7 +89,7 @@ D3 can work with data found through API calls or by reading files, say, stored a
 
 Use the `d3.csv` method to work with a file path to your CSV and a function to work with the loaded dataset, like
 
-```
+```javascript
 d3.csv('myDataset', function(error, loadedData) {
   if (error) { console.log(error); return; }
   // loadedData is all your data in an array of objects where each object has
@@ -115,4 +115,49 @@ D3 does have `d3.xhr` that can work with AJAX requests if you need some more fin
 
 If you want some examples of open data APIs you can work with, check out data.gov, Twitter's API, and coinbase's bitcoin API. Read their documentation on how to use them, which may include learning how to authenticate with the API.
 
+
+## Enhancing Your Viz with Scales and Axis ##
+
+To make a scale, you need to pass in a range of values, then to get your scale, you are returned a different range of values. To easily make scales, you work with the `d3.scale` object. For now, you'll use `d3.scale.linear`.
+
+```javascript
+//To create a scaling function you specify the min and max
+//domain value, then you specify a range to output to,
+//which'll be the pixels you may draw
+var scale = d3.scale.linear()
+	.domain([salesMin, salesMax])
+	.range([startLocation, endLocation]);
+
+//Should be about halfway between start and end location
+console.log(scale(salesAvg));
+```
+
+Once you build a scaling function, you can use this, say, in a line graph to generate your x or y values.
+
+```javascript
+var xScale = d3.scale.linear()
+	.domain([
+		d3.min(monthlySales, function(d) { return d.month; }),
+		d3.max(monthlySales, function(d) { return d.month; })
+	])
+	.range(0, vizWidth);
+
+var yScale = d3.scale.linear()
+	// When making a line graph, your y values should most always
+	// start at zero, otherwise you're probably "lying about your data"
+	.domain([0, d3.max(monthlySales, function(d) { return d.sales; })
+	// Remember you'll flip the y axis since in SVG, increases in 
+	// height grow down, so list the height first, then 0
+	.range([vizHeight, 0]);
+
+var drawLine = d3.svg.line()
+	.x(function(d) { return xScale(d.month); })
+	.y(function(d) { return yScale(d.sales); })
+	.interpolate("linear");
+
+// Now you can draw a scaled line graph. Try extending this to bar
+// graphs and scatter plots!
+```
+
+Now to create an axis, you use the `d3.svg.axis` method. You pass in a scaling function, define an orientation, and then you call your axis drawing function. The author appends a `g` grouping element, then uses `call` passing in the scale function.
 
