@@ -82,3 +82,37 @@ var dots = mySelectedSvg.selectAll("circle")
 
 Note that D3 has a lot of helper methods you can work with for doing data calculations, like `d3.max` and `d3.min`. Check out the docs. Remember that D3's strength is in being dynamic and interactive. You hook up interactive controls into your viz, and let users play with it. 
 
+
+## External Data Sources - JSON and CSV ##
+
+D3 can work with data found through API calls or by reading files, say, stored as CSV or JSON. CSV files are very common and serve as a good step before learning about using API calls.
+
+Use the `d3.csv` method to work with a file path to your CSV and a function to work with the loaded dataset, like
+
+```
+d3.csv('myDataset', function(error, loadedData) {
+  if (error) { console.log(error); return; }
+  // loadedData is all your data in an array of objects where each object has
+  // properties named after your columns
+
+  // Note the callback style of this method. csv() runs as async, so you'll
+  // probably want to do your work drawing the viz inside this method
+});
+```
+
+Working with the `d3.json` method is very similar to using`d3.csv`, except your dataset gets loaded as a JavaScript object, like you'd expect working with JSON.
+
+
+## External Data Sources - Web APIs ##
+
+D3 comes with functionality for accessing Web APIs. If you are working with JavaScript and you're referencing resources across different domains, or same domain different port, or same domain different protocol, you'll run into issues with the Same Origin Policy. This is configurable on the client browser and on servers. You really shouldn't mess around with this unless you're in Ops and know what you're doing, but a lot of public APIs are configured to allow cross origin requests.
+
+The author shows that you can pass a URL as the first argument into `d3.json` since this particular URL returns a JSON response but the URL ends with a file extension, so I don't know if this is a shortcut for hitting APIs with GETs that return JSON or if this particular request is literally returning a file that is JSON formatted.
+
+D3 does have `d3.xhr` that can work with AJAX requests if you need some more fine-grained control over the requests you make.
+
+*Protip* - If you need to work with strings that are `base64` encoded, you can use `window.atob` to make it human readable. Also, if you need to make a string that is JSON into a real JavaScript object, use `JSON.parse`.
+
+If you want some examples of open data APIs you can work with, check out data.gov, Twitter's API, and coinbase's bitcoin API. Read their documentation on how to use them, which may include learning how to authenticate with the API.
+
+
