@@ -270,4 +270,17 @@ mySvg.selectAll("path")
 	});
 ```
 
-Suppose you want to draw points on a map. You need position data for each point, and in the case of cities in a country, latitude and longitude are readily available.
+Suppose you want to draw points on a map. You need position data for each point, and in the case of cities in a country, latitude and longitude are readily available. In the case of cities on the US map, our projection function (what we created using `albersUsa()` can accept a long, lat pair as an array and returns an array with long in index 0, lat in index 1. How can we do this though for maps we ourselves create?
+
+```javascript
+mySvg.selectAll("circle")
+	.data(salesByCityData)
+	.enter()
+	.append("circle")
+	.attr({
+		cx  : function(d) { return myProjection([d.long, d.lat])[0]; },
+		cy  : function(d) { return myProjection([d.long, d.lat])[1]; },
+		r   : function(d) { return sizeProportion(d.sales); },
+		fill: myColor
+	});
+```
