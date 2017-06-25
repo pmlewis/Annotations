@@ -250,4 +250,4 @@ You can also support query and template collections. The author finds Collection
 
 Be aware that Hypermedia is still a real new idea, and the thinking about it is still changing. Remember you have a job to do and you should deliver a solid app first, bells and whistles second.
 
- 
+ gand
