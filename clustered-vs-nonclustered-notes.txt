@@ -1,0 +1,14 @@
+look up sql server clusters
+
+
+clustered indexes vs nonclustered indexes
+
+tables without indexes are heaps and records are inserted just anywhere they can fit without order. a `where` clause here would make a full table scan and would be slow.
+
+index keys imply order, where knowing that data is in order can make things work way faster. however, simply having the data in order would still make a full table scan. the key then is to create index pages that have some of the index keys to find the rest of the record, the base record. Then your index pages in turn can have index pages. This structure is a clustered index. A clustered index seek is when you have a `where` and you start at the top of your index page tree and then searches all the way down to the base record. The drawback to this is you can only create **one** clustered index in a table. this is because all of the base record data is in one particular order, according to your index, and you can't have two ways the base records are ordered without either duplicating the data or making the effort to re-order everything, applying a new clustered index, which should be a no-go.
+
+You'd need a slightly different index structure that contains your indexed data and points to your base records. Understand though that, this index structure right before the base record level contains pointers to each record because *the base records are not stored in order, or maybe even the same sections on disk*. This is a non-clustered index. In this case, the base records are considered a heap.
+
+You can do a couple of neat things with nonclustered indexes. You can create a nonclustered index that includes a filter predicate (think "where" clause). If a user queries this table and uses that filter, the lookup engine will use that index. If you need some data outside of what's indexed, that will take a performance hit. If you commonly need another column associated with the nonclustered index, you can use an *include* clause to include a another column that'll be stored along side the index in index files.
+
+related to these are primary key and unique key contraints. by default in sql server, adding a primary key creates a clustered index and a unique key creates a nonclustered index, however you can create a nonclustered primary key and clustered unique keys

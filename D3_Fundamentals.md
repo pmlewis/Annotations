@@ -43,7 +43,7 @@ svg.selectAll("text")
   .data(yourData)
   .enter()
   .append("text")
-  .text(function(d) { return d; })
+  .text(function(d) { return "Generate your text here"; })
   .attr("x", /*...*/)
   .attr("y", /* ... Remember to place things correctly ... */)
   .attr( { /* go to town on positioning, fonts, color, etc */ });
